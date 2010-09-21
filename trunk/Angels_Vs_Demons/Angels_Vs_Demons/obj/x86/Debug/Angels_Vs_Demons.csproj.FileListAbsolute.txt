@@ -1,9 +1,0 @@
-C:\Users\Beamer\Documents\Visual Studio 2008\Projects\Angels_Vs_Demons\Angels_Vs_Demons\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\Users\Beamer\Documents\Visual Studio 2008\Projects\Angels_Vs_Demons\Angels_Vs_Demons\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
-C:\Users\Beamer\Documents\Visual Studio 2008\Projects\Angels_Vs_Demons\Angels_Vs_Demons\bin\x86\Debug\Angels_Vs_Demons.exe
-C:\Users\Beamer\Documents\Visual Studio 2008\Projects\Angels_Vs_Demons\Angels_Vs_Demons\bin\x86\Debug\Angels_Vs_Demons.pdb
-C:\Users\Beamer\Documents\Visual Studio 2008\Projects\Angels_Vs_Demons\Angels_Vs_Demons\obj\x86\Debug\Angels_Vs_Demons.exe
-C:\Users\Beamer\Documents\Visual Studio 2008\Projects\Angels_Vs_Demons\Angels_Vs_Demons\obj\x86\Debug\Angels_Vs_Demons.pdb
-C:\Users\Beamer\Documents\Visual Studio 2008\Projects\Angels_Vs_Demons\Angels_Vs_Demons\bin\x86\Debug\Content\MenuFont.xnb
-C:\Users\Beamer\Documents\Visual Studio 2008\Projects\Angels_Vs_Demons\Angels_Vs_Demons\bin\x86\Debug\Content\blank.xnb
-C:\Users\Beamer\Documents\Visual Studio 2008\Projects\Angels_Vs_Demons\Angels_Vs_Demons\bin\x86\Debug\Content\gradient.xnb
