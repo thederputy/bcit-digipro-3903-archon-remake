@@ -1,2 +1,0 @@
-Congrats your svn is working!
-I had to revert back to the 2008 version, as the 2010 one would not build on ym machine.
