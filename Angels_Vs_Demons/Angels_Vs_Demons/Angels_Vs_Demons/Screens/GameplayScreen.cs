@@ -10,9 +10,7 @@ using Microsoft.Xna.Framework.Input;
 namespace Angels_Vs_Demons
 {
     /// <summary>
-    /// This screen implements the actual game logic. It is just a
-    /// placeholder to get the idea across: you'll probably want to
-    /// put some more interesting gameplay in here!
+    /// This screen implements the actual game logic
     /// </summary>
     abstract class GameplayScreen : GameScreen
     {
@@ -20,6 +18,11 @@ namespace Angels_Vs_Demons
 
         ContentManager content;
         SpriteFont gameFont;
+        GameObject[][] grid;
+        Texture2D TileTexture;
+        int x_size;
+        int y_size;
+        int tile_size;
 
         #endregion
 
@@ -33,6 +36,22 @@ namespace Angels_Vs_Demons
         {
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
+            x_size = 10;
+            y_size = 9;
+            tile_size = 20;
+            grid = new GameObject[y_size][];
+            for (int i = 0; i < y_size; i++)
+            {
+                grid[i] = new GameObject[x_size]; 
+                for (int j = 0; j < x_size; j++)
+                {
+                    grid[i][j] = new GameObject(TileTexture);
+                    grid[i][j].rect.X = j * tile_size;
+                    grid[i][j].rect.Y = i * tile_size;
+                    grid[i][j].rect.Width = tile_size;
+                    grid[i][j].rect.Height = tile_size;
+                }
+            }
         }
 
 
@@ -45,6 +64,7 @@ namespace Angels_Vs_Demons
                 content = new ContentManager(ScreenManager.Game.Services, "Content");
 
             gameFont = content.Load<SpriteFont>("MenuFont");
+            TileTexture = content.Load<Texture2D>("blank");
 
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
@@ -84,7 +104,7 @@ namespace Angels_Vs_Demons
 
             if (IsActive)
             {
-                // Put the gameplay here
+                // Put the variable updates here
             }
         }
 
@@ -147,8 +167,14 @@ namespace Angels_Vs_Demons
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
             spriteBatch.Begin();
-
-            //Something gets drawn here
+            
+            for (int i = 0; i < y_size; i++)
+            {
+                for (int j = 0; j < x_size; j++)
+                {
+                    spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.BlueViolet);
+                }
+            }
 
             spriteBatch.End();
 
