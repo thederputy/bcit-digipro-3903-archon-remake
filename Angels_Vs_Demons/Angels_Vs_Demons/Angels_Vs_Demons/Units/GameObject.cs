@@ -15,6 +15,7 @@ namespace Angels_Vs_Demons
         public Vector2 position;
         public float direction;
         public Rectangle rect;
+
         public GameObject(Texture2D loadedTexture)
         {
             direction = 0.0f;
