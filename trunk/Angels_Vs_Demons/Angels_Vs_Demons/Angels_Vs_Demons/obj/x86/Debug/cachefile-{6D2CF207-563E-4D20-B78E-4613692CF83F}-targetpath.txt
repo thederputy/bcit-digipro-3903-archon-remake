@@ -1,3 +1,0 @@
-Content\MenuFont.xnb
-Content\blank.xnb
-Content\gradient.xnb
