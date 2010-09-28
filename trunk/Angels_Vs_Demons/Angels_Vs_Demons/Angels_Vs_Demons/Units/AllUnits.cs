@@ -40,18 +40,130 @@ namespace Angels_Vs_Demons
     /// </summary>
     abstract class AllUnits : GameObject
     {
-        public int totalHP;
-        public int currHP;
-        public int movement;
-        public armorType armor;
-        public specialType[] special;
-        public int totalRecharge;
-        public int currRecharge;
+        #region Properties
+
+
+        protected int totalHP;
+
+        /// <summary>
+        /// Current Health Points of this unit.
+        /// </summary>
+        public int CurrHP
+        {
+            get { return currHP; }
+            set { currHP = value; }
+        }
+
+        protected int currHP;
+
+        protected int movement;
+
+        /// <summary>
+        /// Armor Type of this unit. Determines damage mitigation.
+        /// </summary>
+        protected armorType Armor
+        {
+            get { return armor; }
+            set { armor = value; }
+        }
+
+        private armorType armor;
+
+        protected specialType[] special;
+        protected int totalRecharge;
+
+        /// <summary>
+        /// Current recharge time (in turns) of this unit. When this value is greater than 0 this unit cannot act.
+        /// </summary>
+        protected int CurrRecharge
+        {
+            get { return currRecharge; }
+            set { currRecharge = value; }
+        }
+
+        private int currRecharge;
+
+
+        #endregion
 
         protected AllUnits(Texture2D loadedTexture)
             : base(loadedTexture)
         {
 
         }
+
+        #region Public Methods
+
+
+        public int applyMitigation(int attackerAP, attackType attackerType)
+        {
+            int effectiveAP = attackerAP;
+
+            switch (armor)
+            {
+                case armorType.HEAVY:
+                    switch (attackerType)
+                    {
+                        case attackType.MAGIC:
+                            effectiveAP += 5;
+                            break;
+
+                        case attackType.MELEE:
+                            effectiveAP -= 5;
+                            break;
+
+                        case attackType.PROJECTILE:
+                            effectiveAP -= 5;
+                            break;
+                    }
+                    break;
+
+                case armorType.MEDIUM:
+                    break;
+
+                case armorType.LIGHT:
+                    switch (attackerType)
+                    {
+                        case attackType.MAGIC:
+                            break;
+
+                        case attackType.MELEE:
+                            effectiveAP += 5;
+                            break;
+
+                        case attackType.PROJECTILE:
+                            break;
+                    }
+                    break;
+
+                case armorType.MAGIC:
+                    switch (attackerType)
+                    {
+                        case attackType.MAGIC:
+                            effectiveAP -= 10;
+                            break;
+
+                        case attackType.MELEE:
+                            break;
+
+                        case attackType.PROJECTILE:
+                            break;
+                    }
+                    break;
+
+                case armorType.IMBUED:
+                    effectiveAP -= 15;
+                    if (effectiveAP < 5)
+                    {
+                        effectiveAP = 5;
+                    }
+                    break;
+            }
+
+            return effectiveAP;
+        }
+
+
+        #endregion
     }
 }

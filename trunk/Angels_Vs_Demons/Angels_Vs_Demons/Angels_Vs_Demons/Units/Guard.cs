@@ -16,16 +16,21 @@ namespace Angels_Vs_Demons
         public Guard(Texture2D loadedTexture)
             : base(loadedTexture)
         {
-            currHP = 50;
+            CurrHP = 50;
             totalHP = 50;
             attackPower = 25;
-            attackType = attackType.MELEE;
-            armor = armorType.HEAVY;
+            attackTypeVal = attackType.MELEE;
+            Armor = armorType.HEAVY;
             range = 2;
             special = new specialType[]{specialType.HULKING};
             movement = 3;
-            currRecharge = 0;
+            CurrRecharge = 0;
             totalRecharge = 3;
+        }
+
+        public override void attack(AllUnits victim)
+        {
+            victim.CurrHP = victim.applyMitigation(attackPower, attackTypeVal);
         }
     }
 }

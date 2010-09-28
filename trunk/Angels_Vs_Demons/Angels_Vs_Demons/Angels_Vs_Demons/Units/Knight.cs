@@ -16,16 +16,21 @@ namespace Angels_Vs_Demons
         public Knight(Texture2D loadedTexture)
             : base(loadedTexture)
         {
-            currHP = 60;
+            CurrHP = 60;
             totalHP = 60;
             attackPower = 25;
-            attackType = attackType.MELEE;
-            armor = armorType.MAGIC;
+            attackTypeVal = attackType.MELEE;
+            Armor = armorType.MAGIC;
             range = 1;
             special = new specialType[] { specialType.FLYING };
             movement = 4;
-            currRecharge = 0;
+            CurrRecharge = 0;
             totalRecharge = 2;
+        }
+
+        public override void attack(AllUnits victim)
+        {
+            victim.CurrHP = victim.applyMitigation(attackPower, attackTypeVal);
         }
     }
 }
