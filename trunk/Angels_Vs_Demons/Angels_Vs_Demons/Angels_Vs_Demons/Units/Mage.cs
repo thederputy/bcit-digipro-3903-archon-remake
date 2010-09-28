@@ -11,24 +11,30 @@ namespace Angels_Vs_Demons
     /// </summary>
     class Mage : Units
     {
+        #region Initialization
+
+
         public Mage(Texture2D loadedTexture)
             : base(loadedTexture)
         {
             CurrHP = 30;
-            totalHP = 30;
-            attackPower = 30;
-            attackTypeVal = attackType.MAGIC;
+            TotalHP = 30;
+            AttackPower = 30;
+            AttackTypeVal = attackType.MAGIC;
             Armor = armorType.MAGIC;
-            range = 3;
-            special = new specialType[] { specialType.SPLASH, specialType.PROJECTILE };
-            movement = 3;
+            Range = 3;
+            Special = new specialType[] { specialType.SPLASH, specialType.PROJECTILE };
+            Movement = 3;
             CurrRecharge = 0;
-            totalRecharge = 4;
+            TotalRecharge = 4;
         }
+
+
+        #endregion
 
         public override void attack(AllUnits victim)
         {
-            victim.CurrHP = victim.applyMitigation(attackPower, attackTypeVal);
+            victim.CurrHP = victim.applyMitigation(AttackPower, AttackTypeVal);
         }
     }
 }

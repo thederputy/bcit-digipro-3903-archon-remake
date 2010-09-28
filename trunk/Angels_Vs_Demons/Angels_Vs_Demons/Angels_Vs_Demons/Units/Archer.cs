@@ -13,24 +13,30 @@ namespace Angels_Vs_Demons
     /// </summary>
     class Archer : Units
     {
+        #region Initialization
+
+
         public Archer(Texture2D loadedTexture)
             : base(loadedTexture)
         {
             CurrHP = 30;
-            totalHP = 30;
-            attackPower = 20;
-            attackTypeVal = attackType.PROJECTILE;
+            TotalHP = 30;
+            AttackPower = 20;
+            AttackTypeVal = attackType.PROJECTILE;
             Armor = armorType.LIGHT;
-            range = 4;
-            special = new specialType[] {specialType.PROJECTILE};
-            movement = 2;
+            Range = 4;
+            Special = new specialType[] {specialType.PROJECTILE};
+            Movement = 2;
             CurrRecharge = 2;
-            totalRecharge = 2;
+            TotalRecharge = 2;
         }
+
+
+        #endregion
 
         public override void attack(AllUnits victim)
         {
-            victim.CurrHP = victim.applyMitigation(attackPower, attackTypeVal);
+            victim.CurrHP = victim.applyMitigation(AttackPower, AttackTypeVal);
         }
     }
 }

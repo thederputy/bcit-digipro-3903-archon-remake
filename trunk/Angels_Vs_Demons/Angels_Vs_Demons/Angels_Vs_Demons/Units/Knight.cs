@@ -13,24 +13,30 @@ namespace Angels_Vs_Demons
     /// </summary>
     class Knight : Units
     {
+        #region Initialization
+
+
         public Knight(Texture2D loadedTexture)
             : base(loadedTexture)
         {
             CurrHP = 60;
-            totalHP = 60;
-            attackPower = 25;
-            attackTypeVal = attackType.MELEE;
+            TotalHP = 60;
+            AttackPower = 25;
+            AttackTypeVal = attackType.MELEE;
             Armor = armorType.MAGIC;
-            range = 1;
-            special = new specialType[] { specialType.FLYING };
-            movement = 4;
+            Range = 1;
+            Special = new specialType[] { specialType.FLYING };
+            Movement = 4;
             CurrRecharge = 0;
-            totalRecharge = 2;
+            TotalRecharge = 2;
         }
+
+
+        #endregion
 
         public override void attack(AllUnits victim)
         {
-            victim.CurrHP = victim.applyMitigation(attackPower, attackTypeVal);
+            victim.CurrHP = victim.applyMitigation(AttackPower, AttackTypeVal);
         }
     }
 }

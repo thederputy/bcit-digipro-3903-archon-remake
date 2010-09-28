@@ -13,24 +13,30 @@ namespace Angels_Vs_Demons
     /// </summary>
     class Peon : Units
     {
+        #region Initialization
+
+
         public Peon(Texture2D loadedTexture)
             : base(loadedTexture)
         {
             CurrHP = 40;
-            totalHP = 40;
-            attackTypeVal = attackType.MELEE;
-            attackPower = 10;
+            TotalHP = 40;
+            AttackTypeVal = attackType.MELEE;
+            AttackPower = 10;
             Armor = armorType.MEDIUM;
-            special = new specialType[] { specialType.NONE };
-            range = 1;
-            movement = 3;
+            Special = new specialType[] { specialType.NONE };
+            Range = 1;
+            Movement = 3;
             CurrRecharge = 0;
-            totalRecharge = 1;
+            TotalRecharge = 1;
         }
+
+
+        #endregion
 
         public override void attack(AllUnits victim)
         {
-            victim.CurrHP = victim.applyMitigation(attackPower, attackTypeVal);
+            victim.CurrHP = victim.applyMitigation(AttackPower, AttackTypeVal);
         }
     }
 }
