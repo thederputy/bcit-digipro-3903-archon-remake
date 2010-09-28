@@ -11,7 +11,7 @@ namespace Angels_Vs_Demons
     /// <summary>
     /// Archer represents either a Skeleton Archer or Chosen One.
     /// </summary>
-    class Archer : Units
+    class Archer : NonChampion
     {
         #region Initialization
 
@@ -34,7 +34,7 @@ namespace Angels_Vs_Demons
 
         #endregion
 
-        public override void attack(AllUnits victim)
+        public override void attack(Unit victim)
         {
             victim.CurrHP = victim.applyMitigation(AttackPower, AttackTypeVal);
         }

@@ -11,7 +11,7 @@ namespace Angels_Vs_Demons
     /// <summary>
     /// Knight represents either a Nightmare or Pegasus
     /// </summary>
-    class Knight : Units
+    class Knight : NonChampion
     {
         #region Initialization
 
@@ -34,7 +34,7 @@ namespace Angels_Vs_Demons
 
         #endregion
 
-        public override void attack(AllUnits victim)
+        public override void attack(Unit victim)
         {
             victim.CurrHP = victim.applyMitigation(AttackPower, AttackTypeVal);
         }

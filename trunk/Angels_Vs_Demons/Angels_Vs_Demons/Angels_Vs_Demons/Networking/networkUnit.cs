@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Angels_Vs_Demons.Networking
 {
-    class networkUnit : AllUnits
+    class networkUnit : Unit
     {
         int screenWidth = 853;
         int screenHeight = 480;

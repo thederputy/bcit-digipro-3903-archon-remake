@@ -11,10 +11,29 @@ namespace Angels_Vs_Demons
     /// <summary>
     /// Champion represents a Arch Demon or Arch Angel. 
     /// </summary>
-    class Champion : AllUnits
+    class Champion : Unit
     {
-        public int totalMP;
-        public int currMP;
+        #region Properties
+
+
+        public int TotalMP
+        {
+            get { return totalMP; }
+            set { totalMP = value; }
+        }
+
+        private int totalMP;
+        
+        public int CurrMP
+        {
+            get { return currMP; }
+            set { currMP = value; }
+        }
+
+        private int currMP;
+
+
+        #endregion
 
         public Champion(Texture2D loadedTexture)
             : base(loadedTexture)
@@ -31,11 +50,16 @@ namespace Angels_Vs_Demons
         }
 
         /*
-         * Blood Bolt / Lightning Bolt
+         * 
          */
-        public void Bolt()
+        /// <summary>
+        /// Blood Bolt / Lightning Bolt (Bolt): removes 20 from the victim's (Unit) currHP. Removes 20 MP from 
+        /// </summary>
+        /// <param name="victim">Unit object targetted by this method.</param>
+        public void Bolt(Unit victim)
         {
-
+            victim.CurrHP = victim.applyMitigation(20, attackType.MAGIC);
+            CurrMP -= 20;
         }
 
         /*
@@ -45,29 +69,32 @@ namespace Angels_Vs_Demons
         {
 
         }
-
-        /*
-         * Shackles / Light Net
-         */
-        public void Snare()
+        
+        /// <summary>
+        /// Shackles / Light Net (Snare): adds 2 to the victim's (NonChampion) currRecharge
+        /// </summary>
+        /// <param name="victim">Unit object targetted by this method</param>
+        public void Snare(NonChampion victim)
         {
-
+            victim.CurrRecharge += 2;
+            CurrMP -= 20;
         }
 
-        /*
-         * Demonic Empowerment / Blessing
-         */
+        /// <summary>
+        /// Demonic Empowerment / Blessing (Imbue):
+        /// </summary>
         public void Imbue()
         {
 
         }
 
-        /*
-         * Rest
-         */
+        /// <summary>
+        /// Rest: sets currMP to totalMP and sets currRecharge to 5.
+        /// </summary>
         public void Rest()
         {
-
+            CurrMP = TotalMP;
+            CurrRecharge = 5;
         }
     }
 }
