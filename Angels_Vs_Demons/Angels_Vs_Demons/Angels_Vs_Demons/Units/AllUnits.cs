@@ -9,6 +9,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Angels_Vs_Demons
 {
+    #region Enumeration Classes
+
+
     /// <summary>
     /// Types of armor units can have. All units have 1 armor type.
     /// </summary>
@@ -35,6 +38,9 @@ namespace Angels_Vs_Demons
         CHAMPION
     }
 
+
+    #endregion
+
     /// <summary>
     /// AllUnits represents all unit objects.
     /// </summary>
@@ -43,7 +49,16 @@ namespace Angels_Vs_Demons
         #region Properties
 
 
-        protected int totalHP;
+        /// <summary>
+        /// Total Health Points of this unit.
+        /// </summary>
+        public int TotalHP
+        {
+            get { return totalHP; }
+            set { totalHP = value; }
+        }
+
+        private int totalHP;
 
         /// <summary>
         /// Current Health Points of this unit.
@@ -54,14 +69,23 @@ namespace Angels_Vs_Demons
             set { currHP = value; }
         }
 
-        protected int currHP;
+        private int currHP;
 
-        protected int movement;
+        /// <summary>
+        /// The amount of spaces this unit may move.
+        /// </summary>
+        public int Movement
+        {
+            get { return movement; }
+            set { movement = value; }
+        }
+
+        private int movement;
 
         /// <summary>
         /// Armor Type of this unit. Determines damage mitigation.
         /// </summary>
-        protected armorType Armor
+        public armorType Armor
         {
             get { return armor; }
             set { armor = value; }
@@ -69,13 +93,33 @@ namespace Angels_Vs_Demons
 
         private armorType armor;
 
-        protected specialType[] special;
-        protected int totalRecharge;
+        /// <summary>
+        /// Special Type(s), if any, of this unit.
+        /// </summary>
+        protected specialType[] Special
+        {
+            get { return special; }
+            set { special = value; }
+        }
+
+        private specialType[] special;
+
+        /// <summary>
+        /// Total recharge time (in turns) of this unit. This value is constant and represents the value current 
+        /// recharge is set to when an action is taken.   
+        /// </summary>
+        public int TotalRecharge
+        {
+            get { return totalRecharge; }
+            set { totalRecharge = value; }
+        }
+
+        private int totalRecharge;
 
         /// <summary>
         /// Current recharge time (in turns) of this unit. When this value is greater than 0 this unit cannot act.
         /// </summary>
-        protected int CurrRecharge
+        public int CurrRecharge
         {
             get { return currRecharge; }
             set { currRecharge = value; }

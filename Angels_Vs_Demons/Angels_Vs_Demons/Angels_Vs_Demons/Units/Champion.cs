@@ -20,14 +20,14 @@ namespace Angels_Vs_Demons
             : base(loadedTexture)
         {
             CurrHP = 100;
-            totalHP = 100;
+            TotalHP = 100;
             currMP = 50;
             totalMP = 50;
             Armor = armorType.MAGIC;
-            special = new specialType[] { specialType.FLYING, specialType.CHAMPION };
-            movement = 2;
+            Special = new specialType[] { specialType.FLYING, specialType.CHAMPION };
+            Movement = 2;
             CurrRecharge = 0;
-            totalRecharge = 1;
+            TotalRecharge = 1;
         }
 
         /*
