@@ -14,16 +14,21 @@ namespace Angels_Vs_Demons
         public Mage(Texture2D loadedTexture)
             : base(loadedTexture)
         {
-            currHP = 30;
+            CurrHP = 30;
             totalHP = 30;
             attackPower = 30;
-            attackType = attackType.MAGIC;
-            armor = armorType.MAGIC;
+            attackTypeVal = attackType.MAGIC;
+            Armor = armorType.MAGIC;
             range = 3;
             special = new specialType[] { specialType.SPLASH, specialType.PROJECTILE };
             movement = 3;
-            currRecharge = 0;
+            CurrRecharge = 0;
             totalRecharge = 4;
+        }
+
+        public override void attack(AllUnits victim)
+        {
+            victim.CurrHP = victim.applyMitigation(attackPower, attackTypeVal);
         }
     }
 }

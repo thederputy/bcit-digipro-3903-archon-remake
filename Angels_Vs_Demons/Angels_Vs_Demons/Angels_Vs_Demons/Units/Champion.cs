@@ -19,14 +19,14 @@ namespace Angels_Vs_Demons
         public Champion(Texture2D loadedTexture)
             : base(loadedTexture)
         {
-            currHP = 100;
+            CurrHP = 100;
             totalHP = 100;
             currMP = 50;
             totalMP = 50;
-            armor = armorType.MAGIC;
+            Armor = armorType.MAGIC;
             special = new specialType[] { specialType.FLYING, specialType.CHAMPION };
             movement = 2;
-            currRecharge = 0;
+            CurrRecharge = 0;
             totalRecharge = 1;
         }
 

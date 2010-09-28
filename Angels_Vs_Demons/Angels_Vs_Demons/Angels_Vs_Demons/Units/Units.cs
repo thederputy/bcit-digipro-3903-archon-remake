@@ -24,7 +24,7 @@ namespace Angels_Vs_Demons
     abstract class Units : AllUnits
     {
         public int attackPower;
-        public attackType attackType;
+        public attackType attackTypeVal;
         public int range;
 
         protected Units(Texture2D loadedTexture)
@@ -32,5 +32,8 @@ namespace Angels_Vs_Demons
         {
 
         }
+
+        public abstract void attack(AllUnits victim);
+
     }
 }

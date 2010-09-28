@@ -16,16 +16,21 @@ namespace Angels_Vs_Demons
         public Archer(Texture2D loadedTexture)
             : base(loadedTexture)
         {
-            currHP = 30;
+            CurrHP = 30;
             totalHP = 30;
             attackPower = 20;
-            attackType = attackType.PROJECTILE;
-            armor = armorType.LIGHT;
+            attackTypeVal = attackType.PROJECTILE;
+            Armor = armorType.LIGHT;
             range = 4;
             special = new specialType[] {specialType.PROJECTILE};
             movement = 2;
-            currRecharge = 2;
+            CurrRecharge = 2;
             totalRecharge = 2;
+        }
+
+        public override void attack(AllUnits victim)
+        {
+            victim.CurrHP = victim.applyMitigation(attackPower, attackTypeVal);
         }
     }
 }
