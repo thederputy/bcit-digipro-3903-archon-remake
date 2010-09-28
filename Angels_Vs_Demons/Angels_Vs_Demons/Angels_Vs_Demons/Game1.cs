@@ -17,7 +17,6 @@ namespace Angels_Vs_Demons
 
         GraphicsDeviceManager graphics;
         ScreenManager screenManager;
-
         #endregion
 
         #region Initialization
@@ -26,17 +25,21 @@ namespace Angels_Vs_Demons
         /// <summary>
         /// The main game constructor.
         /// </summary>
+        
+        
+
         public GameStateManagementGame()
         {
             Content.RootDirectory = "Content";
 
             graphics = new GraphicsDeviceManager(this);
-
-            graphics.PreferredBackBufferWidth = 853;
-            graphics.PreferredBackBufferHeight = 480;
+            
 
             // Create the screen manager component.
             screenManager = new ScreenManager(this);
+
+            graphics.PreferredBackBufferWidth = ScreenManager.screenWidth;
+            graphics.PreferredBackBufferHeight = ScreenManager.screenHeight;
 
             Components.Add(screenManager);
 

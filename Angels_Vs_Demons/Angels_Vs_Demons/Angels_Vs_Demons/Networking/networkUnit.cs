@@ -11,20 +11,16 @@ namespace Angels_Vs_Demons.Networking
 {
     class networkUnit : Unit
     {
-        int screenWidth = 853;
-        int screenHeight = 480;
         public Vector2 Velocity;
 
-        Vector2 screenSize;
         public Vector2 unitInput;
 
         public networkUnit(Texture2D loadedTexture, int gamerIndex, ContentManager manager)
             : base(loadedTexture)
         {
-            position.X = screenWidth / 4 + (gamerIndex % 5) * screenWidth / 8;
-            position.Y = screenHeight / 4 + (gamerIndex / 5) * screenHeight / 5;
+            position.X = ScreenManager.screenWidth / 4 + (gamerIndex % 5) * ScreenManager.screenWidth / 8;
+            position.Y = ScreenManager.screenHeight / 4 + (gamerIndex / 5) * ScreenManager.screenHeight / 5;
 
-            screenSize = new Vector2(screenWidth, screenHeight);
         }
 
         /// <summary>
@@ -50,7 +46,7 @@ namespace Angels_Vs_Demons.Networking
             position += Velocity;
 
             // Clamp so the unit cannot drive off the edge of the screen.
-            position = Vector2.Clamp(position, Vector2.Zero, screenSize);
+            position = Vector2.Clamp(position, Vector2.Zero, ScreenManager.screenSize);
         }
     }
 }

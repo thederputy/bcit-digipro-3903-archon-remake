@@ -15,15 +15,21 @@ namespace Angels_Vs_Demons
     /// methods at the appropriate times, and automatically routes input to the
     /// topmost active screen.
     /// </summary>
+    /// 
     public class ScreenManager : DrawableGameComponent
     {
+
         #region Fields
+
+        public static int screenWidth = 853;
+        public static int screenHeight = 480;
+        public static Vector2 screenSize = new Vector2(screenWidth, screenHeight);
 
         List<GameScreen> screens = new List<GameScreen>();
         List<GameScreen> screensToUpdate = new List<GameScreen>();
-
+        
         InputState input = new InputState();
-
+        
         SpriteBatch spriteBatch;
         SpriteFont font;
         Texture2D blankTexture;

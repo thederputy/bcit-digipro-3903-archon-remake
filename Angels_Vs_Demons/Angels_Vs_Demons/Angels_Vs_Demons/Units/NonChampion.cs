@@ -12,7 +12,7 @@ namespace Angels_Vs_Demons
 
 
     /// <summary>
-    /// Types of attacks. All non-champion units have an attack type. Attack type interacts with Unit.armorType.
+    /// Types of attacks. All non-champion NonChampion have an attack type. Attack type interacts with Unit.armorType.
     /// </summary>
     public enum attackType
     {
@@ -26,7 +26,7 @@ namespace Angels_Vs_Demons
 
 
     /// <summary>
-    /// NonChampion represents all non-champion units.
+    /// NonChampion represents all non-champion NonChampion.
     /// </summary>
     abstract class NonChampion : Unit
     {

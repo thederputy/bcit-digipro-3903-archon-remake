@@ -18,7 +18,7 @@ namespace Angels_Vs_Demons
 
         public ContentManager content;
         SpriteFont gameFont;
-        GameObject[][] grid;
+        Tile[][] grid;
         Texture2D TileTexture;
         int x_size;
         int y_size;
@@ -38,15 +38,19 @@ namespace Angels_Vs_Demons
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
             x_size = 10;
             y_size = 9;
-            tile_size = 20;
-            grid = new GameObject[y_size][];
+            tile_size = 40;
+            int grid_totalwidth = tile_size * x_size;
+            int grid_x_center = grid_totalwidth / 2;
+            int screen_x_center = (ScreenManager.screenWidth / 2);
+
+            grid = new Tile[y_size][];
             for (int i = 0; i < y_size; i++)
             {
-                grid[i] = new GameObject[x_size]; 
+                grid[i] = new Tile[x_size]; 
                 for (int j = 0; j < x_size; j++)
                 {
-                    grid[i][j] = new GameObject(TileTexture);
-                    grid[i][j].rect.X = j * tile_size;
+                    grid[i][j] = new Tile(TileTexture);
+                    grid[i][j].rect.X = (j * tile_size) + (screen_x_center - grid_x_center);
                     grid[i][j].rect.Y = i * tile_size;
                     grid[i][j].rect.Width = tile_size;
                     grid[i][j].rect.Height = tile_size;
@@ -65,7 +69,7 @@ namespace Angels_Vs_Demons
 
             gameFont = content.Load<SpriteFont>("MenuFont");
             TileTexture = content.Load<Texture2D>("blank");
-
+            
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
             // while, giving you a chance to admire the beautiful loading screen.
@@ -167,7 +171,7 @@ namespace Angels_Vs_Demons
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
             spriteBatch.Begin();
-            
+
             for (int i = 0; i < y_size; i++)
             {
                 for (int j = 0; j < x_size; j++)
