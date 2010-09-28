@@ -11,7 +11,7 @@ namespace Angels_Vs_Demons
     /// <summary>
     /// Guard represents either a Blood Guard or Angelic Guard
     /// </summary>
-    class Guard : Units
+    class Guard : NonChampion
     {
         #region Initialization
 
@@ -34,7 +34,7 @@ namespace Angels_Vs_Demons
 
         #endregion
 
-        public override void attack(AllUnits victim)
+        public override void attack(Unit victim)
         {
             victim.CurrHP = victim.applyMitigation(AttackPower, AttackTypeVal);
         }

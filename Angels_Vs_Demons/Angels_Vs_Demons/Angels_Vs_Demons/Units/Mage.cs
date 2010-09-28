@@ -9,7 +9,7 @@ namespace Angels_Vs_Demons
     /// <summary>
     /// Mage represents either a Demon Lord or High Angel
     /// </summary>
-    class Mage : Units
+    class Mage : NonChampion
     {
         #region Initialization
 
@@ -32,7 +32,7 @@ namespace Angels_Vs_Demons
 
         #endregion
 
-        public override void attack(AllUnits victim)
+        public override void attack(Unit victim)
         {
             victim.CurrHP = victim.applyMitigation(AttackPower, AttackTypeVal);
         }
