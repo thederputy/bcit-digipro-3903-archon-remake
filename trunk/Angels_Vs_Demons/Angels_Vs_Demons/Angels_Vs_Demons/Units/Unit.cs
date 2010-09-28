@@ -13,7 +13,7 @@ namespace Angels_Vs_Demons
 
 
     /// <summary>
-    /// Types of armor units can have. All units have 1 armor type.
+    /// Types of armor NonChampion can have. All NonChampion have 1 armor type.
     /// </summary>
     public enum armorType
     {
@@ -25,7 +25,7 @@ namespace Angels_Vs_Demons
     }
 
     /// <summary>
-    /// Types of special properties units can have. All units have one or more special properties. 
+    /// Types of special properties NonChampion can have. All NonChampion have one or more special properties. 
     /// NONE indicates no special properties on that unit. 
     /// </summary>
     public enum specialType
