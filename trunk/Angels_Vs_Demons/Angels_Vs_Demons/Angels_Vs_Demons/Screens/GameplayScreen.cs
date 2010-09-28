@@ -16,7 +16,7 @@ namespace Angels_Vs_Demons
     {
         #region Fields
 
-        ContentManager content;
+        public ContentManager content;
         SpriteFont gameFont;
         GameObject[][] grid;
         Texture2D TileTexture;
