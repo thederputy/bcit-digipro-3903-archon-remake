@@ -36,6 +36,11 @@ namespace Angels_Vs_Demons
         {
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
+
+            /// <summary>
+            /// Initializes the screen with an empty grid of tiles
+            /// </summary>
+           
             x_size = 10;
             y_size = 9;
             tile_size = 40;
@@ -68,7 +73,7 @@ namespace Angels_Vs_Demons
                 content = new ContentManager(ScreenManager.Game.Services, "Content");
 
             gameFont = content.Load<SpriteFont>("MenuFont");
-            TileTexture = content.Load<Texture2D>("blank");
+            TileTexture = content.Load<Texture2D>("gridNormal");
             
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
@@ -176,7 +181,7 @@ namespace Angels_Vs_Demons
             {
                 for (int j = 0; j < x_size; j++)
                 {
-                    spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.BlueViolet);
+                    spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.White);
                 }
             }
 
