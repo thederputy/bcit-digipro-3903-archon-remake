@@ -30,9 +30,13 @@ namespace Angels_Vs_Demons
         Texture2D Imp_Texture;
         Texture2D Blood_Guard_Texture;
 
+        KeyboardState previousKeyboardState;
+        GamePadState previousGamePadState;
+
         int x_size;
         int y_size;
         int tile_size;
+        UnitDisplayWindow unitDisplay;
 
         #endregion
 
@@ -94,6 +98,9 @@ namespace Angels_Vs_Demons
                     grid[i][j].rect.Height = tile_size;
                 }
             }
+
+            //create new unit display window
+            unitDisplay = new UnitDisplayWindow();
 
             // Initializes the cursor
 
@@ -229,7 +236,7 @@ namespace Angels_Vs_Demons
 
                 grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected = false;
 
-                if (keyboardState.IsKeyDown(Keys.Left))
+                if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
                 {
                     if (Cursor.position.X > 0)
                     {
@@ -238,7 +245,7 @@ namespace Angels_Vs_Demons
                 }
 
 
-                if (keyboardState.IsKeyDown(Keys.Right))
+                if (keyboardState.IsKeyDown(Keys.Right) && !previousKeyboardState.IsKeyDown(Keys.Right))
                 {
                     if (Cursor.position.X < (x_size - 1))
                     {
@@ -246,7 +253,7 @@ namespace Angels_Vs_Demons
                     }
                 }
 
-                if (keyboardState.IsKeyDown(Keys.Up))
+                if (keyboardState.IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
                 {
                     if (Cursor.position.Y > 0)
                     {
@@ -254,7 +261,7 @@ namespace Angels_Vs_Demons
                     }
                 }
 
-                if (keyboardState.IsKeyDown(Keys.Down))
+                if (keyboardState.IsKeyDown(Keys.Down) && !previousKeyboardState.IsKeyDown(Keys.Down))
                 {
                     if (Cursor.position.Y < (y_size - 1))
                     {
@@ -264,6 +271,9 @@ namespace Angels_Vs_Demons
 
                 grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected = true;
             }
+
+            previousKeyboardState = keyboardState;
+            previousGamePadState = gamePadState;
         }
 
 
@@ -308,6 +318,8 @@ namespace Angels_Vs_Demons
                     }
                 }
             }
+
+            //unitDisplay.Draw(gameTime);
 
             spriteBatch.End();
 
