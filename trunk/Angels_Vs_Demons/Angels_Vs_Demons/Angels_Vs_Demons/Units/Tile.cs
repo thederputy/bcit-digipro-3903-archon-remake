@@ -25,10 +25,18 @@ namespace Angels_Vs_Demons
         }
         public Unit getUnit()
         {
-            return occupiedUnit;
+            return this.occupiedUnit;
         }
         public void setUnit(Unit newUnit)
         {
+            if (newUnit != null)
+            {
+                this.isOccupied = true;
+            }
+            else
+            {
+                this.isOccupied = false;
+            }
             this.occupiedUnit = newUnit;
         }
     }
