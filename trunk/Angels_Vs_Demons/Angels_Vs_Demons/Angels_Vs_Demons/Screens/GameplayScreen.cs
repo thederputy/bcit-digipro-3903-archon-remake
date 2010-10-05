@@ -23,12 +23,20 @@ namespace Angels_Vs_Demons
 
         Texture2D Cursor_Texture;
         Texture2D TileTexture;
+
         Texture2D Arch_Demon_Texture;
         Texture2D Nightmare_Texture;
         Texture2D Demon_Lord_Texture;
         Texture2D Skeleton_Archer_Texture;
         Texture2D Imp_Texture;
         Texture2D Blood_Guard_Texture;
+
+        Texture2D Arch_Angel_Texture;
+        Texture2D Pegasus_Texture;
+        Texture2D High_Angel_Texture;
+        Texture2D Chosen_One_Texture;
+        Texture2D Soldier_Texture;
+        Texture2D Angelic_Guard_Texture;
 
         KeyboardState previousKeyboardState;
         GamePadState previousGamePadState;
@@ -68,12 +76,21 @@ namespace Angels_Vs_Demons
             gameFont = content.Load<SpriteFont>("MenuFont");
             Cursor_Texture = content.Load<Texture2D>("Cursor");
             TileTexture = content.Load<Texture2D>("gridNormal");
+
             Arch_Demon_Texture = content.Load<Texture2D>("Arch_Demon");
             Nightmare_Texture = content.Load<Texture2D>("Nightmare");
             Demon_Lord_Texture = content.Load<Texture2D>("Demon_Lord");
             Skeleton_Archer_Texture = content.Load<Texture2D>("Skeleton_Archer");
             Imp_Texture = content.Load<Texture2D>("Imp");
             Blood_Guard_Texture = content.Load<Texture2D>("Blood_Guard");
+
+            Arch_Angel_Texture = content.Load<Texture2D>("Arch_Angel");
+            Pegasus_Texture = content.Load<Texture2D>("Pegasus");
+            High_Angel_Texture = content.Load<Texture2D>("High_Angel");
+            Chosen_One_Texture = content.Load<Texture2D>("Chosen_One");
+            Soldier_Texture = content.Load<Texture2D>("Soldier");
+            Angelic_Guard_Texture = content.Load<Texture2D>("Angelic_Guard");
+
 
             /// Initializes the screen with an empty grid of tiles
 
@@ -133,17 +150,17 @@ namespace Angels_Vs_Demons
             grid[5][1].setUnit(BloodGuard2);
 
             // Initialize Angel Army
-
-            Champion ArchAngel = new Champion(Arch_Demon_Texture);
-            Knight Pegasus = new Knight(Nightmare_Texture);
-            Mage HighAngel = new Mage(TileTexture);
-            Archer ChosenOne1 = new Archer(TileTexture);
-            Archer ChosenOne2 = new Archer(TileTexture);
-            Peon Soldier1 = new Peon(TileTexture);
-            Peon Soldier2 = new Peon(TileTexture);
-            Peon Soldier3 = new Peon(TileTexture);
-            Guard AngelicGuard1 = new Guard(TileTexture);
-            Guard AngelicGuard2 = new Guard(TileTexture);
+            
+            Champion ArchAngel = new Champion(Arch_Angel_Texture);
+            Knight Pegasus = new Knight(Pegasus_Texture);
+            Mage HighAngel = new Mage(High_Angel_Texture);
+            Archer ChosenOne1 = new Archer(Chosen_One_Texture);
+            Archer ChosenOne2 = new Archer(Chosen_One_Texture);
+            Peon Soldier1 = new Peon(Soldier_Texture);
+            Peon Soldier2 = new Peon(Soldier_Texture);
+            Peon Soldier3 = new Peon(Soldier_Texture);
+            Guard AngelicGuard1 = new Guard(Angelic_Guard_Texture);
+            Guard AngelicGuard2 = new Guard(Angelic_Guard_Texture);
 
             // Place Angel army on grid
 
