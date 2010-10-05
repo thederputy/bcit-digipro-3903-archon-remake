@@ -15,14 +15,23 @@ namespace Angels_Vs_Demons
         List<String> fields = new List<String>();
         string menuTitle;
         SpriteFont font;
+        Unit displayedUnit;
 
         #endregion
 
         #region Properties
+
         public int HP
         {
             set { HP = value; }
         }
+
+        public Unit DisplayedUnit
+        {
+            get { return displayedUnit; }
+            set { displayedUnit = value; }
+        }
+
         #endregion
 
         #region Initialization
@@ -32,7 +41,6 @@ namespace Angels_Vs_Demons
             size.X = ScreenManager.screenWidth;
             size.Y = 200;
 
-            //font = content.Load<SpriteFont>("DisplayFont");
             String Name = "Unit: ";
             String HP = "HP: ";
             String Recharge = "Recharge: ";
@@ -51,6 +59,14 @@ namespace Angels_Vs_Demons
 
         #endregion
 
+        public override void LoadContent()
+        {
+            if (content == null)
+                content = new ContentManager(ScreenManager.Game.Services, "Content");
+
+            font = content.Load<SpriteFont>("DisplayFont");
+        }
+
         #region Draw and Update
 
         /// <summary>
@@ -61,7 +77,7 @@ namespace Angels_Vs_Demons
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target,
                                                Color.AliceBlue, 0, 0);
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
-            SpriteFont font = ScreenManager.Font;
+            //SpriteFont font = ScreenManager.Font;
 
             Vector2 position = new Vector2(100, 350);
 

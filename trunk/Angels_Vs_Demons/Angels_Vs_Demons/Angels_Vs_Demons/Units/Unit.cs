@@ -48,6 +48,7 @@ namespace Angels_Vs_Demons
     {
         #region Properties
 
+        protected string name;
 
         /// <summary>
         /// Total Health Points of this unit.
@@ -138,6 +139,10 @@ namespace Angels_Vs_Demons
 
         #region Public Methods
 
+        public override string ToString()
+        {
+            return name;
+        }
 
         public int applyMitigation(int attackerAP, attackType attackerType)
         {
