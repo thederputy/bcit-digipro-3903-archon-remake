@@ -47,6 +47,8 @@ namespace Angels_Vs_Demons
             Movement = 2;
             CurrRecharge = 0;
             TotalRecharge = 1;
+
+            name = "Champion";
         }
 
         /*

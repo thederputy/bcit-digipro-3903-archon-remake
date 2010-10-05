@@ -36,7 +36,8 @@ namespace Angels_Vs_Demons
         int x_size;
         int y_size;
         int tile_size;
-        UnitDisplayWindow unitDisplay;
+
+        UnitDisplayWindow unitDisplayWindow;
 
         #endregion
 
@@ -73,8 +74,6 @@ namespace Angels_Vs_Demons
             Skeleton_Archer_Texture = content.Load<Texture2D>("Skeleton_Archer");
             Imp_Texture = content.Load<Texture2D>("Imp");
             Blood_Guard_Texture = content.Load<Texture2D>("Blood_Guard");
-            
-            
 
             /// Initializes the screen with an empty grid of tiles
 
@@ -98,9 +97,6 @@ namespace Angels_Vs_Demons
                     grid[i][j].rect.Height = tile_size;
                 }
             }
-
-            //create new unit display window
-            unitDisplay = new UnitDisplayWindow();
 
             // Initializes the cursor
 
@@ -161,6 +157,10 @@ namespace Angels_Vs_Demons
             grid[6][8].setUnit(Soldier3);
             grid[3][8].setUnit(AngelicGuard1);
             grid[5][8].setUnit(AngelicGuard2);
+
+
+            //create new unit display window
+            unitDisplayWindow = new UnitDisplayWindow();
 
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
@@ -270,8 +270,18 @@ namespace Angels_Vs_Demons
                 }
 
                 grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected = true;
-            }
 
+                if (grid[(int)Cursor.position.Y][(int)Cursor.position.X].isOccupied)
+                {
+                    Unit displayUnit = grid[(int)Cursor.position.Y][(int)Cursor.position.X].getUnit();
+
+                    unitDisplayWindow.DisplayedUnit = displayUnit;
+                }
+                else
+                {
+                    unitDisplayWindow.DisplayedUnit = null;
+                }
+            }
             previousKeyboardState = keyboardState;
             previousGamePadState = gamePadState;
         }
@@ -319,7 +329,18 @@ namespace Angels_Vs_Demons
                 }
             }
 
-            //unitDisplay.Draw(gameTime);
+            Vector2 unitType = new Vector2(10, 360);
+            if (unitDisplayWindow.DisplayedUnit != null)
+            {
+                String unitName = unitDisplayWindow.DisplayedUnit.ToString();
+                spriteBatch.DrawString(gameFont, unitName, unitType, Color.Black);
+            }
+            else
+            {
+                String unitName = "empty tile";
+                spriteBatch.DrawString(gameFont, unitName, unitType, Color.Black);
+            }
+            //unitDisplayWindow.Draw(gameTime);
 
             spriteBatch.End();
 

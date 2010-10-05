@@ -70,7 +70,7 @@ namespace Angels_Vs_Demons
         protected NonChampion(Texture2D loadedTexture)
             : base(loadedTexture)
         {
-
+            name = "NonChampion";
         }
 
         #region Public Methods
