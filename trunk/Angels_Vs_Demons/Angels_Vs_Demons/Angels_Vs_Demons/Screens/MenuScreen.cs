@@ -141,9 +141,9 @@ namespace Angels_Vs_Demons
             // Update each nested MenuEntry object.
             for (int i = 0; i < menuEntries.Count; i++)
             {
-                bool isSelected = IsActive && (i == selectedEntry);
+                bool isCurrentTile = IsActive && (i == selectedEntry);
 
-                menuEntries[i].Update(this, isSelected, gameTime);
+                menuEntries[i].Update(this, isCurrentTile, gameTime);
             }
         }
 
@@ -177,9 +177,9 @@ namespace Angels_Vs_Demons
             {
                 MenuEntry menuEntry = menuEntries[i];
 
-                bool isSelected = IsActive && (i == selectedEntry);
+                bool isCurrentTile = IsActive && (i == selectedEntry);
 
-                menuEntry.Draw(this, position, isSelected, gameTime);
+                menuEntry.Draw(this, position, isCurrentTile, gameTime);
 
                 position.Y += menuEntry.GetHeight(this);
             }
