@@ -87,7 +87,7 @@ namespace Angels_Vs_Demons
         /// <summary>
         /// Updates the menu entry.
         /// </summary>
-        public virtual void Update(MenuScreen screen, bool isSelected,
+        public virtual void Update(MenuScreen screen, bool isCurrentTile,
                                                       GameTime gameTime)
         {
             // When the menu selection changes, entries gradually fade between
@@ -95,7 +95,7 @@ namespace Angels_Vs_Demons
             // popping to the new state.
             float fadeSpeed = (float)gameTime.ElapsedGameTime.TotalSeconds * 4;
 
-            if (isSelected)
+            if (isCurrentTile)
                 selectionFade = Math.Min(selectionFade + fadeSpeed, 1);
             else
                 selectionFade = Math.Max(selectionFade - fadeSpeed, 0);
@@ -106,10 +106,10 @@ namespace Angels_Vs_Demons
         /// Draws the menu entry. This can be overridden to customize the appearance.
         /// </summary>
         public virtual void Draw(MenuScreen screen, Vector2 position,
-                                 bool isSelected, GameTime gameTime)
+                                 bool isCurrentTile, GameTime gameTime)
         {
             // Draw the selected entry in red, otherwise Black.
-            Color color = isSelected ? Color.Red : Color.Black;
+            Color color = isCurrentTile ? Color.Red : Color.Black;
 
             // Pulsate the size of the selected menu entry.
             double time = gameTime.TotalGameTime.TotalSeconds;

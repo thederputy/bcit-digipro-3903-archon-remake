@@ -21,6 +21,10 @@ namespace Angels_Vs_Demons
         GameObject Cursor;
         Tile[][] grid;
 
+        Boolean isAngelTurn;
+        Boolean turnOver;
+        Boolean unitIsSelected;
+
         Texture2D Cursor_Texture;
         Texture2D TileTexture;
 
@@ -59,6 +63,8 @@ namespace Angels_Vs_Demons
         {
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
+            isAngelTurn = true;
+            unitIsSelected = false;
             
         }
 
@@ -175,6 +181,18 @@ namespace Angels_Vs_Demons
             grid[3][8].setUnit(AngelicGuard1);
             grid[5][8].setUnit(AngelicGuard2);
 
+            // Initiate Angel turn
+
+            grid[4][9].isActive = true;
+            grid[5][9].isActive = true;
+            grid[3][9].isActive = true;
+            grid[2][9].isActive = true;
+            grid[6][9].isActive = true;
+            grid[2][8].isActive = true;
+            grid[4][8].isActive = true;
+            grid[6][8].isActive = true;
+            grid[3][8].isActive = true;
+            grid[5][8].isActive = true;
 
             //create new unit display window
             unitDisplayWindow = new UnitDisplayWindow();
@@ -219,6 +237,15 @@ namespace Angels_Vs_Demons
             {
                 // Put the variable updates here
             }
+
+            for (int i = 0; i < y_size; i++)
+            {
+                for (int j = 0; j < x_size; j++)
+                {
+
+                }
+            }
+
         }
 
 
@@ -251,7 +278,7 @@ namespace Angels_Vs_Demons
             else
             {
 
-                grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected = false;
+                grid[(int)Cursor.position.Y][(int)Cursor.position.X].isCurrentTile = false;
 
                 if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
                 {
@@ -286,7 +313,32 @@ namespace Angels_Vs_Demons
                     }
                 }
 
-                grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected = true;
+                if (keyboardState.IsKeyDown(Keys.Enter) && !previousKeyboardState.IsKeyDown(Keys.Enter))
+                {
+                    if (grid[(int)Cursor.position.Y][(int)Cursor.position.X].isOccupied)
+                    {
+                        if (grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected == true)
+                        {
+                            grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected = false;
+                            for (int i = 0; i < y_size; i++)
+                            {
+                                for (int j = 0; j < x_size; j++)
+                                {
+                                    if (grid[i][j].isMovable)
+                                    {
+                                        grid[i][j].isMovable = false;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected = true;
+                        }
+                    }
+                }
+
+                grid[(int)Cursor.position.Y][(int)Cursor.position.X].isCurrentTile = true;
 
                 if (grid[(int)Cursor.position.Y][(int)Cursor.position.X].isOccupied)
                 {
@@ -298,6 +350,39 @@ namespace Angels_Vs_Demons
                 {
                     unitDisplayWindow.DisplayedUnit = null;
                 }
+
+                for (int i = 0; i < y_size; i++)
+                {
+                    for (int j = 0; j < x_size; j++)
+                    {
+                        if (grid[i][j].isSelected)
+                        {
+                            for (int k = 0; k < grid[i][j].getUnit().Movement; k++)
+                            {
+                                for (int l = 0; l < (grid[i][j].getUnit().Movement - k); l++)
+                                {
+                                    if ((j + l) < x_size && (i + k) < y_size && grid[i + k][j + l].isOccupied == false)
+                                    {//BR
+                                        grid[i + k][j + l].isMovable = true;
+                                    }
+                                    if ((j - l) > -1 && (i - k) > -1 && grid[i - k][j - l].isOccupied == false)
+                                    {//TL
+                                        grid[i - k][j - l].isMovable = true;
+                                    }
+                                    if ((j + l) < x_size && (i - k) > -1 && grid[i - k][j + l].isOccupied == false)
+                                    {//TR
+                                        grid[i - k][j + l].isMovable = true;
+                                    }
+                                    if ((j - l) > -1 && (i + k) < y_size && grid[i + k][j - l].isOccupied == false)
+                                    {//BL
+                                        grid[i + k][j - l].isMovable = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
             previousKeyboardState = keyboardState;
             previousGamePadState = gamePadState;
@@ -319,13 +404,24 @@ namespace Angels_Vs_Demons
 
             // Draw the grid on the screen
 
+            
+
             for (int i = 0; i < y_size; i++)
             {
                 for (int j = 0; j < x_size; j++)
                 {
-                    spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.White);
+                    if (grid[i][j].isMovable)
+                    {
+                        spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.Blue);
+                    }
+                    else if (grid[i][j].isMovable == false)
+                    {
+                        spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.White);
+                    }
                 }
             }
+
+            
 
             // Draw the units on the screen
 
@@ -339,10 +435,11 @@ namespace Angels_Vs_Demons
                         Texture2D TempTexture = Tempunit.sprite;
                         spriteBatch.Draw(TempTexture, grid[i][j].rect, Color.White);
                     }
-                    if (grid[i][j].isSelected)
+                    if (grid[i][j].isCurrentTile)
                     {
                         spriteBatch.Draw(Cursor_Texture, grid[i][j].rect, Color.Silver);
                     }
+                    
                 }
             }
 
