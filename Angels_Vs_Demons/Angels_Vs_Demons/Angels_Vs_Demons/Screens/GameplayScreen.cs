@@ -23,7 +23,7 @@ namespace Angels_Vs_Demons
 
         Boolean isAngelTurn;
         Boolean turnOver;
-        Boolean unitIsSelected;
+        Tile selectedTile;
 
         Texture2D Cursor_Texture;
         Texture2D TileTexture;
@@ -64,7 +64,7 @@ namespace Angels_Vs_Demons
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
             isAngelTurn = true;
-            unitIsSelected = false;
+            selectedTile = null;
             
         }
 
@@ -318,8 +318,10 @@ namespace Angels_Vs_Demons
                     if (grid[(int)Cursor.position.Y][(int)Cursor.position.X].isOccupied)
                     {
                         if (grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected == true)
-                        {
+                        {//if you're selecting the one that is currently active, deactivate it
                             grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected = false;
+
+                            //mark the old movable tiles to not moveable
                             for (int i = 0; i < y_size; i++)
                             {
                                 for (int j = 0; j < x_size; j++)
@@ -332,8 +334,26 @@ namespace Angels_Vs_Demons
                             }
                         }
                         else
-                        {
+                        {//select a new unit
+                            //deselect the curently selected unit
+                            if(selectedTile != null)
+                                selectedTile.isSelected = false;
+
+                            //mark the old movable tiles to not moveable
+                            for (int i = 0; i < y_size; i++)
+                            {
+                                for (int j = 0; j < x_size; j++)
+                                {
+                                    if (grid[i][j].isMovable)
+                                    {
+                                        grid[i][j].isMovable = false;
+                                    }
+                                }
+                            }
+
+                            //select the new tile and assign it to the gameplayscreen's selectedTile
                             grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected = true;
+                            selectedTile = grid[(int)Cursor.position.Y][(int)Cursor.position.X];
                         }
                     }
                 }
