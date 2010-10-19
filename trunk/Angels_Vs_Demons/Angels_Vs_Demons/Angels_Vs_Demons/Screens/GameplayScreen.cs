@@ -171,8 +171,8 @@ namespace Angels_Vs_Demons
             // Place Angel army on grid
 
             grid[4][9].setUnit(ArchAngel);
-            grid[5][9].setUnit(Pegasus);
-            grid[3][9].setUnit(HighAngel);
+            grid[3][9].setUnit(Pegasus);
+            grid[5][9].setUnit(HighAngel);
             grid[2][9].setUnit(ChosenOne1);
             grid[6][9].setUnit(ChosenOne2);
             grid[2][8].setUnit(Soldier1);
@@ -261,6 +261,8 @@ namespace Angels_Vs_Demons
             // Look up inputs for the active player profile.
             int playerIndex = (int)ControllingPlayer.Value;
 
+            Tile currentTile = grid[(int)Cursor.position.Y][(int)Cursor.position.X];
+
             KeyboardState keyboardState = input.CurrentKeyboardStates[playerIndex];
             GamePadState gamePadState = input.CurrentGamePadStates[playerIndex];
 
@@ -278,7 +280,7 @@ namespace Angels_Vs_Demons
             else
             {
 
-                grid[(int)Cursor.position.Y][(int)Cursor.position.X].isCurrentTile = false;
+                currentTile.isCurrentTile = false;
 
                 if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
                 {
@@ -315,11 +317,11 @@ namespace Angels_Vs_Demons
 
                 if (keyboardState.IsKeyDown(Keys.Enter) && !previousKeyboardState.IsKeyDown(Keys.Enter))
                 {
-                    if (grid[(int)Cursor.position.Y][(int)Cursor.position.X].isOccupied)
+                    if (currentTile.isOccupied)
                     {
-                        if (grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected == true)
+                        if (currentTile.isSelected == true)
                         {//if you're selecting the one that is currently active, deactivate it
-                            grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected = false;
+                            currentTile.isSelected = false;
 
                             //mark the old movable tiles to not moveable
                             for (int i = 0; i < y_size; i++)
@@ -336,7 +338,7 @@ namespace Angels_Vs_Demons
                         else
                         {//select a new unit
                             //deselect the curently selected unit
-                            if(selectedTile != null)
+                            if (selectedTile != null)
                                 selectedTile.isSelected = false;
 
                             //mark the old movable tiles to not moveable
@@ -352,17 +354,35 @@ namespace Angels_Vs_Demons
                             }
 
                             //select the new tile and assign it to the gameplayscreen's selectedTile
-                            grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected = true;
-                            selectedTile = grid[(int)Cursor.position.Y][(int)Cursor.position.X];
+                            currentTile.isSelected = true;
+                            selectedTile = currentTile;
+                        }//end if selected == true
+                    }
+                    else if (currentTile.isMovable)
+                    {
+                        //call swap fuction
+                        currentTile.setUnit(selectedTile.getUnit());
+                        selectedTile.setUnit(null);
+                        selectedTile.isSelected = false;
+                        //mark the old movable tiles to not moveable
+                        for (int i = 0; i < y_size; i++)
+                        {
+                            for (int j = 0; j < x_size; j++)
+                            {
+                                if (grid[i][j].isMovable)
+                                {
+                                    grid[i][j].isMovable = false;
+                                }
+                            }
                         }
                     }
                 }
 
                 grid[(int)Cursor.position.Y][(int)Cursor.position.X].isCurrentTile = true;
 
-                if (grid[(int)Cursor.position.Y][(int)Cursor.position.X].isOccupied)
+                if (currentTile.isOccupied)
                 {
-                    Unit displayUnit = grid[(int)Cursor.position.Y][(int)Cursor.position.X].getUnit();
+                    Unit displayUnit = currentTile.getUnit();
 
                     unitDisplayWindow.DisplayedUnit = displayUnit;
                 }
@@ -400,8 +420,8 @@ namespace Angels_Vs_Demons
                                 }
                             }
                         }
-                    }
-                }
+                    }//end inner for loop
+                }//end outer for loop
 
             }
             previousKeyboardState = keyboardState;
