@@ -588,24 +588,24 @@ namespace Angels_Vs_Demons
                                 }
                             }
                             if (attackPhase)
-                            {
+                            {// finds if there are any attackable tiles that the player can move to
                                 for (int k = 0; k < grid[i][j].getUnit().Movement; k++)
-                                {// finds if there are any attackable tiles that the player can move to
+                                {
                                     for (int l = 0; l < (grid[i][j].getUnit().Movement - k); l++)
                                     {
-                                        if ((j + l) < x_size)
+                                        if ((j + l) < x_size && (i + k) < y_size)
                                         {//BR
                                             grid[i + k][j + l].isAttackable = true;
                                         }
-                                        if ((j - l) > -1)
+                                        if ((j - l) > -1 && (i - k) > -1)
                                         {//TL
                                             grid[i - k][j - l].isAttackable = true;
                                         }
-                                        if ((j + l) < x_size)
+                                        if ((j + l) < x_size && (i - k) > -1)
                                         {//TR
                                             grid[i - k][j + l].isAttackable = true;
                                         }
-                                        if ((j - l) > -1)
+                                        if ((j - l) > -1 && (i + k) < y_size)
                                         {//BL
                                             grid[i + k][j - l].isAttackable = true;
                                         }
