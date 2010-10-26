@@ -14,10 +14,11 @@ namespace Angels_Vs_Demons
         private Unit occupiedUnit;
         public Boolean isOccupied;
         public Boolean isCurrentTile;
-        public Boolean isActive;
+        public Boolean isUsable;
         public Boolean isAngel;
         public Boolean isSelected;
         public Boolean isMovable;
+        public Boolean isAttackable;
         public Color tileColor;
         public Tile(Texture2D loadedTexture): base(loadedTexture)
         {
@@ -25,10 +26,11 @@ namespace Angels_Vs_Demons
             this.occupiedUnit = null;
             this.isOccupied = false;
             this.isCurrentTile = false;
-            this.isActive = false;
+            this.isUsable = false;
             this.isAngel = false;
             this.isSelected = false;
             this.isMovable = false;
+            this.isAttackable = false;
             this.direction = 0.0f;
             this.position = Vector2.Zero;
             this.sprite = loadedTexture;
