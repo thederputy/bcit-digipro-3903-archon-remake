@@ -18,11 +18,14 @@ namespace Angels_Vs_Demons
 
         public ContentManager content;
         SpriteFont gameFont;
+        SpriteFont debugFont;
         GameObject Cursor;
         Tile[][] grid;
 
         Boolean isAngelTurn;
-        Boolean turnOver;
+        Boolean movePhase;
+        Boolean attackPhase;
+
         Tile selectedTile;
 
         Texture2D Cursor_Texture;
@@ -64,8 +67,10 @@ namespace Angels_Vs_Demons
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
             isAngelTurn = true;
+            movePhase = true;
+            attackPhase = false;
             selectedTile = null;
-            
+
         }
 
 
@@ -80,6 +85,8 @@ namespace Angels_Vs_Demons
             // Loads the textures
 
             gameFont = content.Load<SpriteFont>("MenuFont");
+            debugFont = content.Load<SpriteFont>("debugFont");
+
             Cursor_Texture = content.Load<Texture2D>("Cursor");
             TileTexture = content.Load<Texture2D>("gridNormal");
 
@@ -155,8 +162,21 @@ namespace Angels_Vs_Demons
             grid[3][1].setUnit(BloodGuard1);
             grid[5][1].setUnit(BloodGuard2);
 
+            // Register Demon army as demons
+
+            grid[4][0].isAngel = false;
+            grid[5][0].isAngel = false;
+            grid[3][0].isAngel = false;
+            grid[2][0].isAngel = false;
+            grid[6][0].isAngel = false;
+            grid[2][1].isAngel = false;
+            grid[4][1].isAngel = false;
+            grid[6][1].isAngel = false;
+            grid[3][1].isAngel = false;
+            grid[5][1].isAngel = false;
+
             // Initialize Angel Army
-            
+
             Champion ArchAngel = new Champion(Arch_Angel_Texture);
             Knight Pegasus = new Knight(Pegasus_Texture);
             Mage HighAngel = new Mage(High_Angel_Texture);
@@ -181,18 +201,42 @@ namespace Angels_Vs_Demons
             grid[3][8].setUnit(AngelicGuard1);
             grid[5][8].setUnit(AngelicGuard2);
 
-            // Initiate Angel turn
+            // Register Angel army as angels
 
-            grid[4][9].isActive = true;
-            grid[5][9].isActive = true;
-            grid[3][9].isActive = true;
-            grid[2][9].isActive = true;
-            grid[6][9].isActive = true;
-            grid[2][8].isActive = true;
-            grid[4][8].isActive = true;
-            grid[6][8].isActive = true;
-            grid[3][8].isActive = true;
-            grid[5][8].isActive = true;
+            grid[4][9].isAngel = true;
+            grid[3][9].isAngel = true;
+            grid[5][9].isAngel = true;
+            grid[2][9].isAngel = true;
+            grid[6][9].isAngel = true;
+            grid[2][8].isAngel = true;
+            grid[4][8].isAngel = true;
+            grid[6][8].isAngel = true;
+            grid[3][8].isAngel = true;
+            grid[5][8].isAngel = true;
+            
+            // Initiate first turn
+
+            grid[4][9].isUsable = true;
+            grid[5][9].isUsable = true;
+            grid[3][9].isUsable = true;
+            grid[2][9].isUsable = true;
+            grid[6][9].isUsable = true;
+            grid[2][8].isUsable = true;
+            grid[4][8].isUsable = true;
+            grid[6][8].isUsable = true;
+            grid[3][8].isUsable = true;
+            grid[5][8].isUsable = true;
+
+            grid[4][0].isUsable = false;
+            grid[5][0].isUsable = false;
+            grid[3][0].isUsable = false;
+            grid[2][0].isUsable = false;
+            grid[6][0].isUsable = false;
+            grid[2][1].isUsable = false;
+            grid[4][1].isUsable = false;
+            grid[6][1].isUsable = false;
+            grid[3][1].isUsable = false;
+            grid[5][1].isUsable = false;
 
             //create new unit display window
             unitDisplayWindow = new UnitDisplayWindow();
@@ -224,7 +268,7 @@ namespace Angels_Vs_Demons
 
 
         /// <summary>
-        /// Updates the state of the game. This method checks the GameScreen.IsActive
+        /// Updates the state of the game. This method checks the GameScreen.isActive
         /// property, so the game will stop updating when the pause menu is active,
         /// or if you tab away to a different application.
         /// </summary>
@@ -233,10 +277,7 @@ namespace Angels_Vs_Demons
         {
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
-            if (IsActive)
-            {
-                // Put the variable updates here
-            }
+
 
             for (int i = 0; i < y_size; i++)
             {
@@ -317,61 +358,185 @@ namespace Angels_Vs_Demons
 
                 if (keyboardState.IsKeyDown(Keys.Enter) && !previousKeyboardState.IsKeyDown(Keys.Enter))
                 {
-                    if (currentTile.isOccupied)
-                    {
-                        if (currentTile.isSelected == true)
-                        {//if you're selecting the one that is currently active, deactivate it
-                            currentTile.isSelected = false;
-
-                            //mark the old movable tiles to not moveable
-                            for (int i = 0; i < y_size; i++)
-                            {
-                                for (int j = 0; j < x_size; j++)
-                                {
-                                    if (grid[i][j].isMovable)
-                                    {
-                                        grid[i][j].isMovable = false;
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {//select a new unit
-                            //deselect the curently selected unit
-                            if (selectedTile != null)
-                                selectedTile.isSelected = false;
-
-                            //mark the old movable tiles to not moveable
-                            for (int i = 0; i < y_size; i++)
-                            {
-                                for (int j = 0; j < x_size; j++)
-                                {
-                                    if (grid[i][j].isMovable)
-                                    {
-                                        grid[i][j].isMovable = false;
-                                    }
-                                }
-                            }
-
-                            //select the new tile and assign it to the gameplayscreen's selectedTile
-                            currentTile.isSelected = true;
-                            selectedTile = currentTile;
-                        }//end if selected == true
-                    }
-                    else if (currentTile.isMovable)
-                    {
-                        //call swap fuction
-                        currentTile.setUnit(selectedTile.getUnit());
-                        selectedTile.setUnit(null);
-                        selectedTile.isSelected = false;
-                        //mark the old movable tiles to not moveable
-                        for (int i = 0; i < y_size; i++)
+                    if (movePhase)
+                    {// if the unit has not been moved yet
+                        if (currentTile.isOccupied && currentTile.isUsable)
                         {
-                            for (int j = 0; j < x_size; j++)
-                            {
-                                if (grid[i][j].isMovable)
+                            if (currentTile.isSelected == true)
+                            {//if you're selecting the one that is currently active, deactivate it
+                                currentTile.isSelected = false;
+
+                                //mark the old movable tiles to not moveable
+                                for (int i = 0; i < y_size; i++)
                                 {
-                                    grid[i][j].isMovable = false;
+                                    for (int j = 0; j < x_size; j++)
+                                    {
+                                        if (grid[i][j].isMovable)
+                                        {
+                                            grid[i][j].isMovable = false;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {//select a new unit
+                                //deselect the curently selected unit
+                                if (selectedTile != null)
+                                    selectedTile.isSelected = false;
+
+                                //mark the old movable tiles to not moveable
+                                for (int i = 0; i < y_size; i++)
+                                {
+                                    for (int j = 0; j < x_size; j++)
+                                    {
+                                        if (grid[i][j].isMovable)
+                                        {
+                                            grid[i][j].isMovable = false;
+                                        }
+                                    }
+                                }
+
+                                //select the new tile and assign it to the gameplayscreen's selectedTile
+                                currentTile.isSelected = true;
+                                selectedTile = currentTile;
+                            }//end if selected == true
+                        }
+                        else if (currentTile.isMovable)
+                        {
+                            //call swap fuction
+                            currentTile.setUnit(selectedTile.getUnit());
+                            currentTile.isOccupied = true;
+                            currentTile.isAngel = selectedTile.isAngel;
+                            selectedTile.setUnit(null);
+                            selectedTile.isSelected = false;
+                            selectedTile.isOccupied = false;
+                            selectedTile.isAngel = false;
+                            //mark the old movable tiles to not moveable
+                            for (int i = 0; i < y_size; i++)
+                            {
+                                for (int j = 0; j < x_size; j++)
+                                {
+                                    if (grid[i][j].isMovable)
+                                    {
+                                        grid[i][j].isMovable = false;
+                                    }
+                                }
+                            }
+                            //end the move phase and enter attack phase
+                            movePhase = false;
+                            attackPhase = true;
+                            //make the current unit the only active one
+                            for (int i = 0; i < y_size; i++)
+                            {
+                                for (int j = 0; j < x_size; j++)
+                                {
+                                    if (grid[i][j].isCurrentTile == false)
+                                    {
+                                        grid[i][j].isUsable = false;
+                                    }
+                                }
+                            }
+                            currentTile.isUsable = true;
+                        }
+                    }
+                    if (attackPhase)
+                    {
+                        if (currentTile.isOccupied && currentTile.isUsable)
+                        {
+                            if (currentTile.isSelected == true)
+                            {//if you're selecting the one that is currently active, deactivate it
+                                currentTile.isSelected = false;
+                                currentTile.isUsable = false;
+
+                                //swap turns and initiates units for the next turn
+
+                                attackPhase = false;
+                                movePhase = true;
+
+                                if (isAngelTurn)
+                                {// if the angels turn is finishing, swap to demons turn
+                                    isAngelTurn = false;
+                                    for (int i = 0; i < y_size; i++)
+                                    {
+                                        for (int j = 0; j < x_size; j++)
+                                        {
+                                            if (grid[i][j].isOccupied)
+                                            {
+                                                if (grid[i][j].isAngel == false)
+                                                {
+                                                    grid[i][j].isUsable = true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {// if the demons turn is finishing, swap to angels turn
+                                    isAngelTurn = true;
+                                    for (int i = 0; i < y_size; i++)
+                                    {
+                                        for (int j = 0; j < x_size; j++)
+                                        {
+                                            if (grid[i][j].isOccupied)
+                                            {
+                                                if (grid[i][j].isAngel)
+                                                {
+                                                    grid[i][j].isUsable = true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+
+                                //mark the old attackable tiles to not attackable
+                                for (int i = 0; i < y_size; i++)
+                                {
+                                    for (int j = 0; j < x_size; j++)
+                                    {
+                                        if (grid[i][j].isAttackable)
+                                        {
+                                            grid[i][j].isAttackable = false;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {//select a new unit
+                                //select the new tile and assign it to the gameplayscreen's selectedTile
+                                currentTile.isSelected = true;
+                                selectedTile = currentTile;
+                            }//end if selected == true
+                        }
+                        else if (currentTile.isAttackable)
+                        {
+                            //call swap fuction
+                            currentTile.setUnit(selectedTile.getUnit());
+                            selectedTile.setUnit(null);
+                            selectedTile.isSelected = false;
+                            //mark the old movable tiles to not moveable
+                            for (int i = 0; i < y_size; i++)
+                            {
+                                for (int j = 0; j < x_size; j++)
+                                {
+                                    if (grid[i][j].isMovable)
+                                    {
+                                        grid[i][j].isMovable = false;
+                                    }
+                                }
+                            }
+                            //end the move phase and enter attack phase
+                            movePhase = false;
+                            attackPhase = true;
+                            //make the current unit the only active one
+                            for (int i = 0; i < y_size; i++)
+                            {
+                                for (int j = 0; j < x_size; j++)
+                                {
+                                    if (grid[i][j].isCurrentTile == false)
+                                    {
+                                        grid[i][j].isUsable = false;
+                                    }
                                 }
                             }
                         }
@@ -396,26 +561,54 @@ namespace Angels_Vs_Demons
                     for (int j = 0; j < x_size; j++)
                     {
                         if (grid[i][j].isSelected)
-                        {
-                            for (int k = 0; k < grid[i][j].getUnit().Movement; k++)
+                        {// finds if any tiles are selected by the player
+                            if (movePhase)
                             {
-                                for (int l = 0; l < (grid[i][j].getUnit().Movement - k); l++)
-                                {
-                                    if ((j + l) < x_size && (i + k) < y_size && grid[i + k][j + l].isOccupied == false)
-                                    {//BR
-                                        grid[i + k][j + l].isMovable = true;
+                                for (int k = 0; k < grid[i][j].getUnit().Movement; k++)
+                                {// finds if there are any movable tiles that the player can move to
+                                    for (int l = 0; l < (grid[i][j].getUnit().Movement - k); l++)
+                                    {
+                                        if ((j + l) < x_size && (i + k) < y_size && grid[i + k][j + l].isOccupied == false)
+                                        {//BR
+                                            grid[i + k][j + l].isMovable = true;
+                                        }
+                                        if ((j - l) > -1 && (i - k) > -1 && grid[i - k][j - l].isOccupied == false)
+                                        {//TL
+                                            grid[i - k][j - l].isMovable = true;
+                                        }
+                                        if ((j + l) < x_size && (i - k) > -1 && grid[i - k][j + l].isOccupied == false)
+                                        {//TR
+                                            grid[i - k][j + l].isMovable = true;
+                                        }
+                                        if ((j - l) > -1 && (i + k) < y_size && grid[i + k][j - l].isOccupied == false)
+                                        {//BL
+                                            grid[i + k][j - l].isMovable = true;
+                                        }
                                     }
-                                    if ((j - l) > -1 && (i - k) > -1 && grid[i - k][j - l].isOccupied == false)
-                                    {//TL
-                                        grid[i - k][j - l].isMovable = true;
-                                    }
-                                    if ((j + l) < x_size && (i - k) > -1 && grid[i - k][j + l].isOccupied == false)
-                                    {//TR
-                                        grid[i - k][j + l].isMovable = true;
-                                    }
-                                    if ((j - l) > -1 && (i + k) < y_size && grid[i + k][j - l].isOccupied == false)
-                                    {//BL
-                                        grid[i + k][j - l].isMovable = true;
+                                }
+                            }
+                            if (attackPhase)
+                            {
+                                for (int k = 0; k < grid[i][j].getUnit().Movement; k++)
+                                {// finds if there are any attackable tiles that the player can move to
+                                    for (int l = 0; l < (grid[i][j].getUnit().Movement - k); l++)
+                                    {
+                                        if ((j + l) < x_size)
+                                        {//BR
+                                            grid[i + k][j + l].isAttackable = true;
+                                        }
+                                        if ((j - l) > -1)
+                                        {//TL
+                                            grid[i - k][j - l].isAttackable = true;
+                                        }
+                                        if ((j + l) < x_size)
+                                        {//TR
+                                            grid[i - k][j + l].isAttackable = true;
+                                        }
+                                        if ((j - l) > -1)
+                                        {//BL
+                                            grid[i + k][j - l].isAttackable = true;
+                                        }
                                     }
                                 }
                             }
@@ -444,7 +637,7 @@ namespace Angels_Vs_Demons
 
             // Draw the grid on the screen
 
-            
+
 
             for (int i = 0; i < y_size; i++)
             {
@@ -454,14 +647,18 @@ namespace Angels_Vs_Demons
                     {
                         spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.Blue);
                     }
-                    else if (grid[i][j].isMovable == false)
+                    else if (grid[i][j].isAttackable)
+                    {
+                        spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.Red);
+                    }
+                    else
                     {
                         spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.White);
                     }
                 }
             }
 
-            
+
 
             // Draw the units on the screen
 
@@ -479,7 +676,7 @@ namespace Angels_Vs_Demons
                     {
                         spriteBatch.Draw(Cursor_Texture, grid[i][j].rect, Color.Silver);
                     }
-                    
+
                 }
             }
 
@@ -495,6 +692,26 @@ namespace Angels_Vs_Demons
                 spriteBatch.DrawString(gameFont, unitName, unitType, Color.Black);
             }
             //unitDisplayWindow.Draw(gameTime);
+
+            //debugging information
+            Vector2 debugLocation = new Vector2(10,10);
+            Vector2 debugLocation2 = new Vector2(10, 50);
+
+            if (isAngelTurn)
+                spriteBatch.DrawString(gameFont, "Angel Turn", debugLocation, Color.Black);
+            else
+                spriteBatch.DrawString(gameFont, "Demon Turn", debugLocation, Color.Black);
+
+            spriteBatch.DrawString(debugFont, "Angel: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isAngel.ToString() + '\n'
+                                            + "Attackable: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isAttackable.ToString() + '\n'
+                                            + "CurrentTile: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isCurrentTile.ToString() + '\n'
+                                            + "Movable: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isMovable.ToString() + '\n'
+                                            + "Occupied: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isOccupied.ToString() + '\n'
+                                            + "Selected: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected.ToString() + '\n'
+                                            + "Usable: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isUsable.ToString() + '\n'
+                                            + "Move Phase: " + movePhase.ToString() + '\n'
+                                            + "Attack Phase: " + attackPhase.ToString() + '\n'
+                , debugLocation2, Color.Black);
 
             spriteBatch.End();
 

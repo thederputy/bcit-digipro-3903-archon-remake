@@ -51,6 +51,17 @@ namespace Angels_Vs_Demons
         protected string name;
 
         /// <summary>
+        /// Angel/Demon association of the unit
+        /// </summary>
+        public Boolean IsAngel
+        {
+            get { return IsAngel; }
+            set { isAngel = value; }
+        }
+
+        private Boolean isAngel;
+
+        /// <summary>
         /// Total Health Points of this unit.
         /// </summary>
         public int TotalHP
