@@ -17,40 +17,12 @@ namespace Angels_Vs_Demons
         #region Fields
 
         public ContentManager content;
-        SpriteFont gameFont;
-        SpriteFont debugFont;
-        GameObject Cursor;
-        Tile[][] grid;
+        private KeyboardState previousKeyboardState;
+        private GamePadState previousGamePadState;
 
-        Boolean isAngelTurn;
-        Boolean movePhase;
-        Boolean attackPhase;
+        Board board;
 
-        Tile selectedTile;
-
-        Texture2D Cursor_Texture;
-        Texture2D TileTexture;
-
-        Texture2D Arch_Demon_Texture;
-        Texture2D Nightmare_Texture;
-        Texture2D Demon_Lord_Texture;
-        Texture2D Skeleton_Archer_Texture;
-        Texture2D Imp_Texture;
-        Texture2D Blood_Guard_Texture;
-
-        Texture2D Arch_Angel_Texture;
-        Texture2D Pegasus_Texture;
-        Texture2D High_Angel_Texture;
-        Texture2D Chosen_One_Texture;
-        Texture2D Soldier_Texture;
-        Texture2D Angelic_Guard_Texture;
-
-        KeyboardState previousKeyboardState;
-        GamePadState previousGamePadState;
-
-        int x_size;
-        int y_size;
-        int tile_size;
+        
 
         UnitDisplayWindow unitDisplayWindow;
 
@@ -66,10 +38,7 @@ namespace Angels_Vs_Demons
         {
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
-            isAngelTurn = true;
-            movePhase = true;
-            attackPhase = false;
-            selectedTile = null;
+            
 
         }
 
@@ -82,162 +51,7 @@ namespace Angels_Vs_Demons
             if (content == null)
                 content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-            // Loads the textures
-
-            gameFont = content.Load<SpriteFont>("MenuFont");
-            debugFont = content.Load<SpriteFont>("debugFont");
-
-            Cursor_Texture = content.Load<Texture2D>("Cursor");
-            TileTexture = content.Load<Texture2D>("gridNormal");
-
-            Arch_Demon_Texture = content.Load<Texture2D>("Arch_Demon");
-            Nightmare_Texture = content.Load<Texture2D>("Nightmare");
-            Demon_Lord_Texture = content.Load<Texture2D>("Demon_Lord");
-            Skeleton_Archer_Texture = content.Load<Texture2D>("Skeleton_Archer");
-            Imp_Texture = content.Load<Texture2D>("Imp");
-            Blood_Guard_Texture = content.Load<Texture2D>("Blood_Guard");
-
-            Arch_Angel_Texture = content.Load<Texture2D>("Arch_Angel");
-            Pegasus_Texture = content.Load<Texture2D>("Pegasus");
-            High_Angel_Texture = content.Load<Texture2D>("High_Angel");
-            Chosen_One_Texture = content.Load<Texture2D>("Chosen_One");
-            Soldier_Texture = content.Load<Texture2D>("Soldier");
-            Angelic_Guard_Texture = content.Load<Texture2D>("Angelic_Guard");
-
-
-            /// Initializes the screen with an empty grid of tiles
-
-            x_size = 10;
-            y_size = 9;
-            tile_size = 40;
-            int grid_totalwidth = tile_size * x_size;
-            int grid_x_center = grid_totalwidth / 2;
-            int screen_x_center = (ScreenManager.screenWidth / 2);
-
-            grid = new Tile[y_size][];
-            for (int i = 0; i < y_size; i++)
-            {
-                grid[i] = new Tile[x_size];
-                for (int j = 0; j < x_size; j++)
-                {
-                    grid[i][j] = new Tile(TileTexture);
-                    grid[i][j].rect.X = (j * tile_size) + (screen_x_center - grid_x_center);
-                    grid[i][j].rect.Y = i * tile_size;
-                    grid[i][j].rect.Width = tile_size;
-                    grid[i][j].rect.Height = tile_size;
-                }
-            }
-
-            // Initializes the cursor
-
-            Cursor = new GameObject(Cursor_Texture);
-            Cursor.rect.X = grid[0][0].rect.X;
-            Cursor.rect.Y = grid[0][0].rect.Y;
-            Cursor.rect.Width = tile_size;
-            Cursor.rect.Height = tile_size;
-
-            // Initialize Demon Army
-
-            Champion ArchDemon = new Champion(Arch_Demon_Texture);
-            Knight Nightmare = new Knight(Nightmare_Texture);
-            Mage DemonLord = new Mage(Demon_Lord_Texture);
-            Archer SkeletonArcher1 = new Archer(Skeleton_Archer_Texture);
-            Archer SkeletonArcher2 = new Archer(Skeleton_Archer_Texture);
-            Peon Imp1 = new Peon(Imp_Texture);
-            Peon Imp2 = new Peon(Imp_Texture);
-            Peon Imp3 = new Peon(Imp_Texture);
-            Guard BloodGuard1 = new Guard(Blood_Guard_Texture);
-            Guard BloodGuard2 = new Guard(Blood_Guard_Texture);
-
-            // Place Demon army on grid
-
-            grid[4][0].setUnit(ArchDemon);
-            grid[5][0].setUnit(Nightmare);
-            grid[3][0].setUnit(DemonLord);
-            grid[2][0].setUnit(SkeletonArcher1);
-            grid[6][0].setUnit(SkeletonArcher2);
-            grid[2][1].setUnit(Imp1);
-            grid[4][1].setUnit(Imp2);
-            grid[6][1].setUnit(Imp3);
-            grid[3][1].setUnit(BloodGuard1);
-            grid[5][1].setUnit(BloodGuard2);
-
-            // Register Demon army as demons
-
-            grid[4][0].isAngel = false;
-            grid[5][0].isAngel = false;
-            grid[3][0].isAngel = false;
-            grid[2][0].isAngel = false;
-            grid[6][0].isAngel = false;
-            grid[2][1].isAngel = false;
-            grid[4][1].isAngel = false;
-            grid[6][1].isAngel = false;
-            grid[3][1].isAngel = false;
-            grid[5][1].isAngel = false;
-
-            // Initialize Angel Army
-
-            Champion ArchAngel = new Champion(Arch_Angel_Texture);
-            Knight Pegasus = new Knight(Pegasus_Texture);
-            Mage HighAngel = new Mage(High_Angel_Texture);
-            Archer ChosenOne1 = new Archer(Chosen_One_Texture);
-            Archer ChosenOne2 = new Archer(Chosen_One_Texture);
-            Peon Soldier1 = new Peon(Soldier_Texture);
-            Peon Soldier2 = new Peon(Soldier_Texture);
-            Peon Soldier3 = new Peon(Soldier_Texture);
-            Guard AngelicGuard1 = new Guard(Angelic_Guard_Texture);
-            Guard AngelicGuard2 = new Guard(Angelic_Guard_Texture);
-
-            // Place Angel army on grid
-
-            grid[4][9].setUnit(ArchAngel);
-            grid[3][9].setUnit(Pegasus);
-            grid[5][9].setUnit(HighAngel);
-            grid[2][9].setUnit(ChosenOne1);
-            grid[6][9].setUnit(ChosenOne2);
-            grid[2][8].setUnit(Soldier1);
-            grid[4][8].setUnit(Soldier2);
-            grid[6][8].setUnit(Soldier3);
-            grid[3][8].setUnit(AngelicGuard1);
-            grid[5][8].setUnit(AngelicGuard2);
-
-            // Register Angel army as angels
-
-            grid[4][9].isAngel = true;
-            grid[3][9].isAngel = true;
-            grid[5][9].isAngel = true;
-            grid[2][9].isAngel = true;
-            grid[6][9].isAngel = true;
-            grid[2][8].isAngel = true;
-            grid[4][8].isAngel = true;
-            grid[6][8].isAngel = true;
-            grid[3][8].isAngel = true;
-            grid[5][8].isAngel = true;
-            
-            // Initiate first turn
-
-            grid[4][9].isUsable = true;
-            grid[5][9].isUsable = true;
-            grid[3][9].isUsable = true;
-            grid[2][9].isUsable = true;
-            grid[6][9].isUsable = true;
-            grid[2][8].isUsable = true;
-            grid[4][8].isUsable = true;
-            grid[6][8].isUsable = true;
-            grid[3][8].isUsable = true;
-            grid[5][8].isUsable = true;
-
-            grid[4][0].isUsable = false;
-            grid[5][0].isUsable = false;
-            grid[3][0].isUsable = false;
-            grid[2][0].isUsable = false;
-            grid[6][0].isUsable = false;
-            grid[2][1].isUsable = false;
-            grid[4][1].isUsable = false;
-            grid[6][1].isUsable = false;
-            grid[3][1].isUsable = false;
-            grid[5][1].isUsable = false;
-
+            board = new Board(content);
             //create new unit display window
             unitDisplayWindow = new UnitDisplayWindow();
 
@@ -278,15 +92,6 @@ namespace Angels_Vs_Demons
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
 
-
-            for (int i = 0; i < y_size; i++)
-            {
-                for (int j = 0; j < x_size; j++)
-                {
-
-                }
-            }
-
         }
 
 
@@ -301,8 +106,7 @@ namespace Angels_Vs_Demons
 
             // Look up inputs for the active player profile.
             int playerIndex = (int)ControllingPlayer.Value;
-
-            Tile currentTile = grid[(int)Cursor.position.Y][(int)Cursor.position.X];
+            
 
             KeyboardState keyboardState = input.CurrentKeyboardStates[playerIndex];
             GamePadState gamePadState = input.CurrentGamePadStates[playerIndex];
@@ -320,44 +124,30 @@ namespace Angels_Vs_Demons
             }
             else
             {
-
-                currentTile.isCurrentTile = false;
-
+                
+                
                 if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
                 {
-                    if (Cursor.position.X > 0)
-                    {
-                        Cursor.position.X--;
-                    }
+                    board.moveCursor(-1, 0);
                 }
-
 
                 if (keyboardState.IsKeyDown(Keys.Right) && !previousKeyboardState.IsKeyDown(Keys.Right))
                 {
-                    if (Cursor.position.X < (x_size - 1))
-                    {
-                        Cursor.position.X++;
-                    }
+                    board.moveCursor(1, 0);
                 }
 
                 if (keyboardState.IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
                 {
-                    if (Cursor.position.Y > 0)
-                    {
-                        Cursor.position.Y--;
-                    }
+                    board.moveCursor(0, -1);
                 }
 
                 if (keyboardState.IsKeyDown(Keys.Down) && !previousKeyboardState.IsKeyDown(Keys.Down))
                 {
-                    if (Cursor.position.Y < (y_size - 1))
-                    {
-                        Cursor.position.Y++;
-                    }
+                    board.moveCursor(0, 1);
                 }
 
                 if (keyboardState.IsKeyDown(Keys.Enter) && !previousKeyboardState.IsKeyDown(Keys.Enter))
-                {
+                {/*
                     if (movePhase)
                     {// if the unit has not been moved yet
                         if (currentTile.isOccupied && currentTile.isUsable)
@@ -510,32 +300,25 @@ namespace Angels_Vs_Demons
                         }
                         else if (currentTile.isAttackable)
                         {
-                            //call swap fuction
-                            currentTile.setUnit(selectedTile.getUnit());
-                            selectedTile.setUnit(null);
-                            selectedTile.isSelected = false;
-                            //mark the old movable tiles to not moveable
-                            for (int i = 0; i < y_size; i++)
-                            {
-                                for (int j = 0; j < x_size; j++)
+                            //call attack fuction
+
+                            
+                            if (currentTile.isSelected)
+                            {//skips turn if you select a unit to attack itself
+                                selectedTile.isSelected = false;
+
+                                //end the move phase and enter attack phase
+                                movePhase = false;
+                                attackPhase = true;
+                                //make the current unit the only active one
+                                for (int i = 0; i < y_size; i++)
                                 {
-                                    if (grid[i][j].isMovable)
+                                    for (int j = 0; j < x_size; j++)
                                     {
-                                        grid[i][j].isMovable = false;
-                                    }
-                                }
-                            }
-                            //end the move phase and enter attack phase
-                            movePhase = false;
-                            attackPhase = true;
-                            //make the current unit the only active one
-                            for (int i = 0; i < y_size; i++)
-                            {
-                                for (int j = 0; j < x_size; j++)
-                                {
-                                    if (grid[i][j].isCurrentTile == false)
-                                    {
-                                        grid[i][j].isUsable = false;
+                                        if (grid[i][j].isCurrentTile == false)
+                                        {
+                                            grid[i][j].isUsable = false;
+                                        }
                                     }
                                 }
                             }
@@ -556,69 +339,72 @@ namespace Angels_Vs_Demons
                     unitDisplayWindow.DisplayedUnit = null;
                 }
 
-                for (int i = 0; i < y_size; i++)
+                for (int grid_y = 0; grid_y < y_size; grid_y++)
                 {
-                    for (int j = 0; j < x_size; j++)
+                    for (int grid_x = 0; grid_x < x_size; grid_x++)
                     {
-                        if (grid[i][j].isSelected)
+                        if (grid[grid_y][grid_x].isSelected)
                         {// finds if any tiles are selected by the player
                             if (movePhase)
-                            {
-                                for (int k = 0; k < grid[i][j].getUnit().Movement; k++)
-                                {// finds if there are any movable tiles that the player can move to
-                                    for (int l = 0; l < (grid[i][j].getUnit().Movement - k); l++)
+                            {// finds if there are any movable tiles that the player can move to
+                                
+                                for (int k = 0; k < grid[grid_y][grid_x].getUnit().Movement; k++)
+                                {
+                                    for (int l = 0; l < (grid[grid_y][grid_x].getUnit().Movement - k); l++)
                                     {
-                                        if ((j + l) < x_size && (i + k) < y_size && grid[i + k][j + l].isOccupied == false)
+                                        if ((grid_x + l) < x_size && (grid_y + k) < y_size && grid[grid_y + k][grid_x + l].isOccupied == false)
                                         {//BR
-                                            grid[i + k][j + l].isMovable = true;
+                                            grid[grid_y + k][grid_x + l].isMovable = true;
                                         }
-                                        if ((j - l) > -1 && (i - k) > -1 && grid[i - k][j - l].isOccupied == false)
+                                        if ((grid_x - l) > -1 && (grid_y - k) > -1 && grid[grid_y - k][grid_x - l].isOccupied == false)
                                         {//TL
-                                            grid[i - k][j - l].isMovable = true;
+                                            grid[grid_y - k][grid_x - l].isMovable = true;
                                         }
-                                        if ((j + l) < x_size && (i - k) > -1 && grid[i - k][j + l].isOccupied == false)
+                                        if ((grid_x + l) < x_size && (grid_y - k) > -1 && grid[grid_y - k][grid_x + l].isOccupied == false)
                                         {//TR
-                                            grid[i - k][j + l].isMovable = true;
+                                            grid[grid_y - k][grid_x + l].isMovable = true;
                                         }
-                                        if ((j - l) > -1 && (i + k) < y_size && grid[i + k][j - l].isOccupied == false)
+                                        if ((grid_x - l) > -1 && (grid_y + k) < y_size && grid[grid_y + k][grid_x - l].isOccupied == false)
                                         {//BL
-                                            grid[i + k][j - l].isMovable = true;
+                                            grid[grid_y + k][grid_x - l].isMovable = true;
                                         }
                                     }
                                 }
                             }
                             if (attackPhase)
                             {// finds if there are any attackable tiles that the player can move to
-                                for (int k = 0; k < grid[i][j].getUnit().Movement; k++)
+
+                                for (int k = 0; k < grid[grid_y][grid_x].getUnit().Movement; k++)
                                 {
-                                    for (int l = 0; l < (grid[i][j].getUnit().Movement - k); l++)
+                                    for (int l = 0; l < (grid[grid_y][grid_x].getUnit().Movement - k); l++)
                                     {
-                                        if ((j + l) < x_size && (i + k) < y_size)
+                                        if ((grid_x + l) < x_size && (grid_y + k) < y_size)
                                         {//BR
-                                            grid[i + k][j + l].isAttackable = true;
+                                            grid[grid_y + k][grid_x + l].isAttackable = true;
                                         }
-                                        if ((j - l) > -1 && (i - k) > -1)
+                                        if ((grid_x - l) > -1 && (grid_y - k) > -1)
                                         {//TL
-                                            grid[i - k][j - l].isAttackable = true;
+                                            grid[grid_y - k][grid_x - l].isAttackable = true;
                                         }
-                                        if ((j + l) < x_size && (i - k) > -1)
+                                        if ((grid_x + l) < x_size && (grid_y - k) > -1)
                                         {//TR
-                                            grid[i - k][j + l].isAttackable = true;
+                                            grid[grid_y - k][grid_x + l].isAttackable = true;
                                         }
-                                        if ((j - l) > -1 && (i + k) < y_size)
+                                        if ((grid_x - l) > -1 && (grid_y + k) < y_size)
                                         {//BL
-                                            grid[i + k][j - l].isAttackable = true;
+                                            grid[grid_y + k][grid_x - l].isAttackable = true;
                                         }
                                     }
                                 }
                             }
                         }
-                    }//end inner for loop
+                    }//end inner for loop*/
                 }//end outer for loop
-
+                
             }
             previousKeyboardState = keyboardState;
             previousGamePadState = gamePadState;
+            
         }
 
 
@@ -630,67 +416,15 @@ namespace Angels_Vs_Demons
             // This game has a blue background
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target,
                                                Color.Azure, 0, 0);
-
+            
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
-            spriteBatch.Begin();
 
-            // Draw the grid on the screen
+            board.PaintGrid(spriteBatch);
 
+            board.PaintUnits(spriteBatch);
 
-
-            for (int i = 0; i < y_size; i++)
-            {
-                for (int j = 0; j < x_size; j++)
-                {
-                    if (grid[i][j].isMovable)
-                    {
-                        spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.Blue);
-                    }
-                    else if (grid[i][j].isAttackable)
-                    {
-                        spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.Red);
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(TileTexture, grid[i][j].rect, Color.White);
-                    }
-                }
-            }
-
-
-
-            // Draw the units on the screen
-
-            for (int i = 0; i < y_size; i++)
-            {
-                for (int j = 0; j < x_size; j++)
-                {
-                    if (grid[i][j].isOccupied)
-                    {
-                        Unit Tempunit = grid[i][j].getUnit();
-                        Texture2D TempTexture = Tempunit.sprite;
-                        spriteBatch.Draw(TempTexture, grid[i][j].rect, Color.White);
-                    }
-                    if (grid[i][j].isCurrentTile)
-                    {
-                        spriteBatch.Draw(Cursor_Texture, grid[i][j].rect, Color.Silver);
-                    }
-
-                }
-            }
-
-            Vector2 unitType = new Vector2(10, 360);
-            if (unitDisplayWindow.DisplayedUnit != null)
-            {
-                String unitName = unitDisplayWindow.DisplayedUnit.ToString();
-                spriteBatch.DrawString(gameFont, unitName, unitType, Color.Black);
-            }
-            else
-            {
-                String unitName = "empty tile";
-                spriteBatch.DrawString(gameFont, unitName, unitType, Color.Black);
-            }
+            /*
             //unitDisplayWindow.Draw(gameTime);
 
             //debugging information
@@ -712,9 +446,8 @@ namespace Angels_Vs_Demons
                                             + "Move Phase: " + movePhase.ToString() + '\n'
                                             + "Attack Phase: " + attackPhase.ToString() + '\n'
                 , debugLocation2, Color.Black);
-
-            spriteBatch.End();
-
+            */
+            
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0)
                 ScreenManager.FadeBackBufferToBlack(255 - TransitionAlpha);
