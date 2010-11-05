@@ -17,12 +17,10 @@ namespace Angels_Vs_Demons
         #region Fields
 
         public ContentManager content;
-        private KeyboardState previousKeyboardState;
-        private GamePadState previousGamePadState;
+        protected KeyboardState previousKeyboardState;
+        protected GamePadState previousGamePadState;
 
-        Board board;
-
-        
+        protected Board board;
 
         UnitDisplayWindow unitDisplayWindow;
 
