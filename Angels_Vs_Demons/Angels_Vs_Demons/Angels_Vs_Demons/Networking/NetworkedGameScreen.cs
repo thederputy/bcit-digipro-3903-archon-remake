@@ -1,23 +1,21 @@
-﻿using System;
+﻿#region Using Statements
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
-using Angels_Vs_Demons.Networking;
+#endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.Networking
 {
-    class networkedGameMenuScreen : GameplayScreen
+    class NetworkedGameScreen : GameplayScreen
     {
-        #region Fields
-
-        const int screenWidth = 1067;
-        const int screenHeight = 600;
-
         const int maxGamers = 16;
         const int maxLocalGamers = 4;
 
@@ -31,14 +29,21 @@ namespace Angels_Vs_Demons
 
         string errorMessage;
 
-        #endregion
-
-        public networkedGameMenuScreen()
+        public NetworkedGameScreen()
         {
 
         }
 
-        #region network
+        /// <summary>
+        /// Checks if the specified button is pressed on either keyboard or gamepad.
+        /// </summary>
+        bool IsPressed(Keys key, Buttons button)
+        {
+            return (currentKeyboardState.IsKeyDown(key) ||
+                    currentGamePadState.IsButtonDown(button));
+        }
+
+        #region Networking
         /// <summary>
         /// Menu screen provides options to create or join network sessions.
         /// </summary>
@@ -72,6 +77,8 @@ namespace Angels_Vs_Demons
                                                        maxLocalGamers, maxGamers);
 
                 HookSessionEvents();
+                
+                //TODO: add code for being the angel player, going first, etc.
             }
             catch (Exception e)
             {
@@ -104,6 +111,8 @@ namespace Angels_Vs_Demons
                     networkSession = NetworkSession.Join(availableSessions[0]);
 
                     HookSessionEvents();
+                    
+                    //TODO: add code for being the demon player, going second etc.
                 }
             }
             catch (Exception e)
@@ -129,6 +138,8 @@ namespace Angels_Vs_Demons
         /// </summary>
         void GamerJoinedEventHandler(object sender, GamerJoinedEventArgs e)
         {
+            //not quite sure yet how this code will be used by our game, as each player maintains
+            // a copy of the board
             int gamerIndex = networkSession.AllGamers.IndexOf(e.Gamer);
             e.Gamer.Tag = new networkUnit(content.Load<Texture2D>("blank"), gamerIndex, content);
         }
@@ -152,8 +163,7 @@ namespace Angels_Vs_Demons
         /// </summary>
         void UpdateNetworkSession()
         {
-            // Update our locally controlled tanks, and send their
-            // latest position data to everyone in the session.
+            // Confirm our move, send the move data to the other player.
             foreach (LocalNetworkGamer gamer in networkSession.LocalGamers)
             {
                 UpdateLocalGamer(gamer);
@@ -166,7 +176,7 @@ namespace Angels_Vs_Demons
             if (networkSession == null)
                 return;
 
-            // Read any packets telling us the positions of remotely controlled tanks.
+            // Read any packets telling us that they made a move.
             foreach (LocalNetworkGamer gamer in networkSession.LocalGamers)
             {
                 ReadIncomingPackets(gamer);
@@ -179,16 +189,19 @@ namespace Angels_Vs_Demons
         /// </summary>
         void UpdateLocalGamer(LocalNetworkGamer gamer)
         {
-            // Look up what tank is associated with this local player.
-            networkUnit localUnit = gamer.Tag as networkUnit;
+            // Look up the cursor associated with this local player.
+            //Tile currentTile = gamer.Tag as Tile;
+            GameObject cursor = gamer.Tag as GameObject;
+            
+            // Update the cursor.
+            //ReadTileInput(currentTile, gamer.SignedInGamer.PlayerIndex);
+            ReadTileInput(cursor, gamer.SignedInGamer.PlayerIndex);
 
-            // Update the tank.
-            ReadUnitInputs(localUnit, gamer.SignedInGamer.PlayerIndex);
-
-            localUnit.Update();
+            //handled by ReadTileInput();
+            //board.moveCursor((int)cursor.position.X, (int)cursor.position.Y);
 
             // Write the unit state into a network packet.
-            packetWriter.Write(localUnit.position);
+            packetWriter.Write(board.GetCurrentTile().position);
 
             // Send the data to everyone in the session.
             gamer.SendData(packetWriter, SendDataOptions.InOrder);
@@ -212,93 +225,65 @@ namespace Angels_Vs_Demons
                 if (sender.IsLocal)
                     continue;
 
-                // Look up the unit associated with whoever sent this packet.
-                networkUnit remoteUnit = sender.Tag as networkUnit;
+                // Look up the cursor with whoever sent this packet.
+                GameObject remoteCursor = sender.Tag as GameObject;
 
-                // Read the state of this tank from the network packet.
-                remoteUnit.position = packetReader.ReadVector2();
+                // Read the state of this current tile from the network packet.
+                remoteCursor.position = packetReader.ReadVector2();
+
+                //move our cursor to match what the remote player did
+                board.moveCursor((int)remoteCursor.position.X, (int)remoteCursor.position.Y);
             }
         }
 
         #endregion
 
-        #region Handle Input
 
-
-        /*/// <summary>
-        /// Handles input.
-        /// </summary>
-        private void HandleInput()
-        {
-            currentKeyboardState = Keyboard.GetState();
-            currentGamePadState = GamePad.GetState(PlayerIndex.One);
-
-            // Check for exit.
-            if (IsActive && IsPressed(Keys.Escape, Buttons.Back))
-            {
-                Exit();
-            }
-        }*/
-
-
-        /// <summary>
-        /// Checks if the specified button is pressed on either keyboard or gamepad.
-        /// </summary>
-        bool IsPressed(Keys key, Buttons button)
-        {
-            return (currentKeyboardState.IsKeyDown(key) ||
-                    currentGamePadState.IsButtonDown(button));
-        }
-
+        #region Input Handling
 
         /// <summary>
         /// Reads input data from keyboard and gamepad, and stores
-        /// it into the specified tank object.
+        /// it into the cursor
         /// </summary>
-        void ReadUnitInputs(networkUnit unit, PlayerIndex playerIndex)
+        void ReadTileInput(GameObject cursor, PlayerIndex playerIndex)
         {
             // Read the gamepad.
-            GamePadState gamePad = GamePad.GetState(playerIndex);
+            GamePadState gamePadState = GamePad.GetState(playerIndex);
 
-            Vector2 unitInput = gamePad.ThumbSticks.Left;
+            //Vector2 unitInput = gamePad.ThumbSticks.Left;
 
             // Read the keyboard.
-            KeyboardState keyboard = Keyboard.GetState(playerIndex);
+            KeyboardState keyboardState = Keyboard.GetState(playerIndex);
 
-            if (keyboard.IsKeyDown(Keys.Left))
-                unitInput.X = -1;
-            else if (keyboard.IsKeyDown(Keys.Right))
-                unitInput.X = 1;
+            if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
+            {
+                board.moveCursor(-1, 0);
+                //update cursor position to be sent over network
+                cursor.position = board.GetCurrentTile().position;
+            }
 
-            if (keyboard.IsKeyDown(Keys.Up))
-                unitInput.Y = 1;
-            else if (keyboard.IsKeyDown(Keys.Down))
-                unitInput.Y = -1;
+            if (keyboardState.IsKeyDown(Keys.Right) && !previousKeyboardState.IsKeyDown(Keys.Right))
+            {
+                board.moveCursor(1, 0);
+                //update cursor position to be sent over network
+                cursor.position = board.GetCurrentTile().position;
+            }
 
-            /*if (keyboard.IsKeyDown(Keys.A))
-                turretInput.X = -1;
-            else if (keyboard.IsKeyDown(Keys.D))
-                turretInput.X = 1;
+            if (keyboardState.IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
+            {
+                board.moveCursor(0, -1);
+                //update cursor position to be sent over network
+                cursor.position = board.GetCurrentTile().position;
+            }
 
-            if (keyboard.IsKeyDown(Keys.W))
-                turretInput.Y = 1;
-            else if (keyboard.IsKeyDown(Keys.S))
-                turretInput.Y = -1;*/
+            if (keyboardState.IsKeyDown(Keys.Down) && !previousKeyboardState.IsKeyDown(Keys.Down))
+            {
+                board.moveCursor(0, 1);
+                //update cursor position to be sent over network
+                cursor.position = board.GetCurrentTile().position;
+            }
+        }   
 
-            // Normalize the input vectors.
-            if (unitInput.Length() > 1)
-                unitInput.Normalize();
-
-            /*if (turretInput.Length() > 1)
-                turretInput.Normalize();*/
-
-            // Store these input values into the unit object.
-            unit.unitInput = unitInput;
-            //unit.TurretInput = turretInput;
-        }
-
-
-            #endregion
-        
+        #endregion
     }
 }

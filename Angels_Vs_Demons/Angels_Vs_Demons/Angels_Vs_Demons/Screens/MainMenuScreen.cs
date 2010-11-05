@@ -1,5 +1,6 @@
 ﻿#region Using Statements
 using Microsoft.Xna.Framework;
+using Angels_Vs_Demons.Networking;
 #endregion
 
 namespace Angels_Vs_Demons
@@ -69,7 +70,7 @@ namespace Angels_Vs_Demons
 
         void networkedGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.AddScreen(new networkedGameMenuScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new NetworkedGameScreen(), e.PlayerIndex);
         }
 
         void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
