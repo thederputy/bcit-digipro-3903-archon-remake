@@ -1,0 +1,16 @@
+(22-02-2002)
+  - Updated the AboutBox.resx to the format used
+  in the .Net release edition;
+
+  - Added support to the makefile to delete
+   src/help/checkers.chm when a 'nmake clean'
+   is performed;
+
+  - Removed the reference about the SDK beta 2 in the
+  src/help/intro.html file;
+
+  - Updated the version number in the About Box to 0.1.1;
+
+  - Changed the About Box size.
+
+Paulo Pinto
