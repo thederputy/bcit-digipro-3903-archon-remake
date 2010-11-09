@@ -1,0 +1,7 @@
+ These are the authors for Sharp Checkers:
+
+ - Paulo Pinto
+  
+ I wish to thank to Pablo Tavares for helping
+me in the Java version. The one that gave birth
+to Sharp Checkers.

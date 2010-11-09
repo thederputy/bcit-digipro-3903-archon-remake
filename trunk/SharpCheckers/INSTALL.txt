@@ -1,0 +1,26 @@
+Building
+
+ This program was developed using C# with the .Net SDK and
+the HTML Help SDK. To compile it, follow these steps.
+
+  - open a command shell;
+  - change the current dir to the src directory;
+  - run the setenv.bat batch file. Please make sure that
+  the paths are correct;
+  - run 'nmake', or 'nmake nohelp' if you don' have the
+  HTML Help compiler;
+  - run 'nmake install' to install the program in the bin
+  directory
+
+ To build the HTML help file that is under the Help folder, you
+need to have the HTML help compiler installed.
+ If you wish to build the debug version, add a 'DEBUG=' in the
+command line.
+
+Running
+
+  Just launch the executable, checkers.exe, located in the bin
+ directory.
+
+--
+ Paulo Pinto
