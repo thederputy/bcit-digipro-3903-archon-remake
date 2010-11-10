@@ -114,7 +114,7 @@ namespace Angels_Vs_Demons
             Cursor.rect.Y = grid[0][0].rect.Y;
             Cursor.rect.Width = tile_size;
             Cursor.rect.Height = tile_size;
-            grid[(int)Cursor.position.X][(int)Cursor.position.Y].isCurrentTile = true;
+            grid[(int)Cursor.position.X][(int)Cursor.position.Y].IsCurrentTile = true;
 
             // Initialize Demon Army
 
@@ -144,16 +144,16 @@ namespace Angels_Vs_Demons
 
             // Register Demon army as demons
 
-            grid[0][4].isAngel = false;
-            grid[0][5].isAngel = false;
-            grid[0][3].isAngel = false;
-            grid[0][2].isAngel = false;
-            grid[0][6].isAngel = false;
-            grid[1][2].isAngel = false;
-            grid[1][4].isAngel = false;
-            grid[1][6].isAngel = false;
-            grid[1][3].isAngel = false;
-            grid[1][5].isAngel = false;
+            grid[0][4].IsAngel = false;
+            grid[0][5].IsAngel = false;
+            grid[0][3].IsAngel = false;
+            grid[0][2].IsAngel = false;
+            grid[0][6].IsAngel = false;
+            grid[1][2].IsAngel = false;
+            grid[1][4].IsAngel = false;
+            grid[1][6].IsAngel = false;
+            grid[1][3].IsAngel = false;
+            grid[1][5].IsAngel = false;
 
             // Initialize Angel Army
 
@@ -183,40 +183,40 @@ namespace Angels_Vs_Demons
 
             // Register Angel army as angels
 
-            grid[9][4].isAngel = true;
-            grid[9][3].isAngel = true;
-            grid[9][5].isAngel = true;
-            grid[9][2].isAngel = true;
-            grid[9][6].isAngel = true;
-            grid[8][2].isAngel = true;
-            grid[8][4].isAngel = true;
-            grid[8][6].isAngel = true;
-            grid[8][3].isAngel = true;
-            grid[8][5].isAngel = true;
+            grid[9][4].IsAngel = true;
+            grid[9][3].IsAngel = true;
+            grid[9][5].IsAngel = true;
+            grid[9][2].IsAngel = true;
+            grid[9][6].IsAngel = true;
+            grid[8][2].IsAngel = true;
+            grid[8][4].IsAngel = true;
+            grid[8][6].IsAngel = true;
+            grid[8][3].IsAngel = true;
+            grid[8][5].IsAngel = true;
 
             // Initiate first turn
 
-            grid[9][4].isUsable = true;
-            grid[9][5].isUsable = true;
-            grid[9][3].isUsable = true;
-            grid[9][2].isUsable = true;
-            grid[9][6].isUsable = true;
-            grid[8][2].isUsable = true;
-            grid[8][4].isUsable = true;
-            grid[8][6].isUsable = true;
-            grid[8][3].isUsable = true;
-            grid[8][5].isUsable = true;
+            grid[9][4].IsUsable = true;
+            grid[9][5].IsUsable = true;
+            grid[9][3].IsUsable = true;
+            grid[9][2].IsUsable = true;
+            grid[9][6].IsUsable = true;
+            grid[8][2].IsUsable = true;
+            grid[8][4].IsUsable = true;
+            grid[8][6].IsUsable = true;
+            grid[8][3].IsUsable = true;
+            grid[8][5].IsUsable = true;
 
-            grid[0][4].isUsable = false;
-            grid[0][5].isUsable = false;
-            grid[0][3].isUsable = false;
-            grid[0][2].isUsable = false;
-            grid[0][6].isUsable = false;
-            grid[1][2].isUsable = false;
-            grid[1][4].isUsable = false;
-            grid[1][6].isUsable = false;
-            grid[1][3].isUsable = false;
-            grid[1][5].isUsable = false;
+            grid[0][4].IsUsable = false;
+            grid[0][5].IsUsable = false;
+            grid[0][3].IsUsable = false;
+            grid[0][2].IsUsable = false;
+            grid[0][6].IsUsable = false;
+            grid[1][2].IsUsable = false;
+            grid[1][4].IsUsable = false;
+            grid[1][6].IsUsable = false;
+            grid[1][3].IsUsable = false;
+            grid[1][5].IsUsable = false;
         }
 
         //Gets the current state of the board
@@ -243,10 +243,10 @@ namespace Angels_Vs_Demons
             if (Cursor.position.X + x < x_size && Cursor.position.X + x >= 0 &&
                 Cursor.position.Y + y < y_size && Cursor.position.Y + y >= 0)
             {
-                grid[(int)Cursor.position.X][(int)Cursor.position.Y].isCurrentTile = false;
+                grid[(int)Cursor.position.X][(int)Cursor.position.Y].IsCurrentTile = false;
                 Cursor.position.X += x;
                 Cursor.position.Y += y;
-                grid[(int)Cursor.position.X][(int)Cursor.position.Y].isCurrentTile = true;
+                grid[(int)Cursor.position.X][(int)Cursor.position.Y].IsCurrentTile = true;
             }
         }
 
@@ -270,11 +270,11 @@ namespace Angels_Vs_Demons
             {
                 for (int j = 0; j < y_size; j++)
                 {
-                    if (grid[i][j].isMovable)
+                    if (grid[i][j].IsMovable)
                     {
                         spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Blue);
                     }
-                    else if (grid[i][j].isAttackable)
+                    else if (grid[i][j].IsAttackable)
                     {
                         spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Red);
                     }
@@ -298,13 +298,13 @@ namespace Angels_Vs_Demons
             {
                 for (int j = 0; j < y_size; j++)
                 {
-                    if (grid[i][j].isOccupied)
+                    if (grid[i][j].IsOccupied)
                     {
                         Unit Tempunit = grid[i][j].getUnit();
                         Texture2D TempTexture = Tempunit.sprite;
                         spriteBatch.Draw(TempTexture, grid[i][j].rect, Color.White);
                     }
-                    if (grid[i][j].isCurrentTile)
+                    if (grid[i][j].IsCurrentTile)
                     {
                         spriteBatch.Draw(Cursor_Texture, grid[i][j].rect, Color.Silver);
                     }
@@ -324,7 +324,7 @@ namespace Angels_Vs_Demons
         {
             if (movePhase)
             {
-                if (GetCurrentTile().isOccupied)
+                if (GetCurrentTile().IsOccupied)
                 {
                     //check that there is a tile selected
                     if (selectedTile != null)
@@ -348,7 +348,7 @@ namespace Angels_Vs_Demons
                 else
                 {
                     //tile is not occupied, check to see if we can move to it
-                    if (GetCurrentTile().isMovable)
+                    if (GetCurrentTile().IsMovable)
                     {
                         //move to this tile
                         swapTiles(GetCurrentTile());
@@ -387,37 +387,37 @@ namespace Angels_Vs_Demons
         public void makePaths(int distance, Tile currentTile)
         {
             distance--;
-            grid[(int)currentTile.position.X][(int)currentTile.position.Y].isMovable = true;
+            grid[(int)currentTile.position.X][(int)currentTile.position.Y].IsMovable = true;
             if (distance >= 0)
             {
                 // are there tiles left and the tile is not occupied, go left
                 if (currentTile.position.X - 1 >= 0 && 
-                    grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].isOccupied == false)
+                    grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].IsOccupied == false)
                 {
-                    currentTile.pathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
-                    makePaths(distance, currentTile.pathLeft);
+                    currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                    makePaths(distance, currentTile.PathLeft);
                 }
                 // are there tiles right and the tile is not occupied, go right
                 if (currentTile.position.X + 1 < x_size &&
-                    grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].isOccupied == false)
+                    grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].IsOccupied == false)
                 {
-                    currentTile.pathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
-                    makePaths(distance, currentTile.pathRight);
+                    currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                    makePaths(distance, currentTile.PathRight);
 
                 }
                 // are there tiles above and the tile is not occupied, go up
                 if (currentTile.position.Y - 1 >= 0 &&
-                    grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].isOccupied == false)
+                    grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].IsOccupied == false)
                 {
-                    currentTile.pathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
-                    makePaths(distance, currentTile.pathTop);
+                    currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                    makePaths(distance, currentTile.PathTop);
                 }
                 // are there tiles below and the tile is not occupied, go down
                 if (currentTile.position.Y + 1 < y_size &&
-                    grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].isOccupied == false)
+                    grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].IsOccupied == false)
                 {
-                    currentTile.pathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
-                    makePaths(distance, currentTile.pathBottom);
+                    currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                    makePaths(distance, currentTile.PathBottom);
                 }
             }
         }
@@ -431,7 +431,7 @@ namespace Angels_Vs_Demons
             {
                 foreach (Tile tile in grid[i])
                 {
-                    tile.isMovable = false;
+                    tile.IsMovable = false;
                 }
             }
         }
@@ -443,12 +443,12 @@ namespace Angels_Vs_Demons
         private void swapTiles(Tile currentTile)
         {
             currentTile.setUnit(selectedTile.getUnit());
-            currentTile.isOccupied = true;
-            currentTile.isAngel = selectedTile.isAngel;
+            currentTile.IsOccupied = true;
+            currentTile.IsAngel = selectedTile.IsAngel;
             selectedTile.setUnit(null);
-            selectedTile.isSelected = false;
-            selectedTile.isOccupied = false;
-            selectedTile.isAngel = false;
+            selectedTile.IsSelected = false;
+            selectedTile.IsOccupied = false;
+            selectedTile.IsAngel = false;
             markAllTilesAsNotMovable();
         }
 

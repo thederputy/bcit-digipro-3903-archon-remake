@@ -12,15 +12,88 @@ namespace Angels_Vs_Demons
     class Tile : GameObject
     {
         private Unit occupiedUnit;
-        public Boolean isOccupied;
-        public Boolean isCurrentTile;
-        public Boolean isUsable;
-        public Boolean isAngel;
-        public Boolean isSelected;
-        public Boolean isMovable;
-        public Boolean isAttackable;
-        public Color tileColor;
+        private bool isOccupied;
+
+        public bool IsOccupied
+        {
+            get { return isOccupied; }
+            set { isOccupied = value; }
+        }
+        private bool isCurrentTile;
+
+        public bool IsCurrentTile
+        {
+            get { return isCurrentTile; }
+            set { isCurrentTile = value; }
+        }
+        private bool isUsable;
+
+        public bool IsUsable
+        {
+            get { return isUsable; }
+            set { isUsable = value; }
+        }
+        private bool isAngel;
+
+        public bool IsAngel
+        {
+            get { return isAngel; }
+            set { isAngel = value; }
+        }
+        private bool isSelected;
+
+        public bool IsSelected
+        {
+            get { return isSelected; }
+            set { isSelected = value; }
+        }
+        private bool isMovable;
+
+        public bool IsMovable
+        {
+            get { return isMovable; }
+            set { isMovable = value; }
+        }
+        private bool isAttackable;
+
+        public bool IsAttackable
+        {
+            get { return isAttackable; }
+            set { isAttackable = value; }
+        }
+        private Color tileColor;
+
+        public Color TileColor
+        {
+            get { return tileColor; }
+            set { tileColor = value; }
+        }
         public Tile pathLeft, pathRight, pathTop, pathBottom;
+
+        internal Tile PathBottom
+        {
+            get { return pathBottom; }
+            set { pathBottom = value; }
+        }
+
+        internal Tile PathTop
+        {
+            get { return pathTop; }
+            set { pathTop = value; }
+        }
+
+        internal Tile PathRight
+        {
+            get { return pathRight; }
+            set { pathRight = value; }
+        }
+
+        internal Tile PathLeft
+        {
+            get { return pathLeft; }
+            set { pathLeft = value; }
+        }
+
         public Tile(Texture2D loadedTexture): base(loadedTexture)
         {
             this.pathLeft = null;
