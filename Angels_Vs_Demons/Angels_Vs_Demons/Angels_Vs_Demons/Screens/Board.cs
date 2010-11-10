@@ -44,6 +44,8 @@ namespace Angels_Vs_Demons
         private int y_size;
         private int tile_size;
 
+        public Move recentMove;
+
         public Board(ContentManager CONTENT)
         {
             content = CONTENT;
