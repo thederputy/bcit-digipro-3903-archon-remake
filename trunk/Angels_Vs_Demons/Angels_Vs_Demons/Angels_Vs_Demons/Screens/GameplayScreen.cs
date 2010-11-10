@@ -145,7 +145,9 @@ namespace Angels_Vs_Demons
                 }
 
                 if (keyboardState.IsKeyDown(Keys.Enter) && !previousKeyboardState.IsKeyDown(Keys.Enter))
-                {/*
+                {
+                    board.makeAction();
+                    /*
                     if (movePhase)
                     {// if the unit has not been moved yet
                         if (currentTile.isOccupied && currentTile.isUsable)
