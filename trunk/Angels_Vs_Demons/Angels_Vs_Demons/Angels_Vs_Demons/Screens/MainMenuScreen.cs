@@ -55,17 +55,17 @@ namespace Angels_Vs_Demons
 
         void HvHMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.AddScreen(new HvHMenuScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new HvHGameplayScreen(), e.PlayerIndex);
         }
 
         void HvAMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.AddScreen(new HvAMenuScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new HvAGameplayScreen(), e.PlayerIndex);
         }
 
         void AvAMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.AddScreen(new AvAMenuScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new AvAGameplayScreen(), e.PlayerIndex);
         }
 
         void networkedGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
