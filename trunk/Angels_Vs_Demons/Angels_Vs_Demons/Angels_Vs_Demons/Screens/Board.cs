@@ -76,7 +76,7 @@ namespace Angels_Vs_Demons
             // Loads the textures
 
             gameFont = content.Load<SpriteFont>("MenuFont");
-            debugFont = content.Load<SpriteFont>("debugFont");
+            debugFont = content.Load<SpriteFont>("MenuFont");
 
             Cursor_Texture = content.Load<Texture2D>("Cursor");
             TileTexture = content.Load<Texture2D>("gridNormal");

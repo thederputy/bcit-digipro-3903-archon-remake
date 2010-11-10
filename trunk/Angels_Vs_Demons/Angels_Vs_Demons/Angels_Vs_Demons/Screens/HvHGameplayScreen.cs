@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Angels_Vs_Demons
 {
-    class HvHMenuScreen : GameplayScreen
+    class HvHGameplayScreen : GameplayScreen
     {
 
     }

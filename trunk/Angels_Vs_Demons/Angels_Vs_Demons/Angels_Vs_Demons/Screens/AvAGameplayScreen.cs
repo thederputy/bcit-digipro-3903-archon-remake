@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Angels_Vs_Demons
 {
-    class AvAMenuScreen : GameplayScreen
+    class AvAGameplayScreen : GameplayScreen
     {
     }
 }

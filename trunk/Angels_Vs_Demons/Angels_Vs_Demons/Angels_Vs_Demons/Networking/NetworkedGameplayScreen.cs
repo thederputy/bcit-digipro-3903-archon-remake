@@ -12,12 +12,13 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
 #endregion
 
+
 namespace Angels_Vs_Demons.Networking
 {
-    class NetworkedGameScreen : GameplayScreen
+    class NetworkedGameplayScreen : GameplayScreen
     {
-        const int maxGamers = 16;
-        const int maxLocalGamers = 4;
+        const int maxGamers = 2;
+        const int maxLocalGamers = 2;
 
         KeyboardState currentKeyboardState;
         GamePadState currentGamePadState;
@@ -29,7 +30,7 @@ namespace Angels_Vs_Demons.Networking
 
         string errorMessage;
 
-        public NetworkedGameScreen()
+        public NetworkedGameplayScreen()
         {
 
         }
@@ -44,6 +45,7 @@ namespace Angels_Vs_Demons.Networking
         }
 
         #region Networking
+
         /// <summary>
         /// Menu screen provides options to create or join network sessions.
         /// </summary>
@@ -141,7 +143,7 @@ namespace Angels_Vs_Demons.Networking
             //not quite sure yet how this code will be used by our game, as each player maintains
             // a copy of the board
             int gamerIndex = networkSession.AllGamers.IndexOf(e.Gamer);
-            e.Gamer.Tag = new networkUnit(content.Load<Texture2D>("blank"), gamerIndex, content);
+            //e.Gamer.Tag = new networkUnit(content.Load<Texture2D>("blank"), gamerIndex, content);
         }
 
 
@@ -205,6 +207,48 @@ namespace Angels_Vs_Demons.Networking
 
             // Send the data to everyone in the session.
             gamer.SendData(packetWriter, SendDataOptions.InOrder);
+        }
+
+        /// <summary>
+        /// Updates the state of the game. This method checks the GameScreen.isActive
+        /// property, so the game will stop updating when the pause menu is active,
+        /// or if you tab away to a different application.
+        /// </summary>
+        public override void Update(GameTime gameTime, bool otherScreenHasFocus,
+                                                       bool coveredByOtherScreen)
+        {
+            HandleInput();
+
+            if (networkSession == null)
+            {
+                // If we are not in a network session, update the
+                // menu screen that will let us create or join one.
+                UpdateMenuScreen();
+            }
+            else
+            {
+                // If we are in a network session, update it.
+                UpdateNetworkSession();
+            }
+
+            base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
+        }
+
+        /// <summary>
+        /// Handles input.
+        /// </summary>
+        private void HandleInput()
+        {
+            currentKeyboardState = Keyboard.GetState();
+            currentGamePadState = GamePad.GetState(PlayerIndex.One);
+
+            // Check for exit.
+            if (IsActive && IsPressed(Keys.Escape, Buttons.Back))
+            {
+                //exit the program
+                //ScreenManager.Game.Exit();
+                ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
+            }
         }
 
 
