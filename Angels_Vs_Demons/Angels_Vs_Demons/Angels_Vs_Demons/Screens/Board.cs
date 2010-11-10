@@ -324,9 +324,37 @@ namespace Angels_Vs_Demons
         {
             if (movePhase)
             {
-                if(GetCurrentTile().isOccupied)
+                if (GetCurrentTile().isOccupied)
                 {
-                    makeMove(GetCurrentTile());
+                    //check that there is a tile selected
+                    if (selectedTile != null)
+                    {
+                        //if we've selected the same tile again
+                        if (GetCurrentTile().position == selectedTile.position)
+                        {
+                            markAllTilesAsNotMovable();
+                            selectedTile = null;
+                        }
+                        else
+                        {
+                            makeMove(GetCurrentTile());
+                        }
+                    }
+                    else
+                    {
+                        makeMove(GetCurrentTile());
+                    }
+                }
+                else
+                {
+                    //tile is not occupied, check to see if we can move to it
+                    if (GetCurrentTile().isMovable)
+                    {
+                        //move to this tile
+                        swapTiles(GetCurrentTile());
+                        //movePhase = false;
+                        //attackPhase = true;
+                    }
                 }
             }
             if (attackPhase)
@@ -336,6 +364,8 @@ namespace Angels_Vs_Demons
         }
         private void makeMove(Tile startTile)
         {
+            selectedTile = startTile;
+            markAllTilesAsNotMovable();
             makePaths(startTile.getUnit().Movement, startTile);
         }
         private void makeAttack()
@@ -344,54 +374,82 @@ namespace Angels_Vs_Demons
         public Tile getMoves(int distance, Tile startingTile, Boolean initiateTiles)
         {
             Tile pathOrigin = startingTile;
+            markAllTilesAsNotMovable();
             makePaths(distance, pathOrigin);
             return pathOrigin;
         }
+
+        /// <summary>
+        /// Marks all tiles within a Units move range that are not occupied as moveable.
+        /// </summary>
+        /// <param name="distance">The move range of a unit</param>
+        /// <param name="currentTile">The current tile we are checking</param>
         public void makePaths(int distance, Tile currentTile)
         {
             distance--;
             grid[(int)currentTile.position.X][(int)currentTile.position.Y].isMovable = true;
             if (distance >= 0)
             {
-
-                // are there tiles left and if the tile is not occupied, go left
+                // are there tiles left and the tile is not occupied, go left
                 if (currentTile.position.X - 1 >= 0 && 
                     grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].isOccupied == false)
                 {
-                        currentTile.pathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
-                        makePaths(distance, currentTile.pathLeft);
+                    currentTile.pathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                    makePaths(distance, currentTile.pathLeft);
                 }
-                // are there tiles right
-                if (currentTile.position.X + 1 < x_size)
+                // are there tiles right and the tile is not occupied, go right
+                if (currentTile.position.X + 1 < x_size &&
+                    grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].isOccupied == false)
                 {
-                    // if the tile is not occupied, go right
-                    if (grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].isOccupied == false)
-                    {
-                        currentTile.pathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
-                        makePaths(distance, currentTile.pathRight);
-                    }
+                    currentTile.pathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                    makePaths(distance, currentTile.pathRight);
+
                 }
-                // are there tiles above
-                if (currentTile.position.Y - 1 >= 0)
+                // are there tiles above and the tile is not occupied, go up
+                if (currentTile.position.Y - 1 >= 0 &&
+                    grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].isOccupied == false)
                 {
-                    // if the tile is not occupied, go up
-                    if (grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].isOccupied == false)
-                    {
-                        currentTile.pathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
-                        makePaths(distance, currentTile.pathTop);
-                    }
+                    currentTile.pathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                    makePaths(distance, currentTile.pathTop);
                 }
-                // are there tiles below
-                if (currentTile.position.Y + 1 < y_size)
+                // are there tiles below and the tile is not occupied, go down
+                if (currentTile.position.Y + 1 < y_size &&
+                    grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].isOccupied == false)
                 {
-                    // if the tile is not occupied, go up
-                    if (grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].isOccupied == false)
-                    {
-                        currentTile.pathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
-                        makePaths(distance, currentTile.pathBottom);
-                    }
+                    currentTile.pathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                    makePaths(distance, currentTile.pathBottom);
                 }
             }
+        }
+
+        /// <summary>
+        /// Iterates through the grid and marks all tiles as not moveable
+        /// </summary>
+        private void markAllTilesAsNotMovable()
+        {
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    tile.isMovable = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Swaps the current tile with the selected tile
+        /// </summary>
+        /// <param name="currentTile">The tile that we are going to move to.</param>
+        private void swapTiles(Tile currentTile)
+        {
+            currentTile.setUnit(selectedTile.getUnit());
+            currentTile.isOccupied = true;
+            currentTile.isAngel = selectedTile.isAngel;
+            selectedTile.setUnit(null);
+            selectedTile.isSelected = false;
+            selectedTile.isOccupied = false;
+            selectedTile.isAngel = false;
+            markAllTilesAsNotMovable();
         }
 
         public object clone()
