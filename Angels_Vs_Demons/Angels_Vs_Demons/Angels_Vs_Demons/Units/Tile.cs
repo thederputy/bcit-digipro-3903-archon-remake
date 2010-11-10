@@ -20,8 +20,13 @@ namespace Angels_Vs_Demons
         public Boolean isMovable;
         public Boolean isAttackable;
         public Color tileColor;
+        public Tile pathLeft, pathRight, pathTop, pathBottom;
         public Tile(Texture2D loadedTexture): base(loadedTexture)
         {
+            this.pathLeft = null;
+            this.pathRight = null;
+            this.pathTop = null;
+            this.pathBottom = null;
             this.tileColor = Color.White;
             this.occupiedUnit = null;
             this.isOccupied = false;

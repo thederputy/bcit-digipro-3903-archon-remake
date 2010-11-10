@@ -44,22 +44,6 @@ namespace Angels_Vs_Demons
         private int y_size;
         private int tile_size;
 
-        // contains the recent move performed and is to be passed between classes and for undoing a move
-        //public struct Move 
-        //{
-        //   public Tile originTile;
-        //   public Tile newTile;
-        //   public Unit unitMoved;
-        //   public Move(Tile ORIGINTILE, Tile NEWTILE, Unit UNITMOVED) 
-        //   {
-        //      originTile = ORIGINTILE;
-        //      newTile = NEWTILE;
-        //      unitMoved = UNITMOVED;
-        //   }
-        //}
-
-        public Move recentMove;
-
         public Board(ContentManager CONTENT)
         {
             content = CONTENT;
@@ -75,7 +59,8 @@ namespace Angels_Vs_Demons
             // Loads the textures
 
             gameFont = content.Load<SpriteFont>("MenuFont");
-            debugFont = content.Load<SpriteFont>("MenuFont");
+            debugFont = content.Load<SpriteFont>("debugFont");
+
 
             Cursor_Texture = content.Load<Texture2D>("Cursor");
             TileTexture = content.Load<Texture2D>("gridNormal");
@@ -115,6 +100,8 @@ namespace Angels_Vs_Demons
                     grid[i][j].rect.Y = j * tile_size;
                     grid[i][j].rect.Width = tile_size;
                     grid[i][j].rect.Height = tile_size;
+                    grid[i][j].position.X = i;
+                    grid[i][j].position.Y = j;
                 }
             }
 
@@ -325,6 +312,84 @@ namespace Angels_Vs_Demons
 
             spriteBatch.End();
 
+        }
+
+        public Move getLastMovement()
+        {
+            return recentMove;
+        }
+        public void makeAction()
+        {
+            if (movePhase)
+            {
+                if(GetCurrentTile().isOccupied)
+                {
+                    makeMove(GetCurrentTile());
+                }
+            }
+            if (attackPhase)
+            {
+
+            }
+        }
+        private void makeMove(Tile startTile)
+        {
+            makePaths(startTile.getUnit().Movement, startTile);
+        }
+        private void makeAttack()
+        {
+        }
+        public Tile getMoves(int distance, Tile startingTile, Boolean initiateTiles)
+        {
+            Tile pathOrigin = startingTile;
+            makePaths(distance, pathOrigin);
+            return pathOrigin;
+        }
+        public void makePaths(int distance, Tile currentTile)
+        {
+            distance--;
+            grid[(int)currentTile.position.X][(int)currentTile.position.Y].isMovable = true;
+            if (distance >= 0)
+            {
+
+                // are there tiles left and if the tile is not occupied, go left
+                if (currentTile.position.X - 1 >= 0 && 
+                    grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].isOccupied == false)
+                {
+                        currentTile.pathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                        makePaths(distance, currentTile.pathLeft);
+                }
+                // are there tiles right
+                if (currentTile.position.X + 1 < x_size)
+                {
+                    // if the tile is not occupied, go right
+                    if (grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].isOccupied == false)
+                    {
+                        currentTile.pathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                        makePaths(distance, currentTile.pathRight);
+                    }
+                }
+                // are there tiles above
+                if (currentTile.position.Y - 1 >= 0)
+                {
+                    // if the tile is not occupied, go up
+                    if (grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].isOccupied == false)
+                    {
+                        currentTile.pathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                        makePaths(distance, currentTile.pathTop);
+                    }
+                }
+                // are there tiles below
+                if (currentTile.position.Y + 1 < y_size)
+                {
+                    // if the tile is not occupied, go up
+                    if (grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].isOccupied == false)
+                    {
+                        currentTile.pathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                        makePaths(distance, currentTile.pathBottom);
+                    }
+                }
+            }
         }
 
         public object clone()
