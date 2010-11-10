@@ -9,9 +9,8 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Angels_Vs_Demons
 {
-    class Board
+    class Board : AbstractBoard
     {
-
         public ContentManager content;
         public SpriteFont gameFont;
         public SpriteFont debugFont;
@@ -326,6 +325,16 @@ namespace Angels_Vs_Demons
 
             spriteBatch.End();
 
+        }
+
+        public object clone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public System.Collections.Generic.List<Move> getValidMoves()
+        {
+            throw new NotImplementedException();
         }
     }
 }
