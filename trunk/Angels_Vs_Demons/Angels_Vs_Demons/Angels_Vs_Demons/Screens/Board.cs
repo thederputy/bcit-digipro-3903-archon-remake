@@ -457,7 +457,13 @@ namespace Angels_Vs_Demons
             throw new NotImplementedException();
         }
 
-        public System.Collections.Generic.List<Move> getValidMoves()
+        public List getValidMoves()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void move(Move move)
         {
             throw new NotImplementedException();
         }
