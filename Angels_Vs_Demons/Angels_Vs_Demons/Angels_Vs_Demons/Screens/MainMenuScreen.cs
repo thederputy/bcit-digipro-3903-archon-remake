@@ -70,7 +70,7 @@ namespace Angels_Vs_Demons
 
         void networkedGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.AddScreen(new NetworkedGameScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new NetworkedMenuScreen(), e.PlayerIndex);
         }
 
         void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
