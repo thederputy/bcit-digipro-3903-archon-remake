@@ -70,7 +70,7 @@ namespace Angels_Vs_Demons
 
             //creates a blank recent move for the class
 
-            recentMove = new Move(null, null, null);
+            recentMove = new Move();
 
             // Loads the textures
 
