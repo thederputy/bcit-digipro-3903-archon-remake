@@ -45,18 +45,18 @@ namespace Angels_Vs_Demons
         private int tile_size;
 
         // contains the recent move performed and is to be passed between classes and for undoing a move
-        public struct Move 
-        {
-           public Tile originTile;
-           public Tile newTile;
-           public Unit unitMoved;
-           public Move(Tile ORIGINTILE, Tile NEWTILE, Unit UNITMOVED) 
-           {
-              originTile = ORIGINTILE;
-              newTile = NEWTILE;
-              unitMoved = UNITMOVED;
-           }
-        }
+        //public struct Move 
+        //{
+        //   public Tile originTile;
+        //   public Tile newTile;
+        //   public Unit unitMoved;
+        //   public Move(Tile ORIGINTILE, Tile NEWTILE, Unit UNITMOVED) 
+        //   {
+        //      originTile = ORIGINTILE;
+        //      newTile = NEWTILE;
+        //      unitMoved = UNITMOVED;
+        //   }
+        //}
 
         public Move recentMove;
 
