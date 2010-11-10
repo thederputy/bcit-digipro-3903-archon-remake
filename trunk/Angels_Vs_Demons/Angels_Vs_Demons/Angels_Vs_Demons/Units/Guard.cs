@@ -26,7 +26,7 @@ namespace Angels_Vs_Demons
             Armor = armorType.HEAVY;
             Range = 2;
             Special = new specialType[]{specialType.HULKING};
-            Movement = 3;
+            Movement = 2;
             CurrRecharge = 0;
             TotalRecharge = 3;
         }
