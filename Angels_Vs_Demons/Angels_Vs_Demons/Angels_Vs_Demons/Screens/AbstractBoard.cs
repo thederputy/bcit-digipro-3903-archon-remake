@@ -21,6 +21,12 @@ namespace Angels_Vs_Demons
         /// <value>
         ///  A list with all the valid moves.
         /// </value>
-        List<Move> getValidMoves();
+        List getValidMoves();
+
+        /// <summary>
+        /// Performs a game move. This consists of a movement/attack.
+        /// </summary>
+        /// <param name="move">Move object that contains details of a move.</param>
+        void move(Move move);
     }
 }
