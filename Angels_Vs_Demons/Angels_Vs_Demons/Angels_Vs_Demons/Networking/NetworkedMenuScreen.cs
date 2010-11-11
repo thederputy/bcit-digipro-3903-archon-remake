@@ -60,13 +60,25 @@ namespace Angels_Vs_Demons
         void CreateSessionSelected(object sender, PlayerIndexEventArgs e)
         {
             //create the new session
-            ScreenManager.AddScreen(new NetworkedGameplayScreen(), e.PlayerIndex);
+            if (Gamer.SignedInGamers.Count == 0)
+            {
+                // If there are no profiles signed in, we cannot proceed.
+                // Show the Guide so the user can sign in.
+                Guide.ShowSignIn(maxLocalGamers, false);
+            }
+            ScreenManager.AddScreen(new NetworkedGameplayScreen(true), e.PlayerIndex);
         }
 
         void JoinSessionSelected(object sender, PlayerIndexEventArgs e)
         {
             //search for sessions and join one if found
-            //ScreenManager.AddScreen(new HvAMenuScreen(), e.PlayerIndex);
+            if (Gamer.SignedInGamers.Count == 0)
+            {
+                // If there are no profiles signed in, we cannot proceed.
+                // Show the Guide so the user can sign in.
+                Guide.ShowSignIn(maxLocalGamers, false);
+            }
+            ScreenManager.AddScreen(new NetworkedGameplayScreen(false), e.PlayerIndex);
         }
 
         void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)

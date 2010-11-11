@@ -7,27 +7,18 @@ namespace Angels_Vs_Demons.Players
 {
     class Player
     {
-        /// <summary>
-        /// Rpresents a faction, either ANGEL or DEMON
-        /// </summary>
-        public enum factionType
-        {
-            ANGEL,
-            DEMON
-        }
-
         #region Properties
 
-        private factionType faction;
+        private Faction faction;
 
-        public factionType Faction
+        public Faction Faction
         {
             get { return faction; }
             set { faction = value; }
         }
         #endregion
 
-        protected Player(factionType faction)
+        protected Player(Faction faction)
         {
             Faction = faction;
         }

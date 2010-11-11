@@ -1,5 +1,6 @@
 #region Using Statements
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 #endregion
 
@@ -42,6 +43,7 @@ namespace Angels_Vs_Demons
             graphics.PreferredBackBufferHeight = ScreenManager.screenHeight;
 
             Components.Add(screenManager);
+            Components.Add(new GamerServicesComponent(this));
 
             // Activate the first screen
             screenManager.AddScreen(new MainMenuScreen(), null);
