@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Angels_Vs_Demons.Players;
 #endregion
 
 namespace Angels_Vs_Demons
@@ -17,8 +18,12 @@ namespace Angels_Vs_Demons
         #region Fields
 
         public ContentManager content;
+
         protected KeyboardState previousKeyboardState;
         protected GamePadState previousGamePadState;
+
+        protected Player player1;
+        protected Player player2;
 
         protected Board board;
 

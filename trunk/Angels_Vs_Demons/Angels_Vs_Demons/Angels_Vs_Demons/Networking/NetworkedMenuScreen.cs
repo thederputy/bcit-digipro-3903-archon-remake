@@ -21,15 +21,8 @@ namespace Angels_Vs_Demons
         const int maxGamers = 16;
         const int maxLocalGamers = 4;
 
-        KeyboardState currentKeyboardState;
-        GamePadState currentGamePadState;
-
-        NetworkSession networkSession;
-
         PacketWriter packetWriter = new PacketWriter();
         PacketReader packetReader = new PacketReader();
-
-        string errorMessage;
 
         #endregion
 
