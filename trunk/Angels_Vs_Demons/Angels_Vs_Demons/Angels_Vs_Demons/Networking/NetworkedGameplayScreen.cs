@@ -57,25 +57,26 @@ namespace Angels_Vs_Demons.Networking
 
         #region Networking
 
-        /// <summary>
-        /// Menu screen provides options to create or join network sessions.
-        /// </summary>
-        void UpdateMenuScreen()
-        {
-            if (IsActive)
-            {
-                if (IsPressed(Keys.A, Buttons.A))
-                {
-                    // Create a new session?
-                    CreateSession();
-                }
-                else if (IsPressed(Keys.B, Buttons.B))
-                {
-                    // Join an existing session?
-                    JoinSession();
-                }
-            }
-        }
+        ///// <summary>
+        ///// Menu screen provides options to create or join network sessions.
+        ///// </summary>
+        //void UpdateMenuScreen()
+        //deprecated, as we're using NetworkedMenuScreen for this, but leaving in just in case
+        //{
+        //    if (IsActive)
+        //    {
+        //        if (IsPressed(Keys.A, Buttons.A))
+        //        {
+        //            // Create a new session?
+        //            CreateSession();
+        //        }
+        //        else if (IsPressed(Keys.B, Buttons.B))
+        //        {
+        //            // Join an existing session?
+        //            JoinSession();
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Starts hosting a new network session.
@@ -90,8 +91,6 @@ namespace Angels_Vs_Demons.Networking
                                                        maxLocalGamers, maxGamers);
 
                 HookSessionEvents();
-                
-                //TODO: add code for being the angel player, going first, etc.
             }
             catch (Exception e)
             {
@@ -126,8 +125,6 @@ namespace Angels_Vs_Demons.Networking
                     networkSession = NetworkSession.Join(availableSessions[0]);
 
                     HookSessionEvents();
-                    
-                    //TODO: add code for being the demon player, going second etc.
                 }
             }
             catch (Exception e)
@@ -153,8 +150,7 @@ namespace Angels_Vs_Demons.Networking
         /// </summary>
         void GamerJoinedEventHandler(object sender, GamerJoinedEventArgs e)
         {
-            //not quite sure yet how this code will be used by our game, as each player maintains
-            // a copy of the board
+            //the creator will have index of 0, so make them player1, the ANGEL player
             int gamerIndex = networkSession.AllGamers.IndexOf(e.Gamer);
             if (gamerIndex == 0)
             {
@@ -218,7 +214,7 @@ namespace Angels_Vs_Demons.Networking
             
             // Update the cursor.
             if(hPlayer.Position != null)
-                ReadPositionInput(hPlayer.Position, gamer.SignedInGamer.PlayerIndex);
+                ReadPlayerInput(hPlayer, gamer.SignedInGamer.PlayerIndex);
 
 
             // Write the unit state into a network packet.
@@ -254,7 +250,8 @@ namespace Angels_Vs_Demons.Networking
         }
 
         /// <summary>
-        /// Handles input.
+        /// Handles input specific to the NetworkedGameplayScreen.
+        /// For basic game mechanics input, see HandleInput in GameplayScreen.
         /// </summary>
         private void HandleInput()
         {
@@ -295,6 +292,11 @@ namespace Angels_Vs_Demons.Networking
 
                 //move our cursor to match what the remote player did
                 board.moveCursor((int)hPlayer.Position.X, (int)hPlayer.Position.Y);
+				#if DEBUG
+                Console.WriteLine("Moved remote player's cursor from " + board.GetCurrentTile().position.X
+                    + "," + board.GetCurrentTile().position.Y + " to "
+                    + hPlayer.Position.X + "," + hPlayer.Position.Y);
+				#endif
             }
         }
 
@@ -303,11 +305,15 @@ namespace Angels_Vs_Demons.Networking
 
         #region Input Handling
 
+
         /// <summary>
-        /// Reads input data from keyboard and gamepad, and stores
-        /// it into the cursor
+        /// Actual gameplay movement of the cursor is handled in Gamplay screen.
+        /// This update methods gets the new position of the cursor and assigns it 
+        /// to the position of the player that we passed in.
         /// </summary>
-        void ReadPositionInput(Vector2 position, PlayerIndex playerIndex)
+        /// <param name="hPlayer">The player we're going to update</param>
+        /// <param name="playerIndex">The index, if local player</param>
+        void ReadPlayerInput(HumanPlayer hPlayer, PlayerIndex playerIndex)
         {
             // Read the gamepad.
             GamePadState gamePadState = GamePad.GetState(playerIndex);
@@ -319,9 +325,8 @@ namespace Angels_Vs_Demons.Networking
 
             if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
             {
-                //board.moveCursor(-1, 0);
                 //update cursor position to be sent over network
-                position = board.GetCurrentTile().position;
+                hPlayer.Position = board.GetCurrentTile().position;
                 #if DEBUG
                 Console.WriteLine("Moved Left");
                 #endif
@@ -329,9 +334,8 @@ namespace Angels_Vs_Demons.Networking
 
             if (keyboardState.IsKeyDown(Keys.Right) && !previousKeyboardState.IsKeyDown(Keys.Right))
             {
-                //board.moveCursor(1, 0);
                 //update cursor position to be sent over network
-                position = board.GetCurrentTile().position;
+                hPlayer.Position = board.GetCurrentTile().position;
                 #if DEBUG
                 Console.WriteLine("Moved Right");
                 #endif
@@ -339,9 +343,8 @@ namespace Angels_Vs_Demons.Networking
 
             if (keyboardState.IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
             {
-                //board.moveCursor(0, -1);
                 //update cursor position to be sent over network
-                position = board.GetCurrentTile().position;
+                hPlayer.Position = board.GetCurrentTile().position;
                 #if DEBUG
                 Console.WriteLine("Moved Up");
                 #endif
@@ -349,9 +352,8 @@ namespace Angels_Vs_Demons.Networking
 
             if (keyboardState.IsKeyDown(Keys.Down) && !previousKeyboardState.IsKeyDown(Keys.Down))
             {
-                //board.moveCursor(0, 1);
                 //update cursor position to be sent over network
-                position = board.GetCurrentTile().position;
+                hPlayer.Position = board.GetCurrentTile().position;
                 #if DEBUG
                 Console.WriteLine("Moved Down");
                 #endif
