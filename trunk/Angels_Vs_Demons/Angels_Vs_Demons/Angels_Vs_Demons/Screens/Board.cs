@@ -56,7 +56,7 @@ namespace Angels_Vs_Demons
 
             //creates a blank recent move for the class
 
-            recentMove = new Move();
+            //recentMove = new Move();
 
             // Loads the textures
 
@@ -380,7 +380,7 @@ namespace Angels_Vs_Demons
         }
 
         /// <summary>
-        /// Marks all tiles within a Units move range that are not occupied as moveable.
+        /// Marks all tiles within a Units move range that are not occupied as movable.
         /// </summary>
         /// <param name="distance">The move range of a unit</param>
         /// <param name="currentTile">The current tile we are checking</param>
@@ -460,6 +460,7 @@ namespace Angels_Vs_Demons
         public List getValidMoves()
         {
             throw new NotImplementedException();
+            
         }
 
 

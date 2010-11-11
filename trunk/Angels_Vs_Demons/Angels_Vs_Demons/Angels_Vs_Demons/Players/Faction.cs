@@ -5,11 +5,12 @@ using System.Text;
 
 namespace Angels_Vs_Demons.Players
 {
-    class HumanPlayer : Player
+
+    /// Rpresents a faction, either ANGEL or DEMON
+    /// </summary>
+    public enum Faction
     {
-        public HumanPlayer(Faction faction)
-            :base(faction)
-        {
-        }
+        ANGEL,
+        DEMON
     }
 }

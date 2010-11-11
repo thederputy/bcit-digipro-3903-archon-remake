@@ -20,7 +20,8 @@ namespace Angels_Vs_Demons.Players
         // Max depth used in the Min-Max algorithm
         private int maxDepth = 1;
 
-        public ComputerPlayer(factionType faction) : base(faction)
+        public ComputerPlayer(Faction faction)
+            : base(faction)
         {
 
         }

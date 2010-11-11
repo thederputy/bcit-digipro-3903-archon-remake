@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
+using Angels_Vs_Demons.Players;
 #endregion
 
 
@@ -30,9 +31,17 @@ namespace Angels_Vs_Demons.Networking
 
         string errorMessage;
 
-        public NetworkedGameplayScreen()
+        public NetworkedGameplayScreen(bool isHost)
+            : base()
         {
-
+            if (isHost)
+            {
+                CreateSession();
+            }
+            else
+            {
+                JoinSession();
+            }
         }
 
         /// <summary>
@@ -95,6 +104,7 @@ namespace Angels_Vs_Demons.Networking
         void JoinSession()
         {
             //DrawMessage("Joining session...");
+            //SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
             try
             {
@@ -106,6 +116,7 @@ namespace Angels_Vs_Demons.Networking
                     if (availableSessions.Count == 0)
                     {
                         errorMessage = "No network sessions found.";
+                        //spriteBatch.DrawString(board.debugFont, errorMessage, new Vector2(100, 400), Color.Black);
                         return;
                     }
 
@@ -143,7 +154,15 @@ namespace Angels_Vs_Demons.Networking
             //not quite sure yet how this code will be used by our game, as each player maintains
             // a copy of the board
             int gamerIndex = networkSession.AllGamers.IndexOf(e.Gamer);
-            //e.Gamer.Tag = new networkUnit(content.Load<Texture2D>("blank"), gamerIndex, content);
+            if (gamerIndex == 0)
+            {
+                e.Gamer.Tag = new HumanPlayer(Faction.ANGEL);
+            }
+            else
+            {
+                e.Gamer.Tag = new HumanPlayer(Faction.DEMON);
+            }
+            
         }
 
 
@@ -196,11 +215,9 @@ namespace Angels_Vs_Demons.Networking
             GameObject cursor = gamer.Tag as GameObject;
             
             // Update the cursor.
-            //ReadTileInput(currentTile, gamer.SignedInGamer.PlayerIndex);
-            ReadTileInput(cursor, gamer.SignedInGamer.PlayerIndex);
+            if(cursor != null)
+                ReadTileInput(cursor, gamer.SignedInGamer.PlayerIndex);
 
-            //handled by ReadTileInput();
-            //board.moveCursor((int)cursor.position.X, (int)cursor.position.Y);
 
             // Write the unit state into a network packet.
             packetWriter.Write(board.GetCurrentTile().position);
@@ -223,7 +240,7 @@ namespace Angels_Vs_Demons.Networking
             {
                 // If we are not in a network session, update the
                 // menu screen that will let us create or join one.
-                UpdateMenuScreen();
+                ExitScreen();
             }
             else
             {
@@ -239,14 +256,13 @@ namespace Angels_Vs_Demons.Networking
         /// </summary>
         private void HandleInput()
         {
-            currentKeyboardState = Keyboard.GetState();
-            currentGamePadState = GamePad.GetState(PlayerIndex.One);
+            currentKeyboardState    = Keyboard.GetState();
+            currentGamePadState     = GamePad.GetState(PlayerIndex.One);
 
             // Check for exit.
             if (IsActive && IsPressed(Keys.Escape, Buttons.Back))
             {
                 //exit the program
-                //ScreenManager.Game.Exit();
                 ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
             }
         }
