@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 #endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.Screens.GameplayScreens
 {
     class HvHGameplayScreen : GameplayScreen
     {

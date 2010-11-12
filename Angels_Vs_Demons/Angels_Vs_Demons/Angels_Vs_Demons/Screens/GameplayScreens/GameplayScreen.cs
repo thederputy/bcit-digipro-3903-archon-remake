@@ -5,10 +5,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Angels_Vs_Demons.BoardObjects;
 using Angels_Vs_Demons.Players;
+using Angels_Vs_Demons.Screens.ScreenManagers;
+using Angels_Vs_Demons.Screens;
 #endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.Screens.GameplayScreens
 {
     /// <summary>
     /// This screen implements the actual game logic
@@ -429,29 +432,29 @@ namespace Angels_Vs_Demons
 
             board.PaintUnits(spriteBatch);
 
-            /*
+            
             //unitDisplayWindow.Draw(gameTime);
 
             //debugging information
             Vector2 debugLocation = new Vector2(10,10);
             Vector2 debugLocation2 = new Vector2(10, 50);
 
-            if (isAngelTurn)
-                spriteBatch.DrawString(gameFont, "Angel Turn", debugLocation, Color.Black);
-            else
-                spriteBatch.DrawString(gameFont, "Demon Turn", debugLocation, Color.Black);
+            //if (board.isAngelTurn)
+            //    spriteBatch.DrawString(board.gameFont, "Angel Turn", debugLocation, Color.Black);
+            //else
+            //    spriteBatch.DrawString(board.gameFont, "Demon Turn", debugLocation, Color.Black);
 
-            spriteBatch.DrawString(debugFont, "Angel: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isAngel.ToString() + '\n'
-                                            + "Attackable: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isAttackable.ToString() + '\n'
-                                            + "CurrentTile: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isCurrentTile.ToString() + '\n'
-                                            + "Movable: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isMovable.ToString() + '\n'
-                                            + "Occupied: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isOccupied.ToString() + '\n'
-                                            + "Selected: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isSelected.ToString() + '\n'
-                                            + "Usable: " + grid[(int)Cursor.position.Y][(int)Cursor.position.X].isUsable.ToString() + '\n'
-                                            + "Move Phase: " + movePhase.ToString() + '\n'
-                                            + "Attack Phase: " + attackPhase.ToString() + '\n'
-                , debugLocation2, Color.Black);
-            */
+            //spriteBatch.DrawString(board.debugFont, "Angel: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsAngel.ToString() + '\n'
+            //                                + "Attackable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsAttackable.ToString() + '\n'
+            //                                + "CurrentTile: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsCurrentTile.ToString() + '\n'
+            //                                + "Movable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsMovable.ToString() + '\n'
+            //                                + "Occupied: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsOccupied.ToString() + '\n'
+            //                                + "Selected: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsSelected.ToString() + '\n'
+            //                                + "Usable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsUsable.ToString() + '\n'
+            //                                + "Move Phase: " + board.movePhase.ToString() + '\n'
+            //                                + "Attack Phase: " + board.attackPhase.ToString() + '\n'
+            //    , debugLocation2, Color.Black);
+            
             
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0)

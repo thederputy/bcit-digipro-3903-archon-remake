@@ -1,4 +1,5 @@
-﻿using System;
+﻿#region Using Statements
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,10 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
-using Angels_Vs_Demons.Networking;
+using Angels_Vs_Demons.Screens;
+#endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.Networking
 {
     class NetworkedMenuScreen : MenuScreen
     {
@@ -21,6 +23,8 @@ namespace Angels_Vs_Demons
         const int maxGamers = 16;
         const int maxLocalGamers = 4;
 
+        bool isHost;
+
         PacketWriter packetWriter = new PacketWriter();
         PacketReader packetReader = new PacketReader();
 
@@ -30,40 +34,56 @@ namespace Angels_Vs_Demons
             : base("Network Lobby")
         {
             // Create our menu entries.
-            MenuEntry CreateSessionEntry = new MenuEntry("Create Session");
-            MenuEntry JoinSessionEntry = new MenuEntry("Join Session");
+            MenuEntry HostLocalSessionEntry = new MenuEntry("Host LAN Game");
+            MenuEntry JoinLocalSessionEntry = new MenuEntry("Join LAN Game");
+            MenuEntry HostOnlineSessionEntry = new MenuEntry("Host Online Game");
+            MenuEntry JoinOnlineSessionEntry = new MenuEntry("Join Online Game");
             MenuEntry ExitMenuEntry = new MenuEntry("Back");
 
             // Hook up menu event handlers.
-            CreateSessionEntry.Selected += CreateSessionSelected;
-            JoinSessionEntry.Selected += JoinSessionSelected;
+            HostLocalSessionEntry.Selected += HostLocalSessionSelected;
+            JoinLocalSessionEntry.Selected += JoinLocalSessionSelected;
+            HostOnlineSessionEntry.Selected += HostOnlineSessionSelected;
+            JoinOnlineSessionEntry.Selected += JoinOnlineSessionSelected;
             ExitMenuEntry.Selected += OnCancel;
 
             // Add entries to the menu.
-            MenuEntries.Add(CreateSessionEntry);
-            MenuEntries.Add(JoinSessionEntry);
+            MenuEntries.Add(HostLocalSessionEntry);
+            MenuEntries.Add(JoinLocalSessionEntry);
+            MenuEntries.Add(HostOnlineSessionEntry);
+            MenuEntries.Add(JoinOnlineSessionEntry);
             MenuEntries.Add(ExitMenuEntry);
         }
+
+        // Event handlers for when the menu options are selected
         #region Handle Input
 
         /// <summary>
-        /// Event handler for when the menu options are selected
+        /// Hosts a system link game with this player as the Angel faction.
         /// </summary>
-
-        void CreateSessionSelected(object sender, PlayerIndexEventArgs e)
+        /// <param name="sender">Not sure what this parameter is.</param>
+        /// <param name="e">This one either</param>
+        void HostLocalSessionSelected(object sender, PlayerIndexEventArgs e)
         {
             //create the new session
+            isHost = true;
             if (Gamer.SignedInGamers.Count == 0)
             {
                 // If there are no profiles signed in, we cannot proceed.
                 // Show the Guide so the user can sign in.
                 Guide.ShowSignIn(maxLocalGamers, false);
             }
-            ScreenManager.AddScreen(new NetworkedGameplayScreen(true), e.PlayerIndex);
+            ScreenManager.AddScreen(new NetworkedGameplayScreen(isHost, NetworkSessionType.SystemLink), e.PlayerIndex);
         }
 
-        void JoinSessionSelected(object sender, PlayerIndexEventArgs e)
+        /// <summary>
+        /// Joins a system link game with this player as the Demon faction.
+        /// </summary>
+        /// <param name="sender">Not sure what this parameter is.</param>
+        /// <param name="e">This one either</param>
+        void JoinLocalSessionSelected(object sender, PlayerIndexEventArgs e)
         {
+            isHost = false;
             //search for sessions and join one if found
             if (Gamer.SignedInGamers.Count == 0)
             {
@@ -71,7 +91,43 @@ namespace Angels_Vs_Demons
                 // Show the Guide so the user can sign in.
                 Guide.ShowSignIn(maxLocalGamers, false);
             }
-            ScreenManager.AddScreen(new NetworkedGameplayScreen(false), e.PlayerIndex);
+            ScreenManager.AddScreen(new NetworkedGameplayScreen(isHost, NetworkSessionType.SystemLink), e.PlayerIndex);
+        }
+
+        /// <summary>
+        /// Hosts an online game using XBOX LIVE servers with this player as the Angel faction.
+        /// </summary>
+        /// <param name="sender">Not sure what this parameter is.</param>
+        /// <param name="e">This one either</param>
+        void HostOnlineSessionSelected(object sender, PlayerIndexEventArgs e)
+        {
+            //create the new session
+            isHost = true;
+            if (Gamer.SignedInGamers.Count == 0)
+            {
+                // If there are no profiles signed in, we cannot proceed.
+                // Show the Guide so the user can sign in.
+                Guide.ShowSignIn(maxLocalGamers, false);
+            }
+            ScreenManager.AddScreen(new NetworkedGameplayScreen(isHost, NetworkSessionType.PlayerMatch), e.PlayerIndex);
+        }
+
+        /// <summary>
+        /// Joins an online game using XBOX LIVE servers with this player as the Demon faction.
+        /// </summary>
+        /// <param name="sender">Not sure what this parameter is.</param>
+        /// <param name="e">This one either</param>
+        void JoinOnlineSessionSelected(object sender, PlayerIndexEventArgs e)
+        {
+            isHost = false;
+            //search for sessions and join one if found
+            if (Gamer.SignedInGamers.Count == 0)
+            {
+                // If there are no profiles signed in, we cannot proceed.
+                // Show the Guide so the user can sign in.
+                Guide.ShowSignIn(maxLocalGamers, false);
+            }
+            ScreenManager.AddScreen(new NetworkedGameplayScreen(isHost, NetworkSessionType.PlayerMatch), e.PlayerIndex);
         }
 
         void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)

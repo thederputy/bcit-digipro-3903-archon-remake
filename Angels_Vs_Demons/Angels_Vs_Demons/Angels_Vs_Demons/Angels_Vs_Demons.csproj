@@ -107,6 +107,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoardObjects\Attack.cs" />
+    <Compile Include="BoardObjects\Turn.cs" />
     <Compile Include="Players\Faction.cs" />
     <Compile Include="Util\List.cs" />
     <Compile Include="Networking\NetworkedGameplayScreen.cs" />
@@ -114,37 +116,37 @@
     <Compile Include="Players\HumanPlayer.cs" />
     <Compile Include="Players\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Game1.cs" />
-    <Compile Include="Screen Manager\GameScreen.cs" />
-    <Compile Include="Screen Manager\InputState.cs" />
-    <Compile Include="Screen Manager\ScreenManager.cs" />
-    <Compile Include="Screens\AbstractBoard.cs" />
-    <Compile Include="Screens\AvAGameplayScreen.cs" />
-    <Compile Include="Screens\Board.cs" />
-    <Compile Include="Screens\GameplayScreen.cs" />
-    <Compile Include="Screens\HvAGameplayScreen.cs" />
-    <Compile Include="Screens\HvHGameplayScreen.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="Screens\ScreenManagers\GameScreen.cs" />
+    <Compile Include="Screens\ScreenManagers\InputState.cs" />
+    <Compile Include="Screens\ScreenManagers\ScreenManager.cs" />
+    <Compile Include="BoardObjects\AbstractBoard.cs" />
+    <Compile Include="Screens\GameplayScreens\AvAGameplayScreen.cs" />
+    <Compile Include="BoardObjects\Board.cs" />
+    <Compile Include="Screens\GameplayScreens\GameplayScreen.cs" />
+    <Compile Include="Screens\GameplayScreens\HvAGameplayScreen.cs" />
+    <Compile Include="Screens\GameplayScreens\HvHGameplayScreen.cs" />
     <Compile Include="Screens\LoadingScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Screens\MenuEntry.cs" />
     <Compile Include="Screens\MenuScreen.cs" />
     <Compile Include="Screens\MessageBoxScreen.cs" />
     <Compile Include="Networking\NetworkedMenuScreen.cs" />
-    <Compile Include="Screens\Move.cs" />
+    <Compile Include="BoardObjects\Move.cs" />
     <Compile Include="Screens\OptionsMenuScreen.cs" />
     <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\PlayerIndexEventArgs.cs" />
     <Compile Include="Screens\UnitDisplayWindow.cs" />
-    <Compile Include="Units\Archer.cs" />
-    <Compile Include="Units\Champion.cs" />
-    <Compile Include="Units\GameObject.cs" />
-    <Compile Include="Units\Guard.cs" />
-    <Compile Include="Units\Knight.cs" />
-    <Compile Include="Units\Mage.cs" />
-    <Compile Include="Units\NonChampion.cs" />
-    <Compile Include="Units\Peon.cs" />
-    <Compile Include="Units\Tile.cs" />
-    <Compile Include="Units\Unit.cs" />
+    <Compile Include="GameObjects\Units\Archer.cs" />
+    <Compile Include="GameObjects\Units\Champion.cs" />
+    <Compile Include="GameObjects\GameObject.cs" />
+    <Compile Include="GameObjects\Units\Guard.cs" />
+    <Compile Include="GameObjects\Units\Knight.cs" />
+    <Compile Include="GameObjects\Units\Mage.cs" />
+    <Compile Include="GameObjects\Units\NonChampion.cs" />
+    <Compile Include="GameObjects\Units\Peon.cs" />
+    <Compile Include="GameObjects\Tile.cs" />
+    <Compile Include="GameObjects\Units\Unit.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

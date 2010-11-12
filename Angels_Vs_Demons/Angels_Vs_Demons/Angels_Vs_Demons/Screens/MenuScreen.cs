@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Angels_Vs_Demons.Screens.ScreenManagers;
+using Angels_Vs_Demons.Screens.GameplayScreens;
 #endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.Screens
 {
     /// <summary>
     /// Base class for screens that contain a menu of options. The user can
