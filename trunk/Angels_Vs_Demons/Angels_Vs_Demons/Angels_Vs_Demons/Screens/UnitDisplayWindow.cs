@@ -1,12 +1,17 @@
-﻿using System;
+﻿#region Using Statements
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Angels_Vs_Demons.GameObjects.Units;
+using Angels_Vs_Demons.Screens.ScreenManagers;
+using Angels_Vs_Demons.Screens.GameplayScreens;
+#endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.Screens
 {
     class UnitDisplayWindow : GameplayScreen
     {

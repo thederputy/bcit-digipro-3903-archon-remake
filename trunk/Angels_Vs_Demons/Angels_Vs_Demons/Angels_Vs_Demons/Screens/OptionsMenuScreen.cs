@@ -1,8 +1,9 @@
 ﻿#region Using Statements
 using Microsoft.Xna.Framework;
+using Angels_Vs_Demons.Screens.ScreenManagers;
 #endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.Screens
 {
     /// <summary>
     /// The options screen is brought up over the top of the main menu

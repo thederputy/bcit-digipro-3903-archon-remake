@@ -11,6 +11,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
 using Angels_Vs_Demons.Players;
+using Angels_Vs_Demons.Screens;
+using Angels_Vs_Demons.Screens.GameplayScreens;
 #endregion
 
 
@@ -21,19 +23,24 @@ namespace Angels_Vs_Demons.Networking
         const int maxGamers = 2;
         const int maxLocalGamers = 2;
 
+        Vector2 previousCursorPosition;
+
         KeyboardState currentKeyboardState;
         GamePadState currentGamePadState;
 
         NetworkSession networkSession;
+        NetworkSessionType sessionType;
 
         PacketWriter packetWriter = new PacketWriter();
         PacketReader packetReader = new PacketReader();
 
         string errorMessage;
 
-        public NetworkedGameplayScreen(bool isHost)
+        public NetworkedGameplayScreen(bool isHost, NetworkSessionType type)
             : base()
         {
+            sessionType = type;
+            previousCursorPosition = new Vector2(0, 0);
             player1 = new HumanPlayer(Faction.ANGEL);
             player2 = new HumanPlayer(Faction.DEMON);
             if (isHost)
@@ -56,27 +63,6 @@ namespace Angels_Vs_Demons.Networking
         }
 
         #region Networking
-
-        ///// <summary>
-        ///// Menu screen provides options to create or join network sessions.
-        ///// </summary>
-        //void UpdateMenuScreen()
-        //deprecated, as we're using NetworkedMenuScreen for this, but leaving in just in case
-        //{
-        //    if (IsActive)
-        //    {
-        //        if (IsPressed(Keys.A, Buttons.A))
-        //        {
-        //            // Create a new session?
-        //            CreateSession();
-        //        }
-        //        else if (IsPressed(Keys.B, Buttons.B))
-        //        {
-        //            // Join an existing session?
-        //            JoinSession();
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// Starts hosting a new network session.
@@ -118,6 +104,7 @@ namespace Angels_Vs_Demons.Networking
                     {
                         errorMessage = "No network sessions found.";
                         //spriteBatch.DrawString(board.debugFont, errorMessage, new Vector2(100, 400), Color.Black);
+                        Console.WriteLine(errorMessage);
                         return;
                     }
 
@@ -152,6 +139,7 @@ namespace Angels_Vs_Demons.Networking
         {
             //the creator will have index of 0, so make them player1, the ANGEL player
             int gamerIndex = networkSession.AllGamers.IndexOf(e.Gamer);
+
             if (gamerIndex == 0)
             {
                 e.Gamer.Tag = player1;
@@ -213,15 +201,19 @@ namespace Angels_Vs_Demons.Networking
             HumanPlayer hPlayer = gamer.Tag as HumanPlayer;
             
             // Update the cursor.
-            if(hPlayer.Position != null)
+            if (hPlayer.Position != null)
                 ReadPlayerInput(hPlayer, gamer.SignedInGamer.PlayerIndex);
 
+            if (hPlayer.Position != previousCursorPosition)
+            {
+                // Write the unit state into a network packet.
+                packetWriter.Write(hPlayer.Position);
 
-            // Write the unit state into a network packet.
-            packetWriter.Write(board.GetCurrentTile().position);
+                // Send the data to everyone in the session.
+                gamer.SendData(packetWriter, SendDataOptions.InOrder);
 
-            // Send the data to everyone in the session.
-            gamer.SendData(packetWriter, SendDataOptions.InOrder);
+                previousCursorPosition = hPlayer.Position;
+            }
         }
 
         /// <summary>
@@ -250,24 +242,6 @@ namespace Angels_Vs_Demons.Networking
         }
 
         /// <summary>
-        /// Handles input specific to the NetworkedGameplayScreen.
-        /// For basic game mechanics input, see HandleInput in GameplayScreen.
-        /// </summary>
-        private void HandleInput()
-        {
-            currentKeyboardState    = Keyboard.GetState();
-            currentGamePadState     = GamePad.GetState(PlayerIndex.One);
-
-            // Check for exit.
-            if (IsActive && IsPressed(Keys.Escape, Buttons.Back))
-            {
-                //exit the program
-                ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
-            }
-        }
-
-
-        /// <summary>
         /// Helper for reading incoming network packets.
         /// </summary>
         void ReadIncomingPackets(LocalNetworkGamer gamer)
@@ -291,12 +265,12 @@ namespace Angels_Vs_Demons.Networking
                 hPlayer.Position = packetReader.ReadVector2();
 
                 //move our cursor to match what the remote player did
-                board.moveCursor((int)hPlayer.Position.X, (int)hPlayer.Position.Y);
-				#if DEBUG
+                board.setCursor((int)hPlayer.Position.X, (int)hPlayer.Position.Y);
+#if DEBUG
                 Console.WriteLine("Moved remote player's cursor from " + board.GetCurrentTile().position.X
                     + "," + board.GetCurrentTile().position.Y + " to "
                     + hPlayer.Position.X + "," + hPlayer.Position.Y);
-				#endif
+#endif
             }
         }
 
@@ -305,6 +279,22 @@ namespace Angels_Vs_Demons.Networking
 
         #region Input Handling
 
+        /// <summary>
+        /// Handles input specific to the NetworkedGameplayScreen.
+        /// For basic game mechanics input, see HandleInput in GameplayScreen.
+        /// </summary>
+        private void HandleInput()
+        {
+            currentKeyboardState = Keyboard.GetState();
+            currentGamePadState = GamePad.GetState(PlayerIndex.One);
+
+            // Check for exit.
+            if (IsActive && IsPressed(Keys.Escape, Buttons.Back))
+            {
+                //exit the program
+                ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
+            }
+        }
 
         /// <summary>
         /// Actual gameplay movement of the cursor is handled in Gamplay screen.
@@ -315,49 +305,7 @@ namespace Angels_Vs_Demons.Networking
         /// <param name="playerIndex">The index, if local player</param>
         void ReadPlayerInput(HumanPlayer hPlayer, PlayerIndex playerIndex)
         {
-            // Read the gamepad.
-            GamePadState gamePadState = GamePad.GetState(playerIndex);
-
-            //Vector2 unitInput = gamePad.ThumbSticks.Left;
-
-            // Read the keyboard.
-            KeyboardState keyboardState = Keyboard.GetState(playerIndex);
-
-            if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
-            {
-                //update cursor position to be sent over network
-                hPlayer.Position = board.GetCurrentTile().position;
-                #if DEBUG
-                Console.WriteLine("Moved Left");
-                #endif
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Right) && !previousKeyboardState.IsKeyDown(Keys.Right))
-            {
-                //update cursor position to be sent over network
-                hPlayer.Position = board.GetCurrentTile().position;
-                #if DEBUG
-                Console.WriteLine("Moved Right");
-                #endif
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
-            {
-                //update cursor position to be sent over network
-                hPlayer.Position = board.GetCurrentTile().position;
-                #if DEBUG
-                Console.WriteLine("Moved Up");
-                #endif
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Down) && !previousKeyboardState.IsKeyDown(Keys.Down))
-            {
-                //update cursor position to be sent over network
-                hPlayer.Position = board.GetCurrentTile().position;
-                #if DEBUG
-                Console.WriteLine("Moved Down");
-                #endif
-            }
+            hPlayer.Position = board.GetCurrentTile().position;
         }   
 
         #endregion

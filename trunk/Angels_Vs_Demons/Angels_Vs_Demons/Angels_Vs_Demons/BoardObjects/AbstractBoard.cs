@@ -3,9 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Angels_Vs_Demons.Util;
 #endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.BoardObjects
 {
     interface AbstractBoard
     {

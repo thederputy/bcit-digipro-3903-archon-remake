@@ -1,9 +1,11 @@
 ﻿#region Using Statements
 using Microsoft.Xna.Framework;
 using Angels_Vs_Demons.Networking;
+using Angels_Vs_Demons.Screens.ScreenManagers;
+using Angels_Vs_Demons.Screens.GameplayScreens;
 #endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.Screens
 {
     /// <summary>
     /// The main menu screen is the first thing displayed when the game starts up.

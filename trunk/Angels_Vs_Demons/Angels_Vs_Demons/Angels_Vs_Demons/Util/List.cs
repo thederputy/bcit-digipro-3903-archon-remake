@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.Util
 {
     /// <sumary>
     ///   All collection classes that wish to support

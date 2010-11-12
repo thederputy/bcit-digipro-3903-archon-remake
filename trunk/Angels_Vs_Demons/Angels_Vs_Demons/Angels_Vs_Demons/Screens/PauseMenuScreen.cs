@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 #endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.Screens
 {
     /// <summary>
     /// The pause menu comes up over the top of the game,

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.BoardObjects
 {
     class Move
     {

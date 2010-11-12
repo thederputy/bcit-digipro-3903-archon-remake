@@ -5,9 +5,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Angels_Vs_Demons.GameObjects;
+using Angels_Vs_Demons.GameObjects.Units;
+using Angels_Vs_Demons.Screens.ScreenManagers;
+using Angels_Vs_Demons.Screens;
+using Angels_Vs_Demons.Util;
 #endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.BoardObjects
 {
     class Board : AbstractBoard
     {
@@ -246,6 +251,22 @@ namespace Angels_Vs_Demons
                 grid[(int)Cursor.position.X][(int)Cursor.position.Y].IsCurrentTile = false;
                 Cursor.position.X += x;
                 Cursor.position.Y += y;
+                grid[(int)Cursor.position.X][(int)Cursor.position.Y].IsCurrentTile = true;
+            }
+        }
+
+        /// <summary>
+        /// Sets the cursor to the position specitfied.
+        /// </summary>
+        /// <param name="x">The x coordinate of the new position.</param>
+        /// <param name="y">The y coordinate of the new position.</param>
+        public void setCursor(int x, int y)
+        {
+            if (x < x_size && x >= 0 && y < y_size && y >= 0)
+            {
+                grid[(int)Cursor.position.X][(int)Cursor.position.Y].IsCurrentTile = false;
+                Cursor.position.X = x;
+                Cursor.position.Y = y;
                 grid[(int)Cursor.position.X][(int)Cursor.position.Y].IsCurrentTile = true;
             }
         }

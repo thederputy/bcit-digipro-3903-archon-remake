@@ -3,7 +3,7 @@ using System;
 using Microsoft.Xna.Framework;
 #endregion
 
-namespace Angels_Vs_Demons
+namespace Angels_Vs_Demons.Screens
 {
     /// <summary>
     /// Custom event argument which includes the index of the player who
