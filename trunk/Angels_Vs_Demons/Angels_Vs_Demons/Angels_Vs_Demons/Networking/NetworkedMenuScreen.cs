@@ -33,6 +33,12 @@ namespace Angels_Vs_Demons.Networking
         public NetworkedMenuScreen()
             : base("Network Lobby")
         {
+            if (Gamer.SignedInGamers.Count == 0)
+            {
+                // If there are no profiles signed in, we cannot proceed.
+                // Show the Guide so the user can sign in.
+                Guide.ShowSignIn(maxLocalGamers, false);
+            }
             // Create our menu entries.
             MenuEntry HostLocalSessionEntry = new MenuEntry("Host LAN Game");
             MenuEntry JoinLocalSessionEntry = new MenuEntry("Join LAN Game");
@@ -67,12 +73,6 @@ namespace Angels_Vs_Demons.Networking
         {
             //create the new session
             isHost = true;
-            if (Gamer.SignedInGamers.Count == 0)
-            {
-                // If there are no profiles signed in, we cannot proceed.
-                // Show the Guide so the user can sign in.
-                Guide.ShowSignIn(maxLocalGamers, false);
-            }
             ScreenManager.AddScreen(new NetworkedGameplayScreen(isHost, NetworkSessionType.SystemLink), e.PlayerIndex);
         }
 
@@ -83,14 +83,8 @@ namespace Angels_Vs_Demons.Networking
         /// <param name="e">This one either</param>
         void JoinLocalSessionSelected(object sender, PlayerIndexEventArgs e)
         {
-            isHost = false;
             //search for sessions and join one if found
-            if (Gamer.SignedInGamers.Count == 0)
-            {
-                // If there are no profiles signed in, we cannot proceed.
-                // Show the Guide so the user can sign in.
-                Guide.ShowSignIn(maxLocalGamers, false);
-            }
+            isHost = false;
             ScreenManager.AddScreen(new NetworkedGameplayScreen(isHost, NetworkSessionType.SystemLink), e.PlayerIndex);
         }
 
@@ -103,12 +97,6 @@ namespace Angels_Vs_Demons.Networking
         {
             //create the new session
             isHost = true;
-            if (Gamer.SignedInGamers.Count == 0)
-            {
-                // If there are no profiles signed in, we cannot proceed.
-                // Show the Guide so the user can sign in.
-                Guide.ShowSignIn(maxLocalGamers, false);
-            }
             ScreenManager.AddScreen(new NetworkedGameplayScreen(isHost, NetworkSessionType.PlayerMatch), e.PlayerIndex);
         }
 
@@ -119,14 +107,8 @@ namespace Angels_Vs_Demons.Networking
         /// <param name="e">This one either</param>
         void JoinOnlineSessionSelected(object sender, PlayerIndexEventArgs e)
         {
-            isHost = false;
             //search for sessions and join one if found
-            if (Gamer.SignedInGamers.Count == 0)
-            {
-                // If there are no profiles signed in, we cannot proceed.
-                // Show the Guide so the user can sign in.
-                Guide.ShowSignIn(maxLocalGamers, false);
-            }
+            isHost = false;
             ScreenManager.AddScreen(new NetworkedGameplayScreen(isHost, NetworkSessionType.PlayerMatch), e.PlayerIndex);
         }
 
