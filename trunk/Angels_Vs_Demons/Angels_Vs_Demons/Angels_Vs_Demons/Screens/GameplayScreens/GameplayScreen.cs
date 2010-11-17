@@ -44,8 +44,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         {
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
-            
-
         }
 
 

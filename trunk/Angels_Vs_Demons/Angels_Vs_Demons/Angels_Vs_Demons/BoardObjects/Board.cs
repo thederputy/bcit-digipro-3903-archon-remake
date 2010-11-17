@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.GameObjects.Units;
+using Angels_Vs_Demons.Players;
 using Angels_Vs_Demons.Screens.ScreenManagers;
 using Angels_Vs_Demons.Screens;
 using Angels_Vs_Demons.Util;
@@ -23,6 +24,15 @@ namespace Angels_Vs_Demons.BoardObjects
         public Tile[][] grid;
 
         public Boolean isAngelTurn;
+
+        private Faction controllingFaction;
+
+        public Faction ControllingFaction
+        {
+            get { return controllingFaction; }
+            set { controllingFaction = value; }
+        }
+
         public Boolean movePhase;
         public Boolean attackPhase;
 
@@ -122,85 +132,82 @@ namespace Angels_Vs_Demons.BoardObjects
             grid[(int)Cursor.position.X][(int)Cursor.position.Y].IsCurrentTile = true;
 
             // Initialize Demon Army
+            Faction demon = Faction.DEMON;
 
-            Champion ArchDemon = new Champion(Arch_Demon_Texture);
-            Knight Nightmare = new Knight(Nightmare_Texture);
-            Mage DemonLord = new Mage(Demon_Lord_Texture);
-            Archer SkeletonArcher1 = new Archer(Skeleton_Archer_Texture);
-            Archer SkeletonArcher2 = new Archer(Skeleton_Archer_Texture);
-            Peon Imp1 = new Peon(Imp_Texture);
-            Peon Imp2 = new Peon(Imp_Texture);
-            Peon Imp3 = new Peon(Imp_Texture);
-            Guard BloodGuard1 = new Guard(Blood_Guard_Texture);
-            Guard BloodGuard2 = new Guard(Blood_Guard_Texture);
+            Champion ArchDemon = new Champion(Arch_Demon_Texture, demon, "ArchDemon");
+            Knight Nightmare = new Knight(Nightmare_Texture, demon, "Nightmare");
+            Mage DemonLord = new Mage(Demon_Lord_Texture, demon, "DemonLord");
+            Archer SkeletonArcher1 = new Archer(Skeleton_Archer_Texture, demon, "SkeletonArcher");
+            Archer SkeletonArcher2 = new Archer(Skeleton_Archer_Texture, demon, "SkeletonArcher");
+            Peon Imp1 = new Peon(Imp_Texture, demon, "Imp");
+            Peon Imp2 = new Peon(Imp_Texture, demon, "Imp");
+            Peon Imp3 = new Peon(Imp_Texture, demon, "Imp");
+            Guard BloodGuard1 = new Guard(Blood_Guard_Texture, demon, "BloodGuard");
+            Guard BloodGuard2 = new Guard(Blood_Guard_Texture, demon, "BloodGuard");
 
             // Place Demon army on grid
-
-            grid[0][4].setUnit(ArchDemon);
-            grid[0][5].setUnit(Nightmare);
-            grid[0][3].setUnit(DemonLord);
-            grid[0][2].setUnit(SkeletonArcher1);
-            grid[0][6].setUnit(SkeletonArcher2);
-            grid[1][2].setUnit(Imp1);
-            grid[1][4].setUnit(Imp2);
-            grid[1][6].setUnit(Imp3);
-            grid[1][3].setUnit(BloodGuard1);
-            grid[1][5].setUnit(BloodGuard2);
-
-            // Register Demon army as demons
-
-            grid[0][4].IsAngel = false;
-            grid[0][5].IsAngel = false;
-            grid[0][3].IsAngel = false;
-            grid[0][2].IsAngel = false;
-            grid[0][6].IsAngel = false;
-            grid[1][2].IsAngel = false;
-            grid[1][4].IsAngel = false;
-            grid[1][6].IsAngel = false;
-            grid[1][3].IsAngel = false;
-            grid[1][5].IsAngel = false;
+            grid[0][4].Unit = ArchDemon;
+            grid[0][5].Unit = Nightmare;
+            grid[0][3].Unit = DemonLord;
+            grid[0][2].Unit = SkeletonArcher1;
+            grid[0][6].Unit = SkeletonArcher2;
+            grid[1][2].Unit = Imp1;
+            grid[1][4].Unit = Imp2;
+            grid[1][6].Unit = Imp3;
+            grid[1][3].Unit = BloodGuard1;
+            grid[1][5].Unit = BloodGuard2;
 
             // Initialize Angel Army
+            Faction angel = Faction.ANGEL;
 
-            Champion ArchAngel = new Champion(Arch_Angel_Texture);
-            Knight Pegasus = new Knight(Pegasus_Texture);
-            Mage HighAngel = new Mage(High_Angel_Texture);
-            Archer ChosenOne1 = new Archer(Chosen_One_Texture);
-            Archer ChosenOne2 = new Archer(Chosen_One_Texture);
-            Peon Soldier1 = new Peon(Soldier_Texture);
-            Peon Soldier2 = new Peon(Soldier_Texture);
-            Peon Soldier3 = new Peon(Soldier_Texture);
-            Guard AngelicGuard1 = new Guard(Angelic_Guard_Texture);
-            Guard AngelicGuard2 = new Guard(Angelic_Guard_Texture);
+            Champion ArchAngel = new Champion(Arch_Angel_Texture, angel, "ArchAngel");
+            Knight Pegasus = new Knight(Pegasus_Texture, angel, "Pegasus");
+            Mage HighAngel = new Mage(High_Angel_Texture, angel, "HighAngel");
+            Archer ChosenOne1 = new Archer(Chosen_One_Texture, angel, "Archer");
+            Archer ChosenOne2 = new Archer(Chosen_One_Texture, angel, "Archer");
+            Peon Soldier1 = new Peon(Soldier_Texture, angel, "Soldier");
+            Peon Soldier2 = new Peon(Soldier_Texture, angel, "Soldier");
+            Peon Soldier3 = new Peon(Soldier_Texture, angel, "Soldier");
+            Guard AngelicGuard1 = new Guard(Angelic_Guard_Texture, angel, "AngelicGuard");
+            Guard AngelicGuard2 = new Guard(Angelic_Guard_Texture, angel, "AngelicGuard");
 
             // Place Angel army on grid
 
-            grid[9][4].setUnit(ArchAngel);
-            grid[9][3].setUnit(Pegasus);
-            grid[9][5].setUnit(HighAngel);
-            grid[9][2].setUnit(ChosenOne1);
-            grid[9][6].setUnit(ChosenOne2);
-            grid[8][2].setUnit(Soldier1);
-            grid[8][4].setUnit(Soldier2);
-            grid[8][6].setUnit(Soldier3);
-            grid[8][3].setUnit(AngelicGuard1);
-            grid[8][5].setUnit(AngelicGuard2);
-
-            // Register Angel army as angels
-
-            grid[9][4].IsAngel = true;
-            grid[9][3].IsAngel = true;
-            grid[9][5].IsAngel = true;
-            grid[9][2].IsAngel = true;
-            grid[9][6].IsAngel = true;
-            grid[8][2].IsAngel = true;
-            grid[8][4].IsAngel = true;
-            grid[8][6].IsAngel = true;
-            grid[8][3].IsAngel = true;
-            grid[8][5].IsAngel = true;
+            grid[9][4].Unit = ArchAngel;
+            grid[9][3].Unit = Pegasus;
+            grid[9][5].Unit = HighAngel;
+            grid[9][2].Unit = ChosenOne1;
+            grid[9][6].Unit = ChosenOne2;
+            grid[8][2].Unit = Soldier1;
+            grid[8][4].Unit = Soldier2;
+            grid[8][6].Unit = Soldier3;
+            grid[8][3].Unit = AngelicGuard1;
+            grid[8][5].Unit = AngelicGuard2;
 
             // Initiate first turn
-
+            controllingFaction = Faction.ANGEL;
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    if (tile.Unit != null)
+                    {
+                        if (tile.Unit.FactionType == Faction.ANGEL)
+                        {
+                            tile.IsUsable = true;
+                        }
+                        else
+                        {
+                            tile.IsUsable = false;
+                        }
+                    }
+                    else
+                    {
+                        tile.IsUsable = false;
+                    }
+                }
+            }
+            /*
             grid[9][4].IsUsable = true;
             grid[9][5].IsUsable = true;
             grid[9][3].IsUsable = true;
@@ -222,27 +229,46 @@ namespace Angels_Vs_Demons.BoardObjects
             grid[1][6].IsUsable = false;
             grid[1][3].IsUsable = false;
             grid[1][5].IsUsable = false;
+            */
         }
 
-        //Gets the current state of the board
+        /// <summary>
+        /// Gets the current state of the board
+        /// </summary>
+        /// <returns>current state of the board</returns>
         public Tile[][] GetBoard()
         {
             return grid;
         }
 
-        //Gets a specific tile
+
+        /// <summary>
+        ///  Gets a tile specified by the x and y values
+        /// </summary>
+        /// <param name="x">x position</param>
+        /// <param name="y">y position</param>
+        /// <returns>tile specified by the x and y values</returns>
         public Tile GetTile(int x, int y)
         {
             return grid[x][y];
         }
 
-        //Gets the current tile
+
+        /// <summary>
+        ///  Gets the tile that the cursor is on
+        /// </summary>
+        /// <returns>the tile that the cursor is on.</returns>
         public Tile GetCurrentTile()
         {
             return grid[(int)Cursor.position.X][(int)Cursor.position.Y];
         }
 
-        //Moves the cursor by the amount inputed, resets current tile
+        
+        /// <summary>
+        ///  Moves the cursor by the amount input, resets current tile
+        /// </summary>
+        /// <param name="x">x amount</param>
+        /// <param name="y">y amount</param>
         public void moveCursor(int x, int y)
         {
             if (Cursor.position.X + x < x_size && Cursor.position.X + x >= 0 &&
@@ -271,14 +297,28 @@ namespace Angels_Vs_Demons.BoardObjects
             }
         }
 
+        /// <summary>
+        /// Gets the x size of the grid.
+        /// </summary>
+        /// <returns>the x size of the grid</returns>
         public int Get_xSize()
         {
             return x_size;
         }
+
+        /// <summary>
+        /// Gets the y size of the grid.
+        /// </summary>
+        /// <returns>the y size of the grid</returns>
         public int Get_ySize()
         {
             return y_size;
         }
+
+        /// <summary>
+        /// Paints the grid.
+        /// </summary>
+        /// <param name="SPRITEBATCH">the spritebatch to draw with</param>
         public void PaintGrid(SpriteBatch SPRITEBATCH)
         {
             SpriteBatch spriteBatch = SPRITEBATCH;
@@ -308,6 +348,11 @@ namespace Angels_Vs_Demons.BoardObjects
 
             spriteBatch.End();
         }
+
+        /// <summary>
+        /// Paints the units
+        /// </summary>
+        /// <param name="SPRITEBATCH">the spritebatch</param>
         public void PaintUnits(SpriteBatch SPRITEBATCH)
         {
 
@@ -321,7 +366,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 {
                     if (grid[i][j].IsOccupied)
                     {
-                        Unit Tempunit = grid[i][j].getUnit();
+                        Unit Tempunit = grid[i][j].Unit;
                         Texture2D TempTexture = Tempunit.sprite;
                         spriteBatch.Draw(TempTexture, grid[i][j].rect, Color.White);
                     }
@@ -345,34 +390,35 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             if (movePhase)
             {
-                if (GetCurrentTile().IsOccupied)
+                Tile currentTile = GetCurrentTile();
+                if (currentTile.IsOccupied)
                 {
                     //check that there is a tile selected
                     if (selectedTile != null)
                     {
                         //if we've selected the same tile again
-                        if (GetCurrentTile().position == selectedTile.position)
+                        if (currentTile.position == selectedTile.position)
                         {
                             markAllTilesAsNotMovable();
                             selectedTile = null;
                         }
                         else
                         {
-                            makeMove(GetCurrentTile());
+                            makeMove(currentTile);
                         }
                     }
                     else
                     {
-                        makeMove(GetCurrentTile());
+                        makeMove(currentTile);
                     }
                 }
                 else
                 {
                     //tile is not occupied, check to see if we can move to it
-                    if (GetCurrentTile().IsMovable)
+                    if (currentTile.IsMovable)
                     {
                         //move to this tile
-                        swapTiles(GetCurrentTile());
+                        swapTiles(currentTile);
                         //movePhase = false;
                         //attackPhase = true;
                     }
@@ -383,11 +429,16 @@ namespace Angels_Vs_Demons.BoardObjects
 
             }
         }
+
+        /// <summary>
+        /// Makes moves from a given tile
+        /// </summary>
+        /// <param name="startTile">starting tile.</param>
         private void makeMove(Tile startTile)
         {
             selectedTile = startTile;
             markAllTilesAsNotMovable();
-            makePaths(startTile.getUnit().Movement, startTile);
+            makePaths(startTile.Unit.Movement, startTile);
         }
         private void makeAttack()
         {
@@ -463,13 +514,11 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <param name="currentTile">The tile that we are going to move to.</param>
         private void swapTiles(Tile currentTile)
         {
-            currentTile.setUnit(selectedTile.getUnit());
+            currentTile.Unit = selectedTile.Unit;
             currentTile.IsOccupied = true;
-            currentTile.IsAngel = selectedTile.IsAngel;
-            selectedTile.setUnit(null);
+            selectedTile.Unit = null;
             selectedTile.IsSelected = false;
             selectedTile.IsOccupied = false;
-            selectedTile.IsAngel = false;
             markAllTilesAsNotMovable();
         }
 
@@ -480,8 +529,20 @@ namespace Angels_Vs_Demons.BoardObjects
 
         public List getValidMoves()
         {
-            throw new NotImplementedException();
             
+            throw new NotImplementedException();
+        }
+
+        public List getValidAttacks()
+        {
+
+            throw new NotImplementedException();
+        }
+
+        public List getValidTurns()
+        {
+
+            throw new NotImplementedException();
         }
 
 

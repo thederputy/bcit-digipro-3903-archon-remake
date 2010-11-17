@@ -12,7 +12,27 @@ namespace Angels_Vs_Demons.GameObjects
 {
     class Tile : GameObject
     {
-        private Unit occupiedUnit;
+        /// <summary>
+        /// The unit on this tile
+        /// </summary>
+        private Unit unit;
+
+        public Unit Unit
+        {
+            get { return unit; }
+            set { 
+                if (value != null)
+                {
+                    isOccupied = true;
+                }
+                else
+                {
+                    isOccupied = false;
+                }
+                unit = value;
+            }
+        }
+
         private bool isOccupied;
 
         public bool IsOccupied
@@ -34,13 +54,8 @@ namespace Angels_Vs_Demons.GameObjects
             get { return isUsable; }
             set { isUsable = value; }
         }
-        private bool isAngel;
 
-        public bool IsAngel
-        {
-            get { return isAngel; }
-            set { isAngel = value; }
-        }
+
         private bool isSelected;
 
         public bool IsSelected
@@ -102,33 +117,16 @@ namespace Angels_Vs_Demons.GameObjects
             this.pathTop = null;
             this.pathBottom = null;
             this.tileColor = Color.White;
-            this.occupiedUnit = null;
+            this.unit = null;
             this.isOccupied = false;
             this.isCurrentTile = false;
             this.isUsable = false;
-            this.isAngel = false;
             this.isSelected = false;
             this.isMovable = false;
             this.isAttackable = false;
             this.direction = 0.0f;
             this.position = Vector2.Zero;
             this.sprite = loadedTexture;
-        }
-        public Unit getUnit()
-        {
-            return this.occupiedUnit;
-        }
-        public void setUnit(Unit newUnit)
-        {
-            if (newUnit != null)
-            {
-                this.isOccupied = true;
-            }
-            else
-            {
-                this.isOccupied = false;
-            }
-            this.occupiedUnit = newUnit;
         }
     }
 }

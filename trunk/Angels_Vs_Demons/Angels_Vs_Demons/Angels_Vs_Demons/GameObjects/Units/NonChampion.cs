@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
+using Angels_Vs_Demons.Players;
 #endregion
 
 namespace Angels_Vs_Demons.GameObjects.Units
@@ -67,10 +68,9 @@ namespace Angels_Vs_Demons.GameObjects.Units
 
         #endregion
 
-        protected NonChampion(Texture2D loadedTexture)
-            : base(loadedTexture)
+        protected NonChampion(Texture2D loadedTexture, Faction factionType, string name)
+            : base(loadedTexture, factionType, name)
         {
-            name = "NonChampion";
         }
 
         #region Public Methods
