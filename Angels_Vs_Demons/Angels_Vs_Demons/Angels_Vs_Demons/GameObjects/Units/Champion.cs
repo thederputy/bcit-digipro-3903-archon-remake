@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
+using Angels_Vs_Demons.Players;
 #endregion
 
 namespace Angels_Vs_Demons.GameObjects.Units
 {
     /// <summary>
-    /// Champion represents a Arch Demon or Arch Angel. 
+    /// Champion represents a Arch Demon or Arch Angel.
     /// </summary>
     class Champion : Unit
     {
@@ -35,8 +36,8 @@ namespace Angels_Vs_Demons.GameObjects.Units
 
         #endregion
 
-        public Champion(Texture2D loadedTexture)
-            : base(loadedTexture)
+        public Champion(Texture2D loadedTexture, Faction factionType, string name)
+            : base(loadedTexture, factionType, name)
         {
             CurrHP = 100;
             TotalHP = 100;
@@ -47,8 +48,6 @@ namespace Angels_Vs_Demons.GameObjects.Units
             Movement = 2;
             CurrRecharge = 0;
             TotalRecharge = 1;
-
-            name = "Champion";
         }
 
         /*

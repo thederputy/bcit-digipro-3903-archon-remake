@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
+using Angels_Vs_Demons.Players;
 #endregion
 
 
@@ -48,18 +49,27 @@ namespace Angels_Vs_Demons.GameObjects.Units
     {
         #region Properties
 
-        protected string name;
+        /// <summary>
+        /// String representation of this unit.
+        /// </summary>
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+
+        private string name;
 
         /// <summary>
         /// Angel/Demon association of the unit
         /// </summary>
-        public Boolean IsAngel
+        public Faction FactionType
         {
-            get { return IsAngel; }
-            set { isAngel = value; }
+            get { return factionType; }
+            set { factionType = value; }
         }
 
-        private Boolean isAngel;
+        private Faction factionType;
 
         /// <summary>
         /// Total Health Points of this unit.
@@ -142,10 +152,11 @@ namespace Angels_Vs_Demons.GameObjects.Units
 
         #endregion
 
-        protected Unit(Texture2D loadedTexture)
+        protected Unit(Texture2D loadedTexture, Faction factionType, string name)
             : base(loadedTexture)
         {
-
+            FactionType = factionType;
+            Name        = name;
         }
 
         #region Public Methods

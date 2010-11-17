@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
+using Angels_Vs_Demons.Players;
 #endregion
 
 namespace Angels_Vs_Demons.GameObjects.Units
@@ -16,8 +17,8 @@ namespace Angels_Vs_Demons.GameObjects.Units
         #region Initialization
 
 
-        public Guard(Texture2D loadedTexture)
-            : base(loadedTexture)
+        public Guard(Texture2D loadedTexture, Faction factionType, string name)
+            : base(loadedTexture, factionType, name)
         {
             CurrHP = 50;
             TotalHP = 50;
