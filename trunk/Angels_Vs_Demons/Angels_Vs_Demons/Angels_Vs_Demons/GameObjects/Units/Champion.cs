@@ -36,8 +36,8 @@ namespace Angels_Vs_Demons.GameObjects.Units
 
         #endregion
 
-        public Champion(Texture2D loadedTexture, Faction factionType, string name)
-            : base(loadedTexture, factionType, name)
+        public Champion(Texture2D loadedTexture, Faction factionType, string name, int id)
+            : base(loadedTexture, factionType, name, id)
         {
             CurrHP = 100;
             TotalHP = 100;
@@ -50,9 +50,6 @@ namespace Angels_Vs_Demons.GameObjects.Units
             TotalRecharge = 1;
         }
 
-        /*
-         * 
-         */
         /// <summary>
         /// Blood Bolt / Lightning Bolt (Bolt): removes 20 from the victim's (Unit) currHP. Removes 20 MP from 
         /// </summary>

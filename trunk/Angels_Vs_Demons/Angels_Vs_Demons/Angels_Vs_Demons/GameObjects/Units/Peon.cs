@@ -17,8 +17,8 @@ namespace Angels_Vs_Demons.GameObjects.Units
         #region Initialization
 
 
-        public Peon(Texture2D loadedTexture, Faction factionType, string name)
-            : base(loadedTexture, factionType, name)
+        public Peon(Texture2D loadedTexture, Faction factionType, string name, int id)
+            : base(loadedTexture, factionType, name, id)
         {
             CurrHP = 40;
             TotalHP = 40;

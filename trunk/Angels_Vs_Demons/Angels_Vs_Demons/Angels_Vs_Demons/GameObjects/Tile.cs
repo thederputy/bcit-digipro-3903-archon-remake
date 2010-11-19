@@ -12,6 +12,14 @@ namespace Angels_Vs_Demons.GameObjects
 {
     class Tile : GameObject
     {
+        private int unitIDs;
+
+        public int UnitIDs
+        {
+            get { return unitIDs; }
+            set { unitIDs = value; }
+        }
+
         /// <summary>
         /// The unit on this tile
         /// </summary>
@@ -127,6 +135,7 @@ namespace Angels_Vs_Demons.GameObjects
             this.direction = 0.0f;
             this.position = Vector2.Zero;
             this.sprite = loadedTexture;
+            unitIDs = 0;
         }
     }
 }
