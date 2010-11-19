@@ -13,7 +13,7 @@ using Angels_Vs_Demons.Screens.GameplayScreens;
 
 namespace Angels_Vs_Demons.Screens
 {
-    class UnitDisplayWindow : GameplayScreen
+    class UnitDisplayWindow : GameScreen
     {
         #region Fields
         Vector2 size;
@@ -63,14 +63,6 @@ namespace Angels_Vs_Demons.Screens
         }
 
         #endregion
-
-        public override void LoadContent()
-        {
-            if (content == null)
-                content = new ContentManager(ScreenManager.Game.Services, "Content");
-
-            font = content.Load<SpriteFont>("DisplayFont");
-        }
 
         #region Draw and Update
 

@@ -308,80 +308,6 @@ namespace Angels_Vs_Demons.BoardObjects
         }
 
         /// <summary>
-        /// Gets called when you press enter on the board.
-        /// This is the main loop that the board processes
-        /// </summary>
-        public void makeAction()
-        {
-            if (movePhase)
-            {
-#if DEBUG
-                //showBitMasks();
-#endif
-
-                Tile currentTile = GetCurrentTile();
-
-#if DEBUG
-                Console.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
-#endif
-                if (currentTile.IsUsable)
-                {
-                    //check that there is a tile selected
-                    if (selectedTile != null)
-                    {
-                        //if we've selected the same tile again
-                        if (currentTile.position == selectedTile.position)
-                        {
-                            //we're de-selecting this tile, no tiles are selected anymore
-                            //markAllTilesAsNotMovable();
-                            selectedTile = null;
-#if DEBUG
-                        Console.WriteLine("selected tile = null");
-#endif
-                        }
-                        else
-                        {
-                            //makeMove(currentTile);
-#if DEBUG
-                        Console.WriteLine("updating seleted tile");
-#endif
-                            selectedTile = currentTile;
-                        }
-                    }
-                    else
-                    {
-                        //makeMove(currentTile);
-#if DEBUG
-                    Console.WriteLine("updating seleted tile");
-#endif
-                        selectedTile = currentTile;
-                    }
-                }
-                else
-                {
-                    //tile is not occupied, check to see if we can move to it
-                    //if (currentTile.IsMovable)
-                    if (selectedTile != null && (currentTile.UnitIDs & selectedTile.Unit.ID) != 0)
-                    {
-                        //move to this tile
-                        //swapTiles(currentTile);
-#if DEBUG
-                        Console.WriteLine("bit mask swapping");
-#endif
-                        bitMaskSwapTile(currentTile);
-                        selectedTile = null;
-                        movePhase = false;
-                        attackPhase = true;
-                    }
-                }
-            }
-            if (attackPhase)
-            {
-                endTurn();
-            }
-        }
-
-        /// <summary>
         /// Makes moves from a given tile
         /// </summary>
         /// <param name="startTile">starting tile</param>
@@ -547,7 +473,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// Swaps the current tile with the board's selected tile.
         /// </summary>
         /// <param name="currentTile">tile that we are going to move to</param>
-        private void bitMaskSwapTile(Tile currentTile)
+        public void bitMaskSwapTile(Tile currentTile)
         {
             currentTile.Unit = selectedTile.Unit;
             currentTile.IsOccupied = true;
@@ -562,7 +488,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// </summary>
         /// <param name="destTile">tile that we are going to move to</param>
         /// <param name="srcTile">tile that we are moving from</param>
-        private void bitMaskSwapTiles(Tile destTile, Tile srcTile)
+        public void bitMaskSwapTiles(Tile destTile, Tile srcTile)
         {
             destTile.Unit = srcTile.Unit;
             destTile.IsOccupied = true;

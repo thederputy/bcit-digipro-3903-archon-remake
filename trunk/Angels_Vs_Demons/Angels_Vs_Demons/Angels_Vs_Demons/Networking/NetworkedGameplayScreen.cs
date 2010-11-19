@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
+using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.Players;
 using Angels_Vs_Demons.Screens;
 using Angels_Vs_Demons.Screens.GameplayScreens;
@@ -73,8 +74,7 @@ namespace Angels_Vs_Demons.Networking
 
             try
             {
-                networkSession = NetworkSession.Create(NetworkSessionType.SystemLink,
-                                                       maxLocalGamers, maxGamers);
+                networkSession = NetworkSession.Create(sessionType, maxLocalGamers, maxGamers);
 
                 HookSessionEvents();
             }
@@ -97,8 +97,7 @@ namespace Angels_Vs_Demons.Networking
             {
                 // Search for sessions.
                 using (AvailableNetworkSessionCollection availableSessions =
-                            NetworkSession.Find(NetworkSessionType.SystemLink,
-                                                maxLocalGamers, null))
+                            NetworkSession.Find(sessionType, maxLocalGamers, null))
                 {
                     if (availableSessions.Count == 0)
                     {
@@ -278,6 +277,79 @@ namespace Angels_Vs_Demons.Networking
 
 
         #region Input Handling
+
+        /// <summary>
+        /// Handles input for a HvH (local hotseat) game.
+        /// </summary>
+        protected override void makeAction()
+        {
+            if (board.movePhase)
+            {
+#if DEBUG
+                //showBitMasks();
+#endif
+
+                Tile currentTile = board.GetCurrentTile();
+
+#if DEBUG
+                Console.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
+#endif
+                if (currentTile.IsUsable)
+                {
+                    //check that there is a tile selected
+                    if (board.selectedTile != null)
+                    {
+                        //if we've selected the same tile again
+                        if (currentTile.position == board.selectedTile.position)
+                        {
+                            //we're de-selecting this tile, no tiles are selected anymore
+                            //board.markAllTilesAsNotMovable();
+                            board.selectedTile = null;
+#if DEBUG
+                            Console.WriteLine("selected tile = null");
+#endif
+                        }
+                        else
+                        {
+                            //board.makeMove(currentTile);
+#if DEBUG
+                            Console.WriteLine("updating seleted tile");
+#endif
+                            board.selectedTile = currentTile;
+                        }
+                    }
+                    else
+                    {
+                        //board.makeMove(currentTile);
+#if DEBUG
+                        Console.WriteLine("updating seleted tile");
+#endif
+                        board.selectedTile = currentTile;
+                    }
+                }
+                else
+                {
+                    //tile is not occupied, check to see if we can move to it
+                    //if (currentTile.IsMovable)
+                    if (board.selectedTile != null && (currentTile.UnitIDs & board.selectedTile.Unit.ID) != 0)
+                    {
+                        //move to this tile
+                        //board.swapTiles(currentTile);
+#if DEBUG
+                        Console.WriteLine("bit mask swapping");
+#endif
+                        board.bitMaskSwapTile(currentTile);
+                        board.selectedTile = null;
+                        board.movePhase = false;
+                        board.attackPhase = true;
+                    }
+                }
+            }
+            if (board.attackPhase)
+            {
+                board.endTurn();
+            }
+        }
 
         /// <summary>
         /// Handles input specific to the NetworkedGameplayScreen.
