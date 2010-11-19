@@ -61,6 +61,17 @@ namespace Angels_Vs_Demons.GameObjects.Units
         private string name;
 
         /// <summary>
+        /// ID used for bitmasking the units; used for pathfinding.
+        /// </summary>
+        private int id;
+
+        public int ID
+        {
+            get { return id; }
+            set { id = value; }
+        }
+
+        /// <summary>
         /// Angel/Demon association of the unit
         /// </summary>
         public Faction FactionType
@@ -152,11 +163,12 @@ namespace Angels_Vs_Demons.GameObjects.Units
 
         #endregion
 
-        protected Unit(Texture2D loadedTexture, Faction factionType, string name)
+        protected Unit(Texture2D loadedTexture, Faction factionType, string name, int id)
             : base(loadedTexture)
         {
             FactionType = factionType;
             Name        = name;
+            this.id     = id;
         }
 
         #region Public Methods

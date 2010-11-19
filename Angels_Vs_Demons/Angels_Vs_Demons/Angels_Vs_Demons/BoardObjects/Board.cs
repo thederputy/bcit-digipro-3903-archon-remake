@@ -20,10 +20,15 @@ namespace Angels_Vs_Demons.BoardObjects
         public ContentManager content;
         public SpriteFont gameFont;
         public SpriteFont debugFont;
-        public GameObject Cursor;
-        public Tile[][] grid;
 
-        public Boolean isAngelTurn;
+        public GameObject Cursor;
+        
+        public Tile[][] grid;
+        private int x_size;
+        private int y_size;
+        private int tile_size;
+
+        public Move lastMove;
 
         private Faction controllingFaction;
 
@@ -33,11 +38,12 @@ namespace Angels_Vs_Demons.BoardObjects
             set { controllingFaction = value; }
         }
 
-        public Boolean movePhase;
-        public Boolean attackPhase;
+        public bool movePhase;
+        public bool attackPhase;
 
         public Tile selectedTile;
 
+        #region Textures (not needed for AI)
         private Texture2D Cursor_Texture;
         private Texture2D TileTexture;
 
@@ -54,40 +60,25 @@ namespace Angels_Vs_Demons.BoardObjects
         private Texture2D Chosen_One_Texture;
         private Texture2D Soldier_Texture;
         private Texture2D Angelic_Guard_Texture;
+        #endregion
 
-        private int x_size;
-        private int y_size;
-        private int tile_size;
-
-        public Move recentMove;
-
+        /// <summary>
+        /// Constructor for the board.
+        /// </summary>
+        /// <param name="CONTENT">the content manager</param>
         public Board(ContentManager CONTENT)
         {
             content = CONTENT;
-            isAngelTurn = true;
-            movePhase = true;
-            attackPhase = false;
             selectedTile = null;
 
             //creates a blank recent move for the class
-
-            //recentMove = new Move();
+            //lastMove = new Move();
 
             // Loads the textures
-
             gameFont = content.Load<SpriteFont>("MenuFont");
             debugFont = content.Load<SpriteFont>("debugFont");
-
-
             Cursor_Texture = content.Load<Texture2D>("Cursor");
             TileTexture = content.Load<Texture2D>("gridNormal");
-
-            Arch_Demon_Texture = content.Load<Texture2D>("Arch_Demon");
-            Nightmare_Texture = content.Load<Texture2D>("Nightmare");
-            Demon_Lord_Texture = content.Load<Texture2D>("Demon_Lord");
-            Skeleton_Archer_Texture = content.Load<Texture2D>("Skeleton_Archer");
-            Imp_Texture = content.Load<Texture2D>("Imp");
-            Blood_Guard_Texture = content.Load<Texture2D>("Blood_Guard");
 
             Arch_Angel_Texture = content.Load<Texture2D>("Arch_Angel");
             Pegasus_Texture = content.Load<Texture2D>("Pegasus");
@@ -96,9 +87,15 @@ namespace Angels_Vs_Demons.BoardObjects
             Soldier_Texture = content.Load<Texture2D>("Soldier");
             Angelic_Guard_Texture = content.Load<Texture2D>("Angelic_Guard");
 
+            Arch_Demon_Texture = content.Load<Texture2D>("Arch_Demon");
+            Nightmare_Texture = content.Load<Texture2D>("Nightmare");
+            Demon_Lord_Texture = content.Load<Texture2D>("Demon_Lord");
+            Skeleton_Archer_Texture = content.Load<Texture2D>("Skeleton_Archer");
+            Imp_Texture = content.Load<Texture2D>("Imp");
+            Blood_Guard_Texture = content.Load<Texture2D>("Blood_Guard");
+
 
             /// Initializes the screen with an empty grid of tiles
-
             x_size = 10;
             y_size = 9;
             tile_size = 40;
@@ -123,7 +120,6 @@ namespace Angels_Vs_Demons.BoardObjects
             }
 
             // Initializes the cursor
-
             Cursor = new GameObject(Cursor_Texture);
             Cursor.rect.X = grid[0][0].rect.X;
             Cursor.rect.Y = grid[0][0].rect.Y;
@@ -131,105 +127,61 @@ namespace Angels_Vs_Demons.BoardObjects
             Cursor.rect.Height = tile_size;
             grid[(int)Cursor.position.X][(int)Cursor.position.Y].IsCurrentTile = true;
 
-            // Initialize Demon Army
-            Faction demon = Faction.DEMON;
-
-            Champion ArchDemon = new Champion(Arch_Demon_Texture, demon, "ArchDemon");
-            Knight Nightmare = new Knight(Nightmare_Texture, demon, "Nightmare");
-            Mage DemonLord = new Mage(Demon_Lord_Texture, demon, "DemonLord");
-            Archer SkeletonArcher1 = new Archer(Skeleton_Archer_Texture, demon, "SkeletonArcher");
-            Archer SkeletonArcher2 = new Archer(Skeleton_Archer_Texture, demon, "SkeletonArcher");
-            Peon Imp1 = new Peon(Imp_Texture, demon, "Imp");
-            Peon Imp2 = new Peon(Imp_Texture, demon, "Imp");
-            Peon Imp3 = new Peon(Imp_Texture, demon, "Imp");
-            Guard BloodGuard1 = new Guard(Blood_Guard_Texture, demon, "BloodGuard");
-            Guard BloodGuard2 = new Guard(Blood_Guard_Texture, demon, "BloodGuard");
-
-            // Place Demon army on grid
-            grid[0][4].Unit = ArchDemon;
-            grid[0][5].Unit = Nightmare;
-            grid[0][3].Unit = DemonLord;
-            grid[0][2].Unit = SkeletonArcher1;
-            grid[0][6].Unit = SkeletonArcher2;
-            grid[1][2].Unit = Imp1;
-            grid[1][4].Unit = Imp2;
-            grid[1][6].Unit = Imp3;
-            grid[1][3].Unit = BloodGuard1;
-            grid[1][5].Unit = BloodGuard2;
-
             // Initialize Angel Army
             Faction angel = Faction.ANGEL;
 
-            Champion ArchAngel = new Champion(Arch_Angel_Texture, angel, "ArchAngel");
-            Knight Pegasus = new Knight(Pegasus_Texture, angel, "Pegasus");
-            Mage HighAngel = new Mage(High_Angel_Texture, angel, "HighAngel");
-            Archer ChosenOne1 = new Archer(Chosen_One_Texture, angel, "Archer");
-            Archer ChosenOne2 = new Archer(Chosen_One_Texture, angel, "Archer");
-            Peon Soldier1 = new Peon(Soldier_Texture, angel, "Soldier");
-            Peon Soldier2 = new Peon(Soldier_Texture, angel, "Soldier");
-            Peon Soldier3 = new Peon(Soldier_Texture, angel, "Soldier");
-            Guard AngelicGuard1 = new Guard(Angelic_Guard_Texture, angel, "AngelicGuard");
-            Guard AngelicGuard2 = new Guard(Angelic_Guard_Texture, angel, "AngelicGuard");
+            Champion ArchAngel = new Champion(Arch_Angel_Texture, angel, "ArchAngel", BitMask.angelBits[0]);
+            Knight Pegasus = new Knight(Pegasus_Texture, angel, "Pegasus", BitMask.angelBits[1]);
+            Mage HighAngel = new Mage(High_Angel_Texture, angel, "HighAngel", BitMask.angelBits[2]);
+            Archer ChosenOne1 = new Archer(Chosen_One_Texture, angel, "Archer", BitMask.angelBits[3]);
+            Archer ChosenOne2 = new Archer(Chosen_One_Texture, angel, "Archer", BitMask.angelBits[4]);
+            Peon Soldier1 = new Peon(Soldier_Texture, angel, "Soldier", BitMask.angelBits[5]);
+            Peon Soldier2 = new Peon(Soldier_Texture, angel, "Soldier", BitMask.angelBits[6]);
+            Peon Soldier3 = new Peon(Soldier_Texture, angel, "Soldier", BitMask.angelBits[7]);
+            Guard AngelicGuard1 = new Guard(Angelic_Guard_Texture, angel, "AngelicGuard", BitMask.angelBits[8]);
+            Guard AngelicGuard2 = new Guard(Angelic_Guard_Texture, angel, "AngelicGuard", BitMask.angelBits[9]);
 
             // Place Angel army on grid
+            grid[0][4].Unit = ArchAngel;
+            grid[0][3].Unit = Pegasus;
+            grid[0][5].Unit = HighAngel;
+            grid[0][2].Unit = ChosenOne1;
+            grid[0][6].Unit = ChosenOne2;
+            grid[1][2].Unit = Soldier1;
+            grid[1][4].Unit = Soldier2;
+            grid[1][6].Unit = Soldier3;
+            grid[1][3].Unit = AngelicGuard1;
+            grid[1][5].Unit = AngelicGuard2;
 
-            grid[9][4].Unit = ArchAngel;
-            grid[9][3].Unit = Pegasus;
-            grid[9][5].Unit = HighAngel;
-            grid[9][2].Unit = ChosenOne1;
-            grid[9][6].Unit = ChosenOne2;
-            grid[8][2].Unit = Soldier1;
-            grid[8][4].Unit = Soldier2;
-            grid[8][6].Unit = Soldier3;
-            grid[8][3].Unit = AngelicGuard1;
-            grid[8][5].Unit = AngelicGuard2;
+            // Initialize Demon Army
+            Faction demon = Faction.DEMON;
+
+            Champion ArchDemon = new Champion(Arch_Demon_Texture, demon, "ArchDemon", BitMask.demonBits[0]);
+            Knight Nightmare = new Knight(Nightmare_Texture, demon, "Nightmare", BitMask.demonBits[1]);
+            Mage DemonLord = new Mage(Demon_Lord_Texture, demon, "DemonLord", BitMask.demonBits[2]);
+            Archer SkeletonArcher1 = new Archer(Skeleton_Archer_Texture, demon, "SkeletonArcher", BitMask.demonBits[3]);
+            Archer SkeletonArcher2 = new Archer(Skeleton_Archer_Texture, demon, "SkeletonArcher", BitMask.demonBits[4]);
+            Peon Imp1 = new Peon(Imp_Texture, demon, "Imp", BitMask.demonBits[5]);
+            Peon Imp2 = new Peon(Imp_Texture, demon, "Imp", BitMask.demonBits[6]);
+            Peon Imp3 = new Peon(Imp_Texture, demon, "Imp", BitMask.demonBits[7]);
+            Guard BloodGuard1 = new Guard(Blood_Guard_Texture, demon, "BloodGuard", BitMask.demonBits[8]);
+            Guard BloodGuard2 = new Guard(Blood_Guard_Texture, demon, "BloodGuard", BitMask.demonBits[9]);
+
+            // Place Demon army on grid
+            grid[9][4].Unit = ArchDemon;
+            grid[9][5].Unit = Nightmare;
+            grid[9][3].Unit = DemonLord;
+            grid[9][2].Unit = SkeletonArcher1;
+            grid[9][6].Unit = SkeletonArcher2;
+            grid[8][2].Unit = Imp1;
+            grid[8][4].Unit = Imp2;
+            grid[8][6].Unit = Imp3;
+            grid[8][3].Unit = BloodGuard1;
+            grid[8][5].Unit = BloodGuard2;
 
             // Initiate first turn
             controllingFaction = Faction.ANGEL;
-            for (int i = 0; i < grid.Length; i++)
-            {
-                foreach (Tile tile in grid[i])
-                {
-                    if (tile.Unit != null)
-                    {
-                        if (tile.Unit.FactionType == Faction.ANGEL)
-                        {
-                            tile.IsUsable = true;
-                        }
-                        else
-                        {
-                            tile.IsUsable = false;
-                        }
-                    }
-                    else
-                    {
-                        tile.IsUsable = false;
-                    }
-                }
-            }
-            /*
-            grid[9][4].IsUsable = true;
-            grid[9][5].IsUsable = true;
-            grid[9][3].IsUsable = true;
-            grid[9][2].IsUsable = true;
-            grid[9][6].IsUsable = true;
-            grid[8][2].IsUsable = true;
-            grid[8][4].IsUsable = true;
-            grid[8][6].IsUsable = true;
-            grid[8][3].IsUsable = true;
-            grid[8][5].IsUsable = true;
-
-            grid[0][4].IsUsable = false;
-            grid[0][5].IsUsable = false;
-            grid[0][3].IsUsable = false;
-            grid[0][2].IsUsable = false;
-            grid[0][6].IsUsable = false;
-            grid[1][2].IsUsable = false;
-            grid[1][4].IsUsable = false;
-            grid[1][6].IsUsable = false;
-            grid[1][3].IsUsable = false;
-            grid[1][5].IsUsable = false;
-            */
+            beginTurn();
         }
 
         /// <summary>
@@ -241,6 +193,23 @@ namespace Angels_Vs_Demons.BoardObjects
             return grid;
         }
 
+        /// <summary>
+        /// Gets the x size of the grid.
+        /// </summary>
+        /// <returns>the x size of the grid</returns>
+        public int Get_xSize()
+        {
+            return x_size;
+        }
+
+        /// <summary>
+        /// Gets the y size of the grid.
+        /// </summary>
+        /// <returns>the y size of the grid</returns>
+        public int Get_ySize()
+        {
+            return y_size;
+        }
 
         /// <summary>
         ///  Gets a tile specified by the x and y values
@@ -298,100 +267,64 @@ namespace Angels_Vs_Demons.BoardObjects
         }
 
         /// <summary>
-        /// Gets the x size of the grid.
+        /// Sets the tiles as usable based on the current controlling faction.
         /// </summary>
-        /// <returns>the x size of the grid</returns>
-        public int Get_xSize()
+        /// <param name="factionType">the controlling faction</param>
+        private void setTilesUsableByFaction(Faction factionType)
         {
-            return x_size;
-        }
-
-        /// <summary>
-        /// Gets the y size of the grid.
-        /// </summary>
-        /// <returns>the y size of the grid</returns>
-        public int Get_ySize()
-        {
-            return y_size;
-        }
-
-        /// <summary>
-        /// Paints the grid.
-        /// </summary>
-        /// <param name="SPRITEBATCH">the spritebatch to draw with</param>
-        public void PaintGrid(SpriteBatch SPRITEBATCH)
-        {
-            SpriteBatch spriteBatch = SPRITEBATCH;
-
-            spriteBatch.Begin();
-
-            // Draw the grid on the screen
-
-            for (int i = 0; i < x_size; i++)
+#if DEBUG
+            Console.WriteLine("Setting tiles to usable with factionType: " + factionType);
+#endif
+            for (int i = 0; i < grid.Length; i++)
             {
-                for (int j = 0; j < y_size; j++)
+                foreach (Tile tile in grid[i])
                 {
-                    if (grid[i][j].IsMovable)
+                    if (tile.Unit != null)
                     {
-                        spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Blue);
-                    }
-                    else if (grid[i][j].IsAttackable)
-                    {
-                        spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Red);
+                        if (tile.Unit.FactionType == factionType)
+                        {
+                            tile.IsUsable = true;
+                        }
+                        else
+                        {
+                            tile.IsUsable = false;
+                        }
                     }
                     else
                     {
-                        spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.White);
+                        tile.IsUsable = false;
                     }
                 }
             }
-
-            spriteBatch.End();
         }
 
         /// <summary>
-        /// Paints the units
+        /// Returns the last movement
         /// </summary>
-        /// <param name="SPRITEBATCH">the spritebatch</param>
-        public void PaintUnits(SpriteBatch SPRITEBATCH)
-        {
-
-            SpriteBatch spriteBatch = SPRITEBATCH;
-
-            spriteBatch.Begin();
-
-            for (int i = 0; i < x_size; i++)
-            {
-                for (int j = 0; j < y_size; j++)
-                {
-                    if (grid[i][j].IsOccupied)
-                    {
-                        Unit Tempunit = grid[i][j].Unit;
-                        Texture2D TempTexture = Tempunit.sprite;
-                        spriteBatch.Draw(TempTexture, grid[i][j].rect, Color.White);
-                    }
-                    if (grid[i][j].IsCurrentTile)
-                    {
-                        spriteBatch.Draw(Cursor_Texture, grid[i][j].rect, Color.Silver);
-                    }
-
-                }
-            }
-
-            spriteBatch.End();
-
-        }
-
+        /// <returns>the most recent move</returns>
         public Move getLastMovement()
         {
-            return recentMove;
+            return lastMove;
         }
+
+        /// <summary>
+        /// Gets called when you press enter on the board.
+        /// This is the main loop that the board processes
+        /// </summary>
         public void makeAction()
         {
             if (movePhase)
             {
+#if DEBUG
+                //showBitMasks();
+#endif
+
                 Tile currentTile = GetCurrentTile();
-                if (currentTile.IsOccupied)
+
+#if DEBUG
+                Console.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
+#endif
+                if (currentTile.IsUsable)
                 {
                     //check that there is a tile selected
                     if (selectedTile != null)
@@ -399,56 +332,102 @@ namespace Angels_Vs_Demons.BoardObjects
                         //if we've selected the same tile again
                         if (currentTile.position == selectedTile.position)
                         {
-                            markAllTilesAsNotMovable();
+                            //we're de-selecting this tile, no tiles are selected anymore
+                            //markAllTilesAsNotMovable();
                             selectedTile = null;
+#if DEBUG
+                        Console.WriteLine("selected tile = null");
+#endif
                         }
                         else
                         {
-                            makeMove(currentTile);
+                            //makeMove(currentTile);
+#if DEBUG
+                        Console.WriteLine("updating seleted tile");
+#endif
+                            selectedTile = currentTile;
                         }
                     }
                     else
                     {
-                        makeMove(currentTile);
+                        //makeMove(currentTile);
+#if DEBUG
+                    Console.WriteLine("updating seleted tile");
+#endif
+                        selectedTile = currentTile;
                     }
                 }
                 else
                 {
                     //tile is not occupied, check to see if we can move to it
-                    if (currentTile.IsMovable)
+                    //if (currentTile.IsMovable)
+                    if (selectedTile != null && (currentTile.UnitIDs & selectedTile.Unit.ID) != 0)
                     {
                         //move to this tile
-                        swapTiles(currentTile);
-                        //movePhase = false;
-                        //attackPhase = true;
+                        //swapTiles(currentTile);
+#if DEBUG
+                        Console.WriteLine("bit mask swapping");
+#endif
+                        bitMaskSwapTile(currentTile);
+                        selectedTile = null;
+                        movePhase = false;
+                        attackPhase = true;
                     }
                 }
             }
             if (attackPhase)
             {
-
+                endTurn();
             }
         }
 
         /// <summary>
         /// Makes moves from a given tile
         /// </summary>
-        /// <param name="startTile">starting tile.</param>
+        /// <param name="startTile">starting tile</param>
         private void makeMove(Tile startTile)
         {
             selectedTile = startTile;
             markAllTilesAsNotMovable();
             makePaths(startTile.Unit.Movement, startTile);
         }
+
         private void makeAttack()
         {
         }
-        public Tile getMoves(int distance, Tile startingTile, Boolean initiateTiles)
+
+        /// <summary>
+        /// Gets called once each turn.
+        /// - Sets the tiles to movable based on the controlling faction.
+        /// - Performs bitmask pathing for the turn.
+        /// </summary>
+        public void beginTurn()
         {
-            Tile pathOrigin = startingTile;
-            markAllTilesAsNotMovable();
-            makePaths(distance, pathOrigin);
-            return pathOrigin;
+#if DEBUG
+            Console.WriteLine("BEGINNING TURN");
+            Console.WriteLine("Controlling Faction: " + ControllingFaction);
+#endif
+            movePhase = true;
+            setTilesUsableByFaction(ControllingFaction);
+            bitMaskGetMoves();
+        }
+
+        /// <summary>
+        /// Ends the turn by switching the controlling faction and marking all tiles as not movable.
+        /// </summary>
+        public void endTurn()
+        {
+            //switch the controlling faction
+            if (ControllingFaction == Faction.ANGEL)
+            {
+                ControllingFaction = Faction.DEMON;
+            }
+            else
+            {
+                ControllingFaction = Faction.ANGEL;
+            }
+            bitMaskAllTilesAsNotMovable();
+            attackPhase = false;
         }
 
         /// <summary>
@@ -519,36 +498,253 @@ namespace Angels_Vs_Demons.BoardObjects
             selectedTile.Unit = null;
             selectedTile.IsSelected = false;
             selectedTile.IsOccupied = false;
+            selectedTile = null;
             markAllTilesAsNotMovable();
         }
 
-        public object clone()
+        public Object clone()
         {
-            throw new NotImplementedException();
+            Board copy = new Board(content);
+
+            copy.grid               = this.grid;
+            copy.controllingFaction = this.controllingFaction;
+            copy.movePhase          = this.movePhase;
+            copy.attackPhase        = this.attackPhase;
+            
+            return (Object)copy;
         }
 
         public List getValidMoves()
         {
-            
             throw new NotImplementedException();
         }
 
         public List getValidAttacks()
         {
-
             throw new NotImplementedException();
         }
 
         public List getValidTurns()
         {
-
+            getValidMoves();
+            getValidAttacks();
             throw new NotImplementedException();
         }
 
-
+        /// <summary>
+        /// Applies a move to the board.
+        /// </summary>
+        /// <param name="move">the move to apply, containing a start tile and end tile</param>
         public void move(Move move)
         {
+            bitMaskSwapTiles(move.NewTile, move.PreviousTile);
             throw new NotImplementedException();
         }
+
+        #region BitMasking
+
+        /// <summary>
+        /// Swaps the current tile with the board's selected tile.
+        /// </summary>
+        /// <param name="currentTile">tile that we are going to move to</param>
+        private void bitMaskSwapTile(Tile currentTile)
+        {
+            currentTile.Unit = selectedTile.Unit;
+            currentTile.IsOccupied = true;
+            selectedTile.Unit = null;
+            selectedTile.IsSelected = false;
+            selectedTile.IsOccupied = false;
+            selectedTile = null;
+        }
+
+        /// <summary>
+        /// Swaps the values of two tiles.
+        /// </summary>
+        /// <param name="destTile">tile that we are going to move to</param>
+        /// <param name="srcTile">tile that we are moving from</param>
+        private void bitMaskSwapTiles(Tile destTile, Tile srcTile)
+        {
+            destTile.Unit = srcTile.Unit;
+            destTile.IsOccupied = true;
+            srcTile.Unit = null;
+            srcTile.IsOccupied = false;
+        }
+
+        /// <summary>
+        /// Uses bit masking to  mark the tiles as movable.
+        /// </summary>
+        public void bitMaskGetMoves()
+        {
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    if (tile.Unit != null)
+                    {
+                        bitMaskPaths(tile.Unit.Movement, tile, tile.Unit.ID);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Iterates through the grid and masks all tiles as not moveable
+        /// </summary>
+        private void bitMaskAllTilesAsNotMovable()
+        {
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    tile.UnitIDs = 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Debugging method that writes the bitmask data of all tiles to the console
+        /// </summary>
+        private void showBitMasks()
+        {
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    showTileBitMasks(tile);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Debugging method that writes the bitmask data of a tile to the console
+        /// </summary>
+        /// <param name="currentTile"> the current tile to get the bitmask of</param>
+        private void showTileBitMasks(Tile currentTile)
+        {
+            Console.Write("x = ");
+            Console.Write(currentTile.position.X);
+            Console.Write(", y = ");
+            Console.Write(currentTile.position.Y);
+            Console.Write(": id = ");
+            Console.WriteLine(grid[(int)currentTile.position.X][(int)currentTile.position.Y].UnitIDs);
+        }
+
+        /// <summary>
+        /// Uses bit masking to all tiles within a Units move range that are not occupied as movable.
+        /// </summary>
+        /// <param name="distance">The move range of a unit</param>
+        /// <param name="currentTile">The current tile we are checking</param>
+        public void bitMaskPaths(int distance, Tile currentTile, int id)
+        {
+            distance--;
+            grid[(int)currentTile.position.X][(int)currentTile.position.Y].UnitIDs |= id;//OR EQUALS
+            if (distance >= 0)
+            {
+                // are there tiles left and the tile is not occupied, go left
+                if (currentTile.position.X - 1 >= 0 &&
+                    grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].IsOccupied == false)
+                {
+                    currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                    bitMaskPaths(distance, currentTile.PathLeft, id);
+                }
+                // are there tiles right and the tile is not occupied, go right
+                if (currentTile.position.X + 1 < x_size &&
+                    grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].IsOccupied == false)
+                {
+                    currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                    bitMaskPaths(distance, currentTile.PathRight, id);
+
+                }
+                // are there tiles above and the tile is not occupied, go up
+                if (currentTile.position.Y - 1 >= 0 &&
+                    grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].IsOccupied == false)
+                {
+                    currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                    bitMaskPaths(distance, currentTile.PathTop, id);
+                }
+                // are there tiles below and the tile is not occupied, go down
+                if (currentTile.position.Y + 1 < y_size &&
+                    grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].IsOccupied == false)
+                {
+                    currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                    bitMaskPaths(distance, currentTile.PathBottom, id);
+                }
+            }
+        }
+        
+        #endregion
+
+        #region Painting
+
+        /// <summary>
+        /// Paints the grid.
+        /// </summary>
+        /// <param name="SPRITEBATCH">the spritebatch to draw with</param>
+        public void PaintGrid(SpriteBatch SPRITEBATCH)
+        {
+            SpriteBatch spriteBatch = SPRITEBATCH;
+
+            spriteBatch.Begin();
+
+            // Draw the grid on the screen
+
+            for (int i = 0; i < x_size; i++)
+            {
+                for (int j = 0; j < y_size; j++)
+                {
+                    //use the selectedTile version for bitmasking
+                    if (selectedTile != null && selectedTile.Unit != null && (grid[i][j].UnitIDs & selectedTile.Unit.ID) != 0)
+                    //if (grid[i][j].IsMovable)
+                    {
+                        spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Blue);
+                    }
+                    else if (grid[i][j].IsAttackable)
+                    {
+                        spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Red);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.White);
+                    }
+                }
+            }
+
+            spriteBatch.End();
+        }
+
+        /// <summary>
+        /// Paints the units
+        /// </summary>
+        /// <param name="SPRITEBATCH">the spritebatch</param>
+        public void PaintUnits(SpriteBatch SPRITEBATCH)
+        {
+
+            SpriteBatch spriteBatch = SPRITEBATCH;
+
+            spriteBatch.Begin();
+
+            for (int i = 0; i < x_size; i++)
+            {
+                for (int j = 0; j < y_size; j++)
+                {
+                    if (grid[i][j].IsOccupied)
+                    {
+                        Unit Tempunit = grid[i][j].Unit;
+                        Texture2D TempTexture = Tempunit.sprite;
+                        spriteBatch.Draw(TempTexture, grid[i][j].rect, Color.White);
+                    }
+                    if (grid[i][j].IsCurrentTile)
+                    {
+                        spriteBatch.Draw(Cursor_Texture, grid[i][j].rect, Color.Silver);
+                    }
+
+                }
+            }
+
+            spriteBatch.End();
+
+        }
+
+        #endregion
     }
 }

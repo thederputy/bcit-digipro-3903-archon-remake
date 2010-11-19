@@ -68,8 +68,8 @@ namespace Angels_Vs_Demons.GameObjects.Units
 
         #endregion
 
-        protected NonChampion(Texture2D loadedTexture, Faction factionType, string name)
-            : base(loadedTexture, factionType, name)
+        protected NonChampion(Texture2D loadedTexture, Faction factionType, string name, int id)
+            : base(loadedTexture, factionType, name, id)
         {
         }
 

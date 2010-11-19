@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Angels_Vs_Demons.GameObjects;
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects
@@ -11,38 +12,38 @@ namespace Angels_Vs_Demons.BoardObjects
     class Move
     {
         #region Fields
-        private Vector2 previousPosition;
+        private Tile previousTile;
 
         /// <summary>
-        /// Sets and gets the previousPosition member
+        /// Sets and gets the previousTile member
         /// </summary>
-        public Vector2 PreviousPosition
+        public Tile PreviousTile
         {
-            get { return previousPosition; }
-            set { previousPosition = value; }
+            get { return previousTile; }
+            set { previousTile = value; }
         }
 
-        private Vector2 newPosition;
+        private Tile newTile;
 
         /// <summary>
-        /// Sets and gets the newPosition member
+        /// Sets and gets the newTile member
         /// </summary>
-        public Vector2 NewPosition
+        public Tile NewTile
         {
-            get { return newPosition; }
-            set { newPosition = value; }
+            get { return newTile; }
+            set { newTile = value; }
         }
         #endregion
 
         /// <summary>
-        /// Creates a move based on an old and new position
+        /// Creates a move based on an new and old tile.
         /// </summary>
-        /// <param name="oldPos">The old grid position</param>
-        /// <param name="newPos">The new grid position</param>
-        public Move(Vector2 oldPos, Vector2 newPos)
+        /// <param name="newTile">The new grid position</param>
+        /// <param name="oldTile">The old grid position</param>
+        public Move(Tile newTile, Tile oldTile)
         {
-            PreviousPosition = oldPos;
-            NewPosition = newPos;
+            NewTile = newTile;
+            PreviousTile = oldTile;
         }
     }
 }

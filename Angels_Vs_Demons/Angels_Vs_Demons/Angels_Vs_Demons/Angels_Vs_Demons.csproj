@@ -129,6 +129,7 @@
     <Compile Include="BoardObjects\Attack.cs" />
     <Compile Include="BoardObjects\Turn.cs" />
     <Compile Include="Players\Faction.cs" />
+    <Compile Include="Util\BitMask.cs" />
     <Compile Include="Util\List.cs" />
     <Compile Include="Networking\NetworkedGameplayScreen.cs" />
     <Compile Include="Players\ComputerPlayer.cs" />

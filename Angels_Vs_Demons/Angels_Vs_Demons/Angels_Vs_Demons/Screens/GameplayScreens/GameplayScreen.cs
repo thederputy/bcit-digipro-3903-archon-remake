@@ -95,7 +95,11 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         {
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
-
+            //check for end of turn
+            if (!board.movePhase && !board.attackPhase)
+            {
+                board.beginTurn();
+            }
         }
 
 

@@ -17,8 +17,8 @@ namespace Angels_Vs_Demons.GameObjects.Units
         #region Initialization
 
 
-        public Knight(Texture2D loadedTexture, Faction factionType, string name)
-            : base(loadedTexture, factionType, name)
+        public Knight(Texture2D loadedTexture, Faction factionType, string name, int id)
+            : base(loadedTexture, factionType, name, id)
         {
             CurrHP = 60;
             TotalHP = 60;
