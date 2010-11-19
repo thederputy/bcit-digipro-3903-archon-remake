@@ -61,8 +61,8 @@ namespace Angels_Vs_Demons.Networking
             MenuEntries.Add(ExitMenuEntry);
         }
 
-        // Event handlers for when the menu options are selected
         #region Handle Input
+        // Event handlers for when the menu options are selected
 
         /// <summary>
         /// Hosts a system link game with this player as the Angel faction.
@@ -127,6 +127,11 @@ namespace Angels_Vs_Demons.Networking
         }
 
 
+        #endregion
+
+        #region Session Initialization
+        /// I will be moving all the session initialization here.
+        /// That way I will just pass the network session to the Networked Gameplayscreen.
         #endregion
     }
 }
