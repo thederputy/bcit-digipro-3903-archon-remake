@@ -181,7 +181,6 @@ namespace Angels_Vs_Demons.BoardObjects
 
             // Initiate first turn
             controllingFaction = Faction.ANGEL;
-            beginTurn();
         }
 
         /// <summary>
@@ -212,7 +211,7 @@ namespace Angels_Vs_Demons.BoardObjects
         }
 
         /// <summary>
-        ///  Gets a tile specified by the x and y values
+        ///  Gets a tile specified by two integer values: x and y.
         /// </summary>
         /// <param name="x">x position</param>
         /// <param name="y">y position</param>
@@ -222,6 +221,15 @@ namespace Angels_Vs_Demons.BoardObjects
             return grid[x][y];
         }
 
+        /// <summary>
+        /// Gets a tile specified by a Vector2.
+        /// </summary>
+        /// <param name="position">the position vector</param>
+        /// <returns>tile specified by Vector2</returns>
+        public Tile GetTile(Vector2 position)
+        {
+            return grid[(int)position.X][(int)position.Y];
+        }
 
         /// <summary>
         ///  Gets the tile that the cursor is on
@@ -308,17 +316,10 @@ namespace Angels_Vs_Demons.BoardObjects
         }
 
         /// <summary>
-        /// Makes moves from a given tile
+        /// DEPRECATED
         /// </summary>
-        /// <param name="startTile">starting tile</param>
-        private void makeMove(Tile startTile)
-        {
-            selectedTile = startTile;
-            markAllTilesAsNotMovable();
-            makePaths(startTile.Unit.Movement, startTile);
-        }
-
-        private void makeAttack()
+        /// <param name="move"></param>
+        public void move(Move move)
         {
         }
 
@@ -353,9 +354,10 @@ namespace Angels_Vs_Demons.BoardObjects
                 ControllingFaction = Faction.ANGEL;
             }
             bitMaskAllTilesAsNotMovable();
-            attackPhase = false;
+            //attackPhase = false;
         }
 
+        /*
         /// <summary>
         /// Marks all tiles within a Units move range that are not occupied as movable.
         /// </summary>
@@ -427,7 +429,7 @@ namespace Angels_Vs_Demons.BoardObjects
             selectedTile = null;
             markAllTilesAsNotMovable();
         }
-
+        */
         public Object clone()
         {
             Board copy = new Board(content);
@@ -457,14 +459,52 @@ namespace Angels_Vs_Demons.BoardObjects
             throw new NotImplementedException();
         }
 
+
+        /// <summary>
+        /// Applies a turn to the board.
+        /// </summary>
+        /// <param name="turn">the turn to apply to the board</param>
+        public void applyTurn(Turn turn)
+        {
+            if (turn.Move.IsExecutable)
+            {
+                applyMove(turn.Move);
+            }
+            if (turn.Attack.IsExecutable)
+            {
+                applyAttack(turn.Attack);
+            }
+            endTurn();
+        }
+
         /// <summary>
         /// Applies a move to the board.
         /// </summary>
         /// <param name="move">the move to apply, containing a start tile and end tile</param>
-        public void move(Move move)
+        public void applyMove(Move move)
         {
             bitMaskSwapTiles(move.NewTile, move.PreviousTile);
-            throw new NotImplementedException();
+            selectedTile = null;
+            movePhase = false;
+            attackPhase = true;
+        }
+
+        /// <summary>
+        /// Applies an attack to the board.
+        /// </summary>
+        /// <param name="attack">the attack to apply, containing a start tile and end tile</param>
+        public void applyAttack(Attack attack)
+        {
+            attackPhase = false;
+        }
+
+
+        /// <summary>
+        /// NOT SURE WHO WROTE THIS, PLEASE COMMENT!!!
+        /// </summary>
+        /// <param name="attack"></param>
+        private void makeAttack(Attack attack)
+        {
         }
 
         #region BitMasking
@@ -476,10 +516,8 @@ namespace Angels_Vs_Demons.BoardObjects
         public void bitMaskSwapTile(Tile currentTile)
         {
             currentTile.Unit = selectedTile.Unit;
-            currentTile.IsOccupied = true;
             selectedTile.Unit = null;
             selectedTile.IsSelected = false;
-            selectedTile.IsOccupied = false;
             selectedTile = null;
         }
 
@@ -491,9 +529,7 @@ namespace Angels_Vs_Demons.BoardObjects
         public void bitMaskSwapTiles(Tile destTile, Tile srcTile)
         {
             destTile.Unit = srcTile.Unit;
-            destTile.IsOccupied = true;
             srcTile.Unit = null;
-            srcTile.IsOccupied = false;
         }
 
         /// <summary>
@@ -522,7 +558,7 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 foreach (Tile tile in grid[i])
                 {
-                    tile.UnitIDs = 0;
+                    tile.MoveID = 0;
                 }
             }
         }
@@ -530,7 +566,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <summary>
         /// Debugging method that writes the bitmask data of all tiles to the console
         /// </summary>
-        private void showBitMasks()
+        public void showBitMasks()
         {
             for (int i = 0; i < grid.Length; i++)
             {
@@ -552,7 +588,7 @@ namespace Angels_Vs_Demons.BoardObjects
             Console.Write(", y = ");
             Console.Write(currentTile.position.Y);
             Console.Write(": id = ");
-            Console.WriteLine(grid[(int)currentTile.position.X][(int)currentTile.position.Y].UnitIDs);
+            Console.WriteLine(grid[(int)currentTile.position.X][(int)currentTile.position.Y].MoveID);
         }
 
         /// <summary>
@@ -563,7 +599,7 @@ namespace Angels_Vs_Demons.BoardObjects
         public void bitMaskPaths(int distance, Tile currentTile, int id)
         {
             distance--;
-            grid[(int)currentTile.position.X][(int)currentTile.position.Y].UnitIDs |= id;//OR EQUALS
+            grid[(int)currentTile.position.X][(int)currentTile.position.Y].MoveID |= id;//OR EQUALS
             if (distance >= 0)
             {
                 // are there tiles left and the tile is not occupied, go left
@@ -579,7 +615,6 @@ namespace Angels_Vs_Demons.BoardObjects
                 {
                     currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
                     bitMaskPaths(distance, currentTile.PathRight, id);
-
                 }
                 // are there tiles above and the tile is not occupied, go up
                 if (currentTile.position.Y - 1 >= 0 &&
@@ -619,7 +654,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 for (int j = 0; j < y_size; j++)
                 {
                     //use the selectedTile version for bitmasking
-                    if (selectedTile != null && selectedTile.Unit != null && (grid[i][j].UnitIDs & selectedTile.Unit.ID) != 0)
+                    if (selectedTile != null && selectedTile.Unit != null && (grid[i][j].MoveID & selectedTile.Unit.ID) != 0)
                     //if (grid[i][j].IsMovable)
                     {
                         spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Blue);

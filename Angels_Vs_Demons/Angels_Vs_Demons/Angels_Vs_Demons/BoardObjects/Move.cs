@@ -12,6 +12,17 @@ namespace Angels_Vs_Demons.BoardObjects
     class Move
     {
         #region Fields
+
+        private bool isExecutable;
+
+        /// <summary>
+        /// Stores whether this move can be executed or not
+        /// </summary>
+        public bool IsExecutable
+        {
+            get { return isExecutable; }
+        }
+
         private Tile previousTile;
 
         /// <summary>
@@ -20,7 +31,6 @@ namespace Angels_Vs_Demons.BoardObjects
         public Tile PreviousTile
         {
             get { return previousTile; }
-            set { previousTile = value; }
         }
 
         private Tile newTile;
@@ -31,7 +41,6 @@ namespace Angels_Vs_Demons.BoardObjects
         public Tile NewTile
         {
             get { return newTile; }
-            set { newTile = value; }
         }
         #endregion
 
@@ -42,8 +51,17 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <param name="oldTile">The old grid position</param>
         public Move(Tile newTile, Tile oldTile)
         {
-            NewTile = newTile;
-            PreviousTile = oldTile;
+            if (newTile == null || oldTile == null)
+            {
+                isExecutable = false;
+            }
+            else
+            {
+                isExecutable = true;
+            }
+
+            this.newTile = newTile;
+            this.previousTile = oldTile;
         }
     }
 }

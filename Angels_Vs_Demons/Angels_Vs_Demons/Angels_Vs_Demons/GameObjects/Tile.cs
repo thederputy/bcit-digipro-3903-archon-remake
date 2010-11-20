@@ -12,19 +12,33 @@ namespace Angels_Vs_Demons.GameObjects
 {
     class Tile : GameObject
     {
-        private int unitIDs;
+        private int moveID;
 
-        public int UnitIDs
+        /// <summary>
+        /// The bitmasked value of who can move to this tile.
+        /// </summary>
+        public int MoveID
         {
-            get { return unitIDs; }
-            set { unitIDs = value; }
+            get { return moveID; }
+            set { moveID = value; }
         }
+
+        private int attackID;
+
+        /// <summary>
+        /// The bitmasked value of who can attack to this tile.
+        /// </summary>
+        public int AttackID
+        {
+            get { return attackID; }
+            set { attackID = value; }
+        }
+
+        private Unit unit;
 
         /// <summary>
         /// The unit on this tile
         /// </summary>
-        private Unit unit;
-
         public Unit Unit
         {
             get { return unit; }
@@ -43,20 +57,31 @@ namespace Angels_Vs_Demons.GameObjects
 
         private bool isOccupied;
 
+        /// <summary>
+        /// Returns whether there is a unit on this tile or not
+        /// </summary>
         public bool IsOccupied
         {
             get { return isOccupied; }
-            set { isOccupied = value; }
         }
+
         private bool isCurrentTile;
 
+        /// <summary>
+        /// Gets/sets whether this tile is the current tile (cursor is on it)
+        /// </summary>
         public bool IsCurrentTile
         {
             get { return isCurrentTile; }
             set { isCurrentTile = value; }
         }
+
+
         private bool isUsable;
 
+        /// <summary>
+        /// Stores whether this tile is usable this turn.
+        /// </summary>
         public bool IsUsable
         {
             get { return isUsable; }
@@ -71,6 +96,7 @@ namespace Angels_Vs_Demons.GameObjects
             get { return isSelected; }
             set { isSelected = value; }
         }
+
         private bool isMovable;
 
         public bool IsMovable
@@ -135,7 +161,8 @@ namespace Angels_Vs_Demons.GameObjects
             this.direction = 0.0f;
             this.position = Vector2.Zero;
             this.sprite = loadedTexture;
-            unitIDs = 0;
+            moveID = 0;
+            attackID = 0;
         }
     }
 }

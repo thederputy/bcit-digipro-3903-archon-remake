@@ -25,9 +25,28 @@ namespace Angels_Vs_Demons.BoardObjects
         List getValidMoves();
 
         /// <summary>
-        /// Performs a game move. This consists of a movement/attack.
+        /// Performs a game turn. This consists of a movement and/or attack.
         /// </summary>
-        /// <param name="move">Move object that contains details of a move.</param>
+        /// <param name="turn">Turn object that contains details of a turn.</param>
+        void applyTurn(Turn turn);
+
+        /// <summary>
+        /// Performs a game turn. This consists of a movement and/or attack.
+        /// </summary>
+        /// <param name="turn">Turn object that contains details of a turn.</param>
+        void applyMove(Move move);
+
+        /// <summary>
+        /// Performs a game turn. This consists of a movement and/or attack.
+        /// </summary>
+        /// <param name="turn">Turn object that contains details of a turn.</param>
+        void applyAttack(Attack attack);
+
+
+        /// <summary>
+        /// IRA! DO NOT USE THIS! USE applyTurn instead!
+        /// </summary>
+        /// <param name="move"></param>
         void move(Move move);
     }
 }

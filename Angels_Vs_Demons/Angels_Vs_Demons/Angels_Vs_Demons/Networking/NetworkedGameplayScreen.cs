@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
+using Angels_Vs_Demons.BoardObjects;
 using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.Players;
 using Angels_Vs_Demons.Screens;
@@ -35,6 +36,12 @@ namespace Angels_Vs_Demons.Networking
         PacketWriter packetWriter = new PacketWriter();
         PacketReader packetReader = new PacketReader();
 
+        Move localMove;
+        Attack localAttack;
+        Turn localTurn;
+
+        Gamer localGamer;
+
         string errorMessage;
 
         public NetworkedGameplayScreen(bool isHost, NetworkSessionType type)
@@ -44,6 +51,11 @@ namespace Angels_Vs_Demons.Networking
             previousCursorPosition = new Vector2(0, 0);
             player1 = new HumanPlayer(Faction.ANGEL);
             player2 = new HumanPlayer(Faction.DEMON);
+
+            localMove = null;
+            localAttack = null;
+            localTurn = null;
+
             if (isHost)
             {
                 CreateSession();
@@ -195,10 +207,12 @@ namespace Angels_Vs_Demons.Networking
         /// </summary>
         void UpdateLocalGamer(LocalNetworkGamer gamer)
         {
-            // Look up the cursor associated with this local player.
-            //Tile currentTile = gamer.Tag as Tile;
+            // Look up the data associated with this local player.
             HumanPlayer hPlayer = gamer.Tag as HumanPlayer;
+            localGamer = gamer;
             
+            bool playerCompletedTurn;
+            /*CURSOR VERSION OF NETWORKING
             // Update the cursor.
             if (hPlayer.Position != null)
                 ReadPlayerInput(hPlayer, gamer.SignedInGamer.PlayerIndex);
@@ -213,6 +227,45 @@ namespace Angels_Vs_Demons.Networking
 
                 previousCursorPosition = hPlayer.Position;
             }
+            */
+
+            //if we haven't stored our turn yet
+            if (hPlayer.Turn == null)
+            {
+                ReadPlayerInput(hPlayer, gamer.SignedInGamer.PlayerIndex);
+            }
+
+            //if our turn was stored properly
+            if (hPlayer.Turn != null)
+            {
+                playerCompletedTurn = true;
+                packetWriter.Write(playerCompletedTurn);
+                // Write the our turn into a network packet.
+                packetWriter.Write(hPlayer.Turn.Move.IsExecutable);
+                if (hPlayer.Turn.Move.IsExecutable)
+                {
+                    //send the Move data
+                    packetWriter.Write(hPlayer.Turn.Move.NewTile.position);
+                    packetWriter.Write(hPlayer.Turn.Move.PreviousTile.position);
+                }
+
+                packetWriter.Write(hPlayer.Turn.Attack.IsExecutable);
+                if (hPlayer.Turn.Attack.IsExecutable)
+                {
+                    //send the Attack data
+                    packetWriter.Write(hPlayer.Turn.Attack.VictimTile.position);
+                    packetWriter.Write(hPlayer.Turn.Attack.AttackerTile.position);
+                }
+            }
+            else
+            {
+                //we didn't move yet
+                playerCompletedTurn = false;
+                packetWriter.Write(playerCompletedTurn);
+            }
+
+            // Send the data to everyone in the session.
+            gamer.SendData(packetWriter, SendDataOptions.InOrder);
         }
 
         /// <summary>
@@ -220,8 +273,7 @@ namespace Angels_Vs_Demons.Networking
         /// property, so the game will stop updating when the pause menu is active,
         /// or if you tab away to a different application.
         /// </summary>
-        public override void Update(GameTime gameTime, bool otherScreenHasFocus,
-                                                       bool coveredByOtherScreen)
+        public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
             HandleInput();
 
@@ -260,6 +312,9 @@ namespace Angels_Vs_Demons.Networking
                 // Look up the position of the cursor with whoever sent this packet.
                 HumanPlayer hPlayer = sender.Tag as HumanPlayer;
 
+                bool playerCompletedTurn;
+
+                /*CURSOR VERSION OF NETWORKING
                 // Read the state of this current tile from the network packet.
                 hPlayer.Position = packetReader.ReadVector2();
 
@@ -270,6 +325,53 @@ namespace Angels_Vs_Demons.Networking
                     + "," + board.GetCurrentTile().position.Y + " to "
                     + hPlayer.Position.X + "," + hPlayer.Position.Y);
 #endif
+                 *END CURSOR VERSION 
+                 */
+
+                playerCompletedTurn = packetReader.ReadBoolean();
+
+                bool moveIsExecutable = false;
+                bool attackIsExecutable = false;
+                Vector2 newTilePosition = Vector2.Zero;
+                Vector2 previousTilePosition = Vector2.Zero;
+                Vector2 victimTilePosition = Vector2.Zero;
+                Vector2 attackerTilePosition = Vector2.Zero;
+
+                if (playerCompletedTurn)
+                {
+                    Move remoteMove;
+                    Attack remoteAttack;
+                    Turn remoteTurn;
+                    //process remote player's move
+                    moveIsExecutable = packetReader.ReadBoolean(); //Turn.Move.IsExecutable
+                    if (moveIsExecutable)
+                    {
+                        newTilePosition = packetReader.ReadVector2();   //Turn.Move.NewTile.position
+                        previousTilePosition = packetReader.ReadVector2();   //Turn.Move.PreviousTile.position
+                        remoteMove = new Move(board.GetTile(newTilePosition), board.GetTile(previousTilePosition));
+                    }
+                    else
+                    {
+                        remoteMove = new Move(null, null);
+                    }
+
+                    //process remote player's attack
+                    attackIsExecutable = packetReader.ReadBoolean(); //Turn.Attack.IsExecutable
+                    if (attackIsExecutable)
+                    {
+                        victimTilePosition = packetReader.ReadVector2();   //Turn.Attack.VictimTile.position
+                        attackerTilePosition = packetReader.ReadVector2();   //Turn.Attack.AttackerTile.position
+                        remoteAttack = new Attack(board.GetTile(victimTilePosition), board.GetTile(attackerTilePosition));
+                    }
+                    else
+                    {
+                        remoteAttack = new Attack(null, null);
+                    }
+
+                    remoteTurn = new Turn(remoteMove, remoteAttack);
+
+                    board.applyTurn(remoteTurn);
+                }
             }
         }
 
@@ -277,79 +379,6 @@ namespace Angels_Vs_Demons.Networking
 
 
         #region Input Handling
-
-        /// <summary>
-        /// Handles input for a HvH (local hotseat) game.
-        /// </summary>
-        protected override void makeAction()
-        {
-            if (board.movePhase)
-            {
-#if DEBUG
-                //showBitMasks();
-#endif
-
-                Tile currentTile = board.GetCurrentTile();
-
-#if DEBUG
-                Console.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
-#endif
-                if (currentTile.IsUsable)
-                {
-                    //check that there is a tile selected
-                    if (board.selectedTile != null)
-                    {
-                        //if we've selected the same tile again
-                        if (currentTile.position == board.selectedTile.position)
-                        {
-                            //we're de-selecting this tile, no tiles are selected anymore
-                            //board.markAllTilesAsNotMovable();
-                            board.selectedTile = null;
-#if DEBUG
-                            Console.WriteLine("selected tile = null");
-#endif
-                        }
-                        else
-                        {
-                            //board.makeMove(currentTile);
-#if DEBUG
-                            Console.WriteLine("updating seleted tile");
-#endif
-                            board.selectedTile = currentTile;
-                        }
-                    }
-                    else
-                    {
-                        //board.makeMove(currentTile);
-#if DEBUG
-                        Console.WriteLine("updating seleted tile");
-#endif
-                        board.selectedTile = currentTile;
-                    }
-                }
-                else
-                {
-                    //tile is not occupied, check to see if we can move to it
-                    //if (currentTile.IsMovable)
-                    if (board.selectedTile != null && (currentTile.UnitIDs & board.selectedTile.Unit.ID) != 0)
-                    {
-                        //move to this tile
-                        //board.swapTiles(currentTile);
-#if DEBUG
-                        Console.WriteLine("bit mask swapping");
-#endif
-                        board.bitMaskSwapTile(currentTile);
-                        board.selectedTile = null;
-                        board.movePhase = false;
-                        board.attackPhase = true;
-                    }
-                }
-            }
-            if (board.attackPhase)
-            {
-                board.endTurn();
-            }
-        }
 
         /// <summary>
         /// Handles input specific to the NetworkedGameplayScreen.
@@ -378,7 +407,102 @@ namespace Angels_Vs_Demons.Networking
         void ReadPlayerInput(HumanPlayer hPlayer, PlayerIndex playerIndex)
         {
             hPlayer.Position = board.GetCurrentTile().position;
-        }   
+            //check to see if it is our turn
+            if (hPlayer.Faction == board.ControllingFaction)
+            {
+                hPlayer.Turn = localTurn;
+            }
+        }
+
+        /// <summary>
+        /// Gets called when you press enter on the board.
+        /// This is the main loop that processes the gamestate.
+        /// </summary>
+        protected override void makeAction()
+        {
+            HumanPlayer hPlayer = localGamer.Tag as HumanPlayer;
+            if (hPlayer.Faction == board.ControllingFaction)
+            {
+                if (board.movePhase)
+                {
+                    processMovePhase();
+                }
+                if (board.attackPhase)
+                {
+                    processAttackPhase();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Executes the move phase for a networked game
+        /// </summary>
+        /// <param name="currentTile"></param>
+        /// <param name="boardSelectedTile"></param>
+        protected override void executeMovePhase(Tile currentTile, Tile boardSelectedTile)
+        {
+            localMove = new Move(currentTile, board.selectedTile);
+            board.applyMove(localMove);
+            localTurn = new Turn(localMove, new Attack(null, null));
+        }
+
+        protected override void executeAttackPhase(Tile currentTile, Tile boardSelectedTile)
+        {
+
+        }
+//        /// <summary>
+//        /// Processes the move phase for a networked game
+//        /// </summary>
+//        protected override void processMovePhase()
+//        {
+//#if DEBUG
+//            //showBitMasks();
+//#endif
+//            Tile currentTile = board.GetCurrentTile();
+//#if DEBUG
+//            Console.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
+//#endif
+//            if (currentTile.IsUsable)
+//            {
+//                //check that there is a tile selected
+//                if (board.selectedTile != null)
+//                {
+//                    //if we've selected the same tile again
+//                    if (currentTile.position == board.selectedTile.position)
+//                    {
+//                        board.selectedTile = null;
+//#if DEBUG
+//                        Console.WriteLine("selected tile = null");
+//#endif
+//                    }
+//                    else
+//                    {
+//#if DEBUG
+//                        Console.WriteLine("updating seleted tile");
+//#endif
+//                        board.selectedTile = currentTile;
+//                    }
+//                }
+//                else
+//                {
+//#if DEBUG
+//                    Console.WriteLine("updating seleted tile");
+//#endif
+//                    board.selectedTile = currentTile;
+//                }
+//            }
+//            else
+//            {
+//                //the tile is not occupied, check to see if we can move to it
+//                if (board.selectedTile != null && (currentTile.MoveID & board.selectedTile.Unit.ID) != 0)
+//                {
+//                    //move to this tile
+//                    localMove = new Move(currentTile, board.selectedTile);
+//                    board.applyMove(localMove);
+//                    localTurn = new Turn(localMove, new Attack(null, null));
+//                }
+//            }
+//        }
 
         #endregion
     }
