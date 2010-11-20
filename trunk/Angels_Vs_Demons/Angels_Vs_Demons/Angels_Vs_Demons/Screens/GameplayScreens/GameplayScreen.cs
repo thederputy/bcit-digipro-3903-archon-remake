@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Angels_Vs_Demons.BoardObjects;
+using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.Players;
 using Angels_Vs_Demons.Screens.ScreenManagers;
 using Angels_Vs_Demons.Screens;
@@ -166,9 +167,95 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// <summary>
         /// Gets called when you press enter on the board.
         /// This is the main loop that processes the gamestate.
+        /// </summary>
+        protected virtual void makeAction()
+        {
+            if (board.movePhase)
+            {
+                processMovePhase();
+            }
+            if (board.attackPhase)
+            {
+                processAttackPhase();
+            }
+        }
+
+        /// <summary>
+        /// Processes the move phase.
+        /// This should be the same for all types of gameplay screen.
+        /// </summary>
+        protected virtual void processMovePhase()
+        {
+#if DEBUG
+            board.showBitMasks();
+#endif
+            Tile currentTile = board.GetCurrentTile();
+#if DEBUG
+            Console.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
+#endif
+            if (currentTile.IsUsable)
+            {
+                //check that there is a tile selected
+                if (board.selectedTile != null)
+                {
+                    //if we've selected the same tile again
+                    if (currentTile.position == board.selectedTile.position)
+                    {
+                        board.selectedTile = null;
+#if DEBUG
+                        Console.WriteLine("selected tile = null");
+#endif
+                    }
+                    else
+                    {
+#if DEBUG
+                        Console.WriteLine("updating seleted tile");
+#endif
+                        board.selectedTile = currentTile;
+                    }
+                }
+                else
+                {
+#if DEBUG
+                    Console.WriteLine("updating seleted tile");
+#endif
+                    board.selectedTile = currentTile;
+                }
+            }
+            else
+            {
+                //the tile is not occupied, check to see if we can move to it
+                if (board.selectedTile != null && (currentTile.MoveID & board.selectedTile.Unit.ID) != 0)
+                {
+                    //execute the move phase
+                    executeMovePhase(currentTile, board.selectedTile);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Executes the move phase.
         /// This should be overridden in each individual gameplayscreen, though they will be similar implementations
         /// </summary>
-        protected abstract void makeAction();
+        protected abstract void executeMovePhase(Tile currentTile, Tile boardSelectedTile);
+
+        /// <summary>
+        /// Processes the attack phase.
+        /// This should be overridden in each individual gameplayscreen, though they will be similar implementations
+        /// </summary>
+        protected virtual void processAttackPhase()
+        {
+            ///this attack is just default for now, until we have attacking working
+            Attack attack = new Attack(null, null);
+            board.applyAttack(attack);
+            board.endTurn();
+        }
+
+        /// <summary>
+        /// Executes the attack phase.
+        /// This should be overridden in each individual gameplayscreen, though they will be similar implementations
+        /// </summary>
+        protected abstract void executeAttackPhase(Tile currentTile, Tile boardSelectedTile);
 
         /// <summary>
         /// Draws the gameplay screen.

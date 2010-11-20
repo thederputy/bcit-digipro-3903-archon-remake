@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Angels_Vs_Demons.BoardObjects;
 using Angels_Vs_Demons.GameObjects;
 #endregion
 
@@ -13,76 +14,27 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
     class HvHGameplayScreen : GameplayScreen
     {
         /// <summary>
-        /// Handles input for a Human versus Human (local hotseat) game.
+        /// Executes the move phase for a hotseat game
         /// </summary>
-        protected override void makeAction()
+        protected override void executeMovePhase(Tile currentTile, Tile boardSelectedTile)
         {
-            if (board.movePhase)
-            {
-#if DEBUG
-                //showBitMasks();
-#endif
+            board.applyMove(new Move(currentTile, boardSelectedTile));
+        }
 
-                Tile currentTile = board.GetCurrentTile();
+        /// <summary>
+        /// Processes the attack phase for a hotseat game.
+        /// </summary>
+        protected override void processAttackPhase()
+        {
+            ///this attack is just default for now, until we have attacking working
+            Attack attack = new Attack(null, null);
+            board.applyAttack(attack);
+            board.endTurn();
+        }
 
-#if DEBUG
-                Console.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
-#endif
-                if (currentTile.IsUsable)
-                {
-                    //check that there is a tile selected
-                    if (board.selectedTile != null)
-                    {
-                        //if we've selected the same tile again
-                        if (currentTile.position == board.selectedTile.position)
-                        {
-                            //we're de-selecting this tile, no tiles are selected anymore
-                            //board.markAllTilesAsNotMovable();
-                            board.selectedTile = null;
-#if DEBUG
-                            Console.WriteLine("selected tile = null");
-#endif
-                        }
-                        else
-                        {
-                            //board.makeMove(currentTile);
-#if DEBUG
-                            Console.WriteLine("updating seleted tile");
-#endif
-                            board.selectedTile = currentTile;
-                        }
-                    }
-                    else
-                    {
-                        //board.makeMove(currentTile);
-#if DEBUG
-                        Console.WriteLine("updating seleted tile");
-#endif
-                        board.selectedTile = currentTile;
-                    }
-                }
-                else
-                {
-                    //tile is not occupied, check to see if we can move to it
-                    //if (currentTile.IsMovable)
-                    if (board.selectedTile != null && (currentTile.UnitIDs & board.selectedTile.Unit.ID) != 0)
-                    {
-                        //move to this tile
-                        //board.swapTiles(currentTile);
-#if DEBUG
-                        Console.WriteLine("bit mask swapping");
-#endif
-                        board.bitMaskSwapTile(currentTile);
-                        board.selectedTile = null;
-                        board.movePhase = false;
-                        board.attackPhase = true;
-                    }
-                }
-            }
-            if (board.attackPhase)
-            {
-                board.endTurn();
-            }
+        protected override void executeAttackPhase(Tile currentTile, Tile boardSelectedTile)
+        {
+
         }
     }
 }
