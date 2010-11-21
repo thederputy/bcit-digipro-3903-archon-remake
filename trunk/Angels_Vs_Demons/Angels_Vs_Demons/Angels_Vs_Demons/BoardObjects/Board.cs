@@ -323,6 +323,8 @@ namespace Angels_Vs_Demons.BoardObjects
         {
         }
 
+        #region Turn methods
+
         /// <summary>
         /// Gets called once each turn.
         /// - Sets the tiles to movable based on the controlling faction.
@@ -335,6 +337,7 @@ namespace Angels_Vs_Demons.BoardObjects
             Console.WriteLine("Controlling Faction: " + ControllingFaction);
 #endif
             movePhase = true;
+            attackPhase = false;
             setTilesUsableByFaction(ControllingFaction);
             bitMaskGetMoves();
         }
@@ -344,6 +347,10 @@ namespace Angels_Vs_Demons.BoardObjects
         /// </summary>
         public void endTurn()
         {
+#if DEBUG
+            Console.WriteLine("ENDING TURN");
+            Console.WriteLine("Controlling Faction: " + ControllingFaction);
+#endif
             //switch the controlling faction
             if (ControllingFaction == Faction.ANGEL)
             {
@@ -353,9 +360,69 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 ControllingFaction = Faction.ANGEL;
             }
+            movePhase = false;
+            attackPhase = false;
             bitMaskAllTilesAsNotMovable();
-            //attackPhase = false;
         }
+
+
+        /// <summary>
+        /// Applies a turn to the board.
+        /// </summary>
+        /// <param name="turn">the turn to apply to the board</param>
+        public void applyTurn(Turn turn)
+        {
+            if (turn.Move.IsExecutable)
+            {
+                applyMove(turn.Move);
+            }
+            else
+            {
+                movePhase = false;
+                attackPhase = true;
+            }
+            if (turn.Attack.IsExecutable)
+            {
+                applyAttack(turn.Attack);
+            }
+            else
+            {
+                attackPhase = false;
+            }
+            endTurn();
+        }
+
+        /// <summary>
+        /// Applies a move to the board.
+        /// </summary>
+        /// <param name="move">the move to apply, containing a start tile and end tile</param>
+        public void applyMove(Move move)
+        {
+            bitMaskSwapTiles(move.NewTile, move.PreviousTile);
+            selectedTile = null;
+            movePhase = false;
+            attackPhase = true;
+        }
+
+        /// <summary>
+        /// Applies an attack to the board.
+        /// </summary>
+        /// <param name="attack">the attack to apply, containing a start tile and end tile</param>
+        public void applyAttack(Attack attack)
+        {
+            attackPhase = false;
+        }
+
+
+        /// <summary>
+        /// NOT SURE WHO WROTE THIS, PLEASE COMMENT!!!
+        /// </summary>
+        /// <param name="attack"></param>
+        private void makeAttack(Attack attack)
+        {
+        }
+
+        #endregion
 
         /*
         /// <summary>
@@ -459,53 +526,6 @@ namespace Angels_Vs_Demons.BoardObjects
             throw new NotImplementedException();
         }
 
-
-        /// <summary>
-        /// Applies a turn to the board.
-        /// </summary>
-        /// <param name="turn">the turn to apply to the board</param>
-        public void applyTurn(Turn turn)
-        {
-            if (turn.Move.IsExecutable)
-            {
-                applyMove(turn.Move);
-            }
-            if (turn.Attack.IsExecutable)
-            {
-                applyAttack(turn.Attack);
-            }
-            endTurn();
-        }
-
-        /// <summary>
-        /// Applies a move to the board.
-        /// </summary>
-        /// <param name="move">the move to apply, containing a start tile and end tile</param>
-        public void applyMove(Move move)
-        {
-            bitMaskSwapTiles(move.NewTile, move.PreviousTile);
-            selectedTile = null;
-            movePhase = false;
-            attackPhase = true;
-        }
-
-        /// <summary>
-        /// Applies an attack to the board.
-        /// </summary>
-        /// <param name="attack">the attack to apply, containing a start tile and end tile</param>
-        public void applyAttack(Attack attack)
-        {
-            attackPhase = false;
-        }
-
-
-        /// <summary>
-        /// NOT SURE WHO WROTE THIS, PLEASE COMMENT!!!
-        /// </summary>
-        /// <param name="attack"></param>
-        private void makeAttack(Attack attack)
-        {
-        }
 
         #region BitMasking
 
