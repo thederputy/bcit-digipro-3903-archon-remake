@@ -211,7 +211,6 @@ namespace Angels_Vs_Demons.Networking
             HumanPlayer hPlayer = gamer.Tag as HumanPlayer;
             localGamer = gamer;
             
-            bool playerCompletedTurn;
             /*CURSOR VERSION OF NETWORKING
             // Update the cursor.
             if (hPlayer.Position != null)
@@ -232,14 +231,13 @@ namespace Angels_Vs_Demons.Networking
             //if we haven't stored our turn yet
             if (hPlayer.Turn == null)
             {
-                ReadPlayerInput(hPlayer, gamer.SignedInGamer.PlayerIndex);
+                //ReadPlayerInput(hPlayer, gamer.SignedInGamer.PlayerIndex);
+                hPlayer.Turn = localTurn;
             }
 
-            //if our turn was stored properly
+            //if our turn was stored properly, and we've made one
             if (hPlayer.Turn != null)
             {
-                playerCompletedTurn = true;
-                packetWriter.Write(playerCompletedTurn);
                 // Write the our turn into a network packet.
                 packetWriter.Write(hPlayer.Turn.Move.IsExecutable);
                 if (hPlayer.Turn.Move.IsExecutable)
@@ -256,16 +254,19 @@ namespace Angels_Vs_Demons.Networking
                     packetWriter.Write(hPlayer.Turn.Attack.VictimTile.position);
                     packetWriter.Write(hPlayer.Turn.Attack.AttackerTile.position);
                 }
-            }
-            else
-            {
-                //we didn't move yet
-                playerCompletedTurn = false;
-                packetWriter.Write(playerCompletedTurn);
-            }
 
-            // Send the data to everyone in the session.
-            gamer.SendData(packetWriter, SendDataOptions.InOrder);
+                // Send the data to everyone in the session.
+                gamer.SendData(packetWriter, SendDataOptions.InOrder);
+#if DEBUG
+                Console.WriteLine("DEBUG: SENDING TURN DATA");
+#endif
+
+                //make our local turn null, so we don't send it again
+                localMove = null;
+                localAttack = null;
+                localTurn = null;
+                hPlayer.Turn = null;
+            }
         }
 
         /// <summary>
@@ -312,8 +313,6 @@ namespace Angels_Vs_Demons.Networking
                 // Look up the position of the cursor with whoever sent this packet.
                 HumanPlayer hPlayer = sender.Tag as HumanPlayer;
 
-                bool playerCompletedTurn;
-
                 /*CURSOR VERSION OF NETWORKING
                 // Read the state of this current tile from the network packet.
                 hPlayer.Position = packetReader.ReadVector2();
@@ -328,8 +327,6 @@ namespace Angels_Vs_Demons.Networking
                  *END CURSOR VERSION 
                  */
 
-                playerCompletedTurn = packetReader.ReadBoolean();
-
                 bool moveIsExecutable = false;
                 bool attackIsExecutable = false;
                 Vector2 newTilePosition = Vector2.Zero;
@@ -337,41 +334,43 @@ namespace Angels_Vs_Demons.Networking
                 Vector2 victimTilePosition = Vector2.Zero;
                 Vector2 attackerTilePosition = Vector2.Zero;
 
-                if (playerCompletedTurn)
+                Move remoteMove;
+                Attack remoteAttack;
+                Turn remoteTurn;
+                //process remote player's move
+                moveIsExecutable = packetReader.ReadBoolean(); //Turn.Move.IsExecutable
+                if (moveIsExecutable)
                 {
-                    Move remoteMove;
-                    Attack remoteAttack;
-                    Turn remoteTurn;
-                    //process remote player's move
-                    moveIsExecutable = packetReader.ReadBoolean(); //Turn.Move.IsExecutable
-                    if (moveIsExecutable)
-                    {
-                        newTilePosition = packetReader.ReadVector2();   //Turn.Move.NewTile.position
-                        previousTilePosition = packetReader.ReadVector2();   //Turn.Move.PreviousTile.position
-                        remoteMove = new Move(board.GetTile(newTilePosition), board.GetTile(previousTilePosition));
-                    }
-                    else
-                    {
-                        remoteMove = new Move(null, null);
-                    }
+                    newTilePosition = packetReader.ReadVector2();   //Turn.Move.NewTile.position
+                    previousTilePosition = packetReader.ReadVector2();   //Turn.Move.PreviousTile.position
+                    remoteMove = new Move(board.GetTile(newTilePosition), board.GetTile(previousTilePosition));
+                }
+                else
+                {
+                    remoteMove = new Move(null, null);
+                }
 
-                    //process remote player's attack
-                    attackIsExecutable = packetReader.ReadBoolean(); //Turn.Attack.IsExecutable
-                    if (attackIsExecutable)
-                    {
-                        victimTilePosition = packetReader.ReadVector2();   //Turn.Attack.VictimTile.position
-                        attackerTilePosition = packetReader.ReadVector2();   //Turn.Attack.AttackerTile.position
-                        remoteAttack = new Attack(board.GetTile(victimTilePosition), board.GetTile(attackerTilePosition));
-                    }
-                    else
-                    {
-                        remoteAttack = new Attack(null, null);
-                    }
+                //process remote player's attack
+                attackIsExecutable = packetReader.ReadBoolean(); //Turn.Attack.IsExecutable
+                if (attackIsExecutable)
+                {
+                    victimTilePosition = packetReader.ReadVector2();   //Turn.Attack.VictimTile.position
+                    attackerTilePosition = packetReader.ReadVector2();   //Turn.Attack.AttackerTile.position
+                    remoteAttack = new Attack(board.GetTile(victimTilePosition), board.GetTile(attackerTilePosition));
+                }
+                else
+                {
+                    remoteAttack = new Attack(null, null);
+                }
 
-                    remoteTurn = new Turn(remoteMove, remoteAttack);
+                remoteTurn = new Turn(remoteMove, remoteAttack);
 
+                if (remoteTurn != null)
+                {
                     board.applyTurn(remoteTurn);
                 }
+
+                remoteTurn = null;
             }
         }
 
@@ -432,6 +431,12 @@ namespace Angels_Vs_Demons.Networking
                     processAttackPhase();
                 }
             }
+#if DEBUG
+            else
+            {
+                Console.WriteLine("NOT YOUR TURN, DUMMY!");
+            }
+#endif
         }
 
         /// <summary>
