@@ -79,7 +79,7 @@ namespace Angels_Vs_Demons.BoardObjects
             gameFont = content.Load<SpriteFont>("MenuFont");
             debugFont = content.Load<SpriteFont>("debugFont");
             Cursor_Texture = content.Load<Texture2D>("Cursor");
-            //SelectedTile_Texture = content.Load<Texture2D>("SelectedTile");
+            SelectedTile_Texture = content.Load<Texture2D>("SelectedTile");
             TileTexture = content.Load<Texture2D>("gridNormal");
 
             Arch_Angel_Texture = content.Load<Texture2D>("Arch_Angel");
@@ -405,6 +405,11 @@ namespace Angels_Vs_Demons.BoardObjects
             else
             {
                 ControllingFaction = Faction.ANGEL;
+            }
+            if (selectedTile != null)
+            {
+                selectedTile.IsSelected = false;
+                selectedTile = null;
             }
             movePhase = false;
             attackPhase = false;
@@ -932,15 +937,14 @@ namespace Angels_Vs_Demons.BoardObjects
                         Texture2D TempTexture = Tempunit.sprite;
                         spriteBatch.Draw(TempTexture, grid[i][j].rect, Color.White);
                     }
+                    if (selectedTile != null && grid[i][j].position == selectedTile.position)
+                    {
+                        spriteBatch.Draw(SelectedTile_Texture, grid[i][j].rect, Color.Yellow);
+                    }
                     if (grid[i][j].IsCurrentTile)
                     {
                         spriteBatch.Draw(Cursor_Texture, grid[i][j].rect, Color.Silver);
                     }
-                    if (grid[i][j].IsSelected)
-                    {
-
-                    }
-
                 }
             }
 
