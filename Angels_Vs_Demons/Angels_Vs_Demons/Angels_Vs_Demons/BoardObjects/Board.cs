@@ -538,6 +538,8 @@ namespace Angels_Vs_Demons.BoardObjects
 #endif
                     NonChampion nc = attack.AttackerTile.Unit as NonChampion;
                     nc.attack(attack.VictimTile.Unit);
+                    //set the recharge on the unit that just attacked
+                    attack.AttackerTile.Unit.CurrRecharge = attack.AttackerTile.Unit.TotalRecharge;
 #if DEBUG
                     Console.WriteLine("DEBUG: attack applied");
                     Console.Write("DEBUG: victim's HP after attack: ");
@@ -653,7 +655,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     if (tile.IsOccupied)
                     {
                         //if we're checking one of the controlling units
-                        if (tile.Unit.FactionType == controllingFaction)
+                        if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
                         {
                             int unitMoves = 0;
                             unitMoves = bitMaskMoves(unitMoves, tile.Unit.Movement, tile.position, tile, tile.Unit.ID);
@@ -793,8 +795,8 @@ namespace Angels_Vs_Demons.BoardObjects
                 {
                     if (tile.IsOccupied)
                     {
-                        //if we're checking one of the controlling units
-                        if (tile.Unit.FactionType == controllingFaction)
+                        //if we're checking one of the controlling units and it is usable
+                        if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
                         {
 #if DEBUG
                             Console.WriteLine("DEBUG: ckecking currently controllable unit: " + tile.Unit.Name);
