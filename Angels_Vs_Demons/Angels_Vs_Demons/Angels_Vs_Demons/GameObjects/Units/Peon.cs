@@ -29,15 +29,11 @@ namespace Angels_Vs_Demons.GameObjects.Units
             Range = 1;
             Movement = 3;
             CurrRecharge = 0;
-            TotalRecharge = 1;
+            totalRecharge = 1;
         }
 
 
         #endregion
 
-        public override void attack(Unit victim)
-        {
-            victim.CurrHP = victim.applyMitigation(AttackPower, AttackTypeVal);
-        }
     }
 }

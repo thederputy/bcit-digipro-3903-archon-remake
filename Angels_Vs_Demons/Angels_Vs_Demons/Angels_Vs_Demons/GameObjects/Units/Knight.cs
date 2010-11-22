@@ -29,15 +29,11 @@ namespace Angels_Vs_Demons.GameObjects.Units
             Special = new specialType[] { specialType.FLYING };
             Movement = 4;
             CurrRecharge = 0;
-            TotalRecharge = 2;
+            totalRecharge = 2;
         }
 
 
         #endregion
 
-        public override void attack(Unit victim)
-        {
-            victim.CurrHP = victim.applyMitigation(AttackPower, AttackTypeVal);
-        }
     }
 }

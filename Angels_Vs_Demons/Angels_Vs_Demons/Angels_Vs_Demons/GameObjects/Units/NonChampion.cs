@@ -76,7 +76,14 @@ namespace Angels_Vs_Demons.GameObjects.Units
         #region Public Methods
 
 
-        public abstract void attack(Unit victim);
+        /// <summary>
+        /// Default attack behaviour for Non-Champions.
+        /// </summary>
+        /// <param name="victim">the victim we are attacking</param>
+        public virtual void attack(Unit victim)
+        {
+            victim.CurrHP -= victim.applyMitigation(AttackPower, AttackTypeVal);
+        }
 
 
         #endregion

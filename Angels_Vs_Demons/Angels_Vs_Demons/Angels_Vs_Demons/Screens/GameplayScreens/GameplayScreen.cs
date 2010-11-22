@@ -99,7 +99,8 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             //check for end of turn
             if (!board.movePhase && !board.attackPhase)
             {
-                board.beginTurn();
+                board.endTurn();    //end the current turn
+                board.beginTurn();  //begin the next turn
             }
         }
 
@@ -229,19 +230,18 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             }
             else
             {
-                //we've selected a tile that is not one of ours.
-                //if there is a selected tile, check to see if the current tile is within our move range
+                //the currentTile is not occupied
+                //if there is a selected tile, check to see if currentTile is within its move range
                 if (board.selectedTile != null && (currentTile.MoveID & board.selectedTile.Unit.ID) != 0)
                 {
                     //execute the move phase
                     executeMovePhase(currentTile, board.selectedTile);
 
-                    //now get all the tiles that are attackable
-                    bool thereAreAttacks = board.bitMaskGetAttacks();
-                    if (!thereAreAttacks)
+                    //after execting the move phase, check for valid attacks
+                    if (!board.bitMaskGetAttacks())
                     {
-                        //there are no attacks to make
-                        board.endTurn();
+                        //there are no valid attacks
+                        board.attackPhase = false;
                     }
                 }
             }
@@ -280,7 +280,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                         Console.WriteLine("selected the same tile again");
                         Console.WriteLine("selected tile = null");
 #endif
-                        //board.endTurn();
                     }
                     else
                     {
@@ -314,9 +313,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 #endif
                         //execute the attack phase
                         executeAttackPhase(currentTile, board.selectedTile);
-
-                        //now end the turn
-                        board.endTurn();
                     }
                 }
             }
@@ -350,25 +346,33 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             //unitDisplayWindow.Draw(gameTime);
 
             //debugging information
-            Vector2 debugLocation = new Vector2(10,10);
-            Vector2 debugLocation2 = new Vector2(10, 50);
+#if DEBUG
+            //Vector2 debugLocation = new Vector2(10,10);
+            //Vector2 debugLocation2 = new Vector2(10, 50);
 
-            //if (board.isAngelTurn)
+            //if (board.ControllingFaction == Faction.ANGEL)
             //    spriteBatch.DrawString(board.gameFont, "Angel Turn", debugLocation, Color.Black);
             //else
             //    spriteBatch.DrawString(board.gameFont, "Demon Turn", debugLocation, Color.Black);
 
-            //spriteBatch.DrawString(board.debugFont, "Angel: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsAngel.ToString() + '\n'
-            //                                + "Attackable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsAttackable.ToString() + '\n'
-            //                                + "CurrentTile: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsCurrentTile.ToString() + '\n'
-            //                                + "Movable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsMovable.ToString() + '\n'
-            //                                + "Occupied: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsOccupied.ToString() + '\n'
-            //                                + "Selected: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsSelected.ToString() + '\n'
-            //                                + "Usable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsUsable.ToString() + '\n'
-            //                                + "Move Phase: " + board.movePhase.ToString() + '\n'
-            //                                + "Attack Phase: " + board.attackPhase.ToString() + '\n'
-            //    , debugLocation2, Color.Black);
+            //String debugString = "";
+
+            //if(board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].Unit != null)
+            //    debugString += "Faction: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].Unit.FactionType.ToString() + '\n';
             
+            //debugString += "Faction: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].ToString() + '\n';
+            //debugString += "Attackable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsAttackable.ToString() + '\n';
+            //debugString += "CurrentTile: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsCurrentTile.ToString() + '\n';
+            //debugString += "Movable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsMovable.ToString() + '\n';
+            //debugString += "Occupied: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsOccupied.ToString() + '\n';
+            //debugString += "Selected: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsSelected.ToString() + '\n';
+            //debugString += "Usable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsUsable.ToString() + '\n';
+            //debugString += "Move Phase: " + board.movePhase.ToString() + '\n';
+            //debugString += "Attack Phase: " + board.attackPhase.ToString() + '\n';
+
+
+            //spriteBatch.DrawString(board.debugFont, debugString, debugLocation2, Color.Black);
+#endif
             
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0)

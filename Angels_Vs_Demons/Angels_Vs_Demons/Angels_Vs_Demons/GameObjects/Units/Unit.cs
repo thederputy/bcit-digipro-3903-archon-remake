@@ -63,13 +63,13 @@ namespace Angels_Vs_Demons.GameObjects.Units
         /// <summary>
         /// ID used for bitmasking the units; used for pathfinding.
         /// </summary>
-        private int id;
-
         public int ID
         {
             get { return id; }
             set { id = value; }
         }
+
+        private int id;
 
         /// <summary>
         /// Angel/Demon association of the unit
@@ -144,10 +144,9 @@ namespace Angels_Vs_Demons.GameObjects.Units
         public int TotalRecharge
         {
             get { return totalRecharge; }
-            set { totalRecharge = value; }
         }
 
-        private int totalRecharge;
+        protected int totalRecharge;
 
         /// <summary>
         /// Current recharge time (in turns) of this unit. When this value is greater than 0 this unit cannot act.
