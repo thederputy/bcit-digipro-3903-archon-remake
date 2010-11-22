@@ -44,6 +44,7 @@ namespace Angels_Vs_Demons.BoardObjects
         public Tile selectedTile;
 
         #region Textures (not needed for AI)
+        private Texture2D AttackableTile_Texture;
         private Texture2D Cursor_Texture;
         private Texture2D SelectedTile_Texture;
         private Texture2D TileTexture;
@@ -78,6 +79,7 @@ namespace Angels_Vs_Demons.BoardObjects
             // Loads the textures
             gameFont = content.Load<SpriteFont>("MenuFont");
             debugFont = content.Load<SpriteFont>("debugFont");
+            AttackableTile_Texture = content.Load<Texture2D>("AttackableTile");
             Cursor_Texture = content.Load<Texture2D>("Cursor");
             SelectedTile_Texture = content.Load<Texture2D>("SelectedTile");
             TileTexture = content.Load<Texture2D>("gridNormal");
@@ -183,6 +185,7 @@ namespace Angels_Vs_Demons.BoardObjects
 
             // Initiate first turn
             controllingFaction = Faction.ANGEL;
+            beginTurn();
         }
 
         /// <summary>
@@ -288,23 +291,59 @@ namespace Angels_Vs_Demons.BoardObjects
         }
 
         /// <summary>
+        /// Called at the beginning of a turn, decrements the recharge of the units.
+        /// </summary>
+        private void decrementRecharge()
+        {
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    if (tile.IsOccupied)
+                    {
+                        if (tile.Unit.FactionType == controllingFaction)
+                        {
+                            if (tile.Unit.CurrRecharge > 0)
+                            {
+                                tile.Unit.CurrRecharge--;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Sets the tiles as usable based on the current controlling faction.
         /// </summary>
-        /// <param name="factionType">the controlling faction</param>
-        private void setTilesUsableByFaction(Faction factionType)
+        private void setTilesUsableByControllingFaction()
         {
 #if DEBUG
-            Console.WriteLine("Setting tiles to usable with factionType: " + factionType);
+            Console.WriteLine("Setting tiles to usable with factionType: " + controllingFaction);
 #endif
             for (int i = 0; i < grid.Length; i++)
             {
                 foreach (Tile tile in grid[i])
                 {
-                    if (tile.Unit != null)
+                    if (tile.IsOccupied)
                     {
-                        if (tile.Unit.FactionType == factionType)
+                        if (tile.Unit.FactionType == controllingFaction)
                         {
-                            tile.IsUsable = true;
+                            if (tile.Unit.CurrRecharge == 0)
+                            {
+#if DEBUG
+                                Console.WriteLine("" + tile.Unit.Name + " is usable this turn");
+#endif
+                                tile.IsUsable = true;
+                            }
+                            else
+                            {
+#if DEBUG
+                                Console.Write("" + tile.Unit.Name + " is NOT usable this turn.");
+                                Console.WriteLine(" Current recharge is: " + tile.Unit.CurrRecharge);
+#endif
+                                tile.IsUsable = false;
+                            }
                         }
                         else
                         {
@@ -375,17 +414,32 @@ namespace Angels_Vs_Demons.BoardObjects
         public void beginTurn()
         {
 #if DEBUG
-            Console.WriteLine("BEGINNING TURN");
+            Console.WriteLine("\nDEBUG: entering beginTurn()");
             Console.WriteLine("Controlling Faction: " + ControllingFaction);
 #endif
             movePhase = true;
             attackPhase = false;
-            setTilesUsableByFaction(ControllingFaction);
-            if (!bitMaskGetMoves())
+            decrementRecharge();
+            setTilesUsableByControllingFaction();
+            //get all the valid moves
+            bool thereAreMoves = bitMaskGetMoves();
+            //if there are no moves, check for attacks
+            if (!thereAreMoves)
             {
                 movePhase = false;
                 attackPhase = true;
+                //get all the valid attacks
+                bool thereAreAttacks = bitMaskGetAttacks();
+                if (!thereAreAttacks)
+                {
+                    //there are no attacks to make
+                    attackPhase = false;
+                }
             }
+
+#if DEBUG
+            Console.WriteLine("DEBUG: leaving beginTurn()");
+#endif
         }
 
         /// <summary>
@@ -394,8 +448,7 @@ namespace Angels_Vs_Demons.BoardObjects
         public void endTurn()
         {
 #if DEBUG
-            Console.WriteLine("ENDING TURN");
-            Console.WriteLine("Controlling Faction: " + ControllingFaction);
+            Console.WriteLine("\nDEBUG: entering endTurn()");
 #endif
             //switch the controlling faction
             if (ControllingFaction == Faction.ANGEL)
@@ -416,58 +469,53 @@ namespace Angels_Vs_Demons.BoardObjects
             bitMaskAllTilesAsNotMovable();
             bitMaskAllTilesAsNotAttackable();
 #if DEBUG
-            Console.WriteLine("TURN ENDED");
-            Console.WriteLine("Controlling Faction is now: " + ControllingFaction);
+            Console.WriteLine("DEBUG: leaving endTurn()");
 #endif
         }
 
 
         /// <summary>
-        /// Applies a turn to the board.
+        /// Applies a turn to the board, which consists of a move and an attack.
         /// </summary>
         /// <param name="turn">the turn to apply to the board</param>
         public void applyTurn(Turn turn)
         {
-            if (turn.Move.IsExecutable)
-            {
-                applyMove(turn.Move);
-            }
-            else
-            {
-                movePhase = false;
-                attackPhase = true;
-            }
-            if (turn.Attack.IsExecutable)
-            {
-                applyAttack(turn.Attack);
-            }
-            else
-            {
-                attackPhase = false;
-            }
 #if DEBUG
-            Console.WriteLine("DEBUG: turn applied, now ending turn");
+            Console.WriteLine("\nDEBUG: entering applyTurn()");
 #endif
-            endTurn();
+            applyMove(turn.Move);
+            applyAttack(turn.Attack);
+#if DEBUG
+            Console.WriteLine("DEBUG: turn applied");
+            Console.WriteLine("DEBUG: leaving applyTurn()");
+#endif
         }
 
         /// <summary>
-        /// Applies a move to the board. If the move is null,
+        /// Applies a move to the board. If the move is not executable,
         /// that means we want to just change to the attack phase without moving.
         /// </summary>
         /// <param name="move">the move to apply, containing a start tile and end tile</param>
         public void applyMove(Move move)
         {
-            if (move != null)
+#if DEBUG
+            Console.WriteLine("\nDEBUG: entering applyMove()");
+#endif
+            if (move.IsExecutable)
             {
                 bitMaskSwapTiles(move.NewTile, move.PreviousTile);
+                //set the recharge on the unit that just moved
+                move.NewTile.Unit.CurrRecharge = move.NewTile.Unit.TotalRecharge;
+#if DEBUG
+                Console.WriteLine("DEBUG: move applied");
+#endif
             }
             selectedTile = null;
             movePhase = false;
             attackPhase = true;
             bitMaskAllTilesAsNotMovable();
 #if DEBUG
-            Console.WriteLine("DEBUG: move applied");
+            Console.WriteLine("DEBUG: leaving applyMove()");
 #endif
         }
 
@@ -477,7 +525,10 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <param name="attack">the attack to apply, containing a start tile and end tile</param>
         public void applyAttack(Attack attack)
         {
-            if (attack != null)
+#if DEBUG
+            Console.WriteLine("\nDEBUG: entering applyAttack()");
+#endif
+            if (attack.IsExecutable)
             {
                 if (isNonChampion(attack.AttackerTile.Unit))
                 {
@@ -497,11 +548,19 @@ namespace Angels_Vs_Demons.BoardObjects
                 {
 
                 }
+                //check to see if we killed the unit
+                if (attack.VictimTile.Unit.CurrHP < 1)
+                {
+                    attack.VictimTile.Unit = null;
+#if DEBUG
+                    Console.WriteLine("DEBUG: victim is dead");
+#endif
+                }
             }
             attackPhase = false;
             bitMaskAllTilesAsNotAttackable();
 #if DEBUG
-            Console.WriteLine("DEBUG: attack applied");
+            Console.WriteLine("DEBUG: leaving applyAttack()");
 #endif
         }
 
@@ -554,7 +613,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// </summary>
         public void showMoveBitMasks()
         {
-            Console.WriteLine("DEBUG: Move bitmasks");
+            Console.WriteLine("\nDEBUG: entering showMoveBitMasks()");
             for (int i = 0; i < grid.Length; i++)
             {
                 foreach (Tile tile in grid[i])
@@ -562,6 +621,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     showTileMoveBitMasks(tile);
                 }
             }
+            Console.WriteLine("DEBUG: leaving showMoveBitMasks()");
         }
 
         /// <summary>
@@ -570,7 +630,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <param name="currentTile"> the current tile to get the bitmask of.</param>
         private void showTileMoveBitMasks(Tile currentTile)
         {
-            Console.Write("x = ");
+            Console.Write("DEBUG: x = ");
             Console.Write(currentTile.position.X);
             Console.Write(", y = ");
             Console.Write(currentTile.position.Y);
@@ -590,7 +650,7 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 foreach (Tile tile in grid[i])
                 {
-                    if (tile.Unit != null)
+                    if (tile.IsOccupied)
                     {
                         //if we're checking one of the controlling units
                         if (tile.Unit.FactionType == controllingFaction)
@@ -690,7 +750,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// </summary>
         public void showAttackBitMasks()
         {
-            Console.WriteLine("DEBUG: Attack bitmasks");
+            Console.WriteLine("\nDEBUG: entering showAttackBitMasks()");
             for (int i = 0; i < grid.Length; i++)
             {
                 foreach (Tile tile in grid[i])
@@ -698,6 +758,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     showTileAttackBitMasks(tile);
                 }
             }
+            Console.WriteLine("DEBUG: leaving showAttackBitMasks()");
         }
 
         /// <summary>
@@ -706,7 +767,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <param name="currentTile"> the current tile to get the bitmask of.</param>
         private void showTileAttackBitMasks(Tile currentTile)
         {
-            Console.Write("x = ");
+            Console.Write("DEBUG: x = ");
             Console.Write(currentTile.position.X);
             Console.Write(", y = ");
             Console.Write(currentTile.position.Y);
@@ -730,7 +791,7 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 foreach (Tile tile in grid[i])
                 {
-                    if (tile.Unit != null)
+                    if (tile.IsOccupied)
                     {
                         //if we're checking one of the controlling units
                         if (tile.Unit.FactionType == controllingFaction)
@@ -796,30 +857,26 @@ namespace Angels_Vs_Demons.BoardObjects
             }
             if (range >= 0)
             {
-                // are there tiles left and the tile is not occupied, go left
-                if (currentTile.position.X - 1 >= 0)// &&
-                    //grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].IsOccupied == false)
+                // are there tiles left, go left
+                if (currentTile.position.X - 1 >= 0)
                 {
                     currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
                     unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathLeft, id);
                 }
-                // are there tiles right and the tile is not occupied, go right
-                if (currentTile.position.X + 1 < x_size)// &&
-                    //grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].IsOccupied == false)
+                // are there tiles right, go right
+                if (currentTile.position.X + 1 < x_size)
                 {
                     currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
                     unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathRight, id);
                 }
-                // are there tiles above and the tile is not occupied, go up
-                if (currentTile.position.Y - 1 >= 0)// &&
-                    //grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].IsOccupied == false)
+                // are there tiles above, go up
+                if (currentTile.position.Y - 1 >= 0)
                 {
                     currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
                     unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathTop, id);
                 }
-                // are there tiles below and the tile is not occupied, go down
-                if (currentTile.position.Y + 1 < y_size)// &&
-                    //grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].IsOccupied == false)
+                // are there tiles below, go down
+                if (currentTile.position.Y + 1 < y_size)
                 {
                     currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
                     unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathBottom, id);
@@ -859,20 +916,18 @@ namespace Angels_Vs_Demons.BoardObjects
         }
 
         /// <summary>
-        /// Swaps the values of two tiles.
+        /// Swaps the units on two tiles.
         /// </summary>
         /// <param name="destTile">tile that we are going to move to</param>
         /// <param name="srcTile">tile that we are moving from</param>
         public void bitMaskSwapTiles(Tile destTile, Tile srcTile)
         {
+            Unit tempUnit = destTile.Unit;
             destTile.Unit = srcTile.Unit;
             destTile.IsUsable = true;
             srcTile.IsUsable = false;
-            srcTile.Unit = null;
+            srcTile.Unit = tempUnit;
             srcTile.IsSelected = false;
-            selectedTile.Unit = null;
-            selectedTile.IsSelected = false;
-            selectedTile = null;
         }
 
         #endregion
@@ -940,6 +995,10 @@ namespace Angels_Vs_Demons.BoardObjects
                     if (selectedTile != null && grid[i][j].position == selectedTile.position)
                     {
                         spriteBatch.Draw(SelectedTile_Texture, grid[i][j].rect, Color.Yellow);
+                    }
+                    if (selectedTile != null && selectedTile.Unit != null && (grid[i][j].AttackID & selectedTile.Unit.ID) != 0)
+                    {
+                        spriteBatch.Draw(AttackableTile_Texture, grid[i][j].rect, Color.Red);
                     }
                     if (grid[i][j].IsCurrentTile)
                     {

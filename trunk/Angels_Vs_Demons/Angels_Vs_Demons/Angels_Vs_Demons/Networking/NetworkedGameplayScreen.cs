@@ -448,7 +448,7 @@ namespace Angels_Vs_Demons.Networking
         {
             localMove = new Move(currentTile, board.selectedTile);
             board.applyMove(localMove);
-            localTurn = new Turn(localMove, new Attack(null, null));
+            //localTurn = new Turn(localMove, new Attack(null, null));
         }
 
         /// <summary>
@@ -458,7 +458,8 @@ namespace Angels_Vs_Demons.Networking
         /// <param name="attackerTile">the tile that is attacking</param>
         protected override void executeAttackPhase(Tile victimTile, Tile attackerTile)
         {
-
+            localAttack = new Attack(victimTile, attackerTile);
+            board.applyAttack(localAttack);
         }
 
         #endregion

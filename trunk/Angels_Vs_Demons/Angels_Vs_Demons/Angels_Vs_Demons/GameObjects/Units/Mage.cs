@@ -29,15 +29,19 @@ namespace Angels_Vs_Demons.GameObjects.Units
             Special = new specialType[] { specialType.SPLASH, specialType.PROJECTILE };
             Movement = 3;
             CurrRecharge = 0;
-            TotalRecharge = 4;
+            totalRecharge = 4;
         }
 
 
         #endregion
 
+        /// <summary>
+        /// Overriddev attack methos for the mage as he does splash damage.
+        /// </summary>
+        /// <param name="victim">the unit we are attacking</param>
         public override void attack(Unit victim)
         {
-            victim.CurrHP = victim.applyMitigation(AttackPower, AttackTypeVal);
+            victim.CurrHP -= victim.applyMitigation(AttackPower, AttackTypeVal);
         }
     }
 }
