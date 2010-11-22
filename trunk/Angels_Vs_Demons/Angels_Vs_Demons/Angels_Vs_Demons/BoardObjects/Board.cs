@@ -22,7 +22,7 @@ namespace Angels_Vs_Demons.BoardObjects
         public SpriteFont debugFont;
 
         public GameObject Cursor;
-        
+
         public Tile[][] grid;
         private int x_size;
         private int y_size;
@@ -45,6 +45,7 @@ namespace Angels_Vs_Demons.BoardObjects
 
         #region Textures (not needed for AI)
         private Texture2D Cursor_Texture;
+        private Texture2D SelectedTile_Texture;
         private Texture2D TileTexture;
 
         private Texture2D Arch_Demon_Texture;
@@ -78,6 +79,7 @@ namespace Angels_Vs_Demons.BoardObjects
             gameFont = content.Load<SpriteFont>("MenuFont");
             debugFont = content.Load<SpriteFont>("debugFont");
             Cursor_Texture = content.Load<Texture2D>("Cursor");
+            //SelectedTile_Texture = content.Load<Texture2D>("SelectedTile");
             TileTexture = content.Load<Texture2D>("gridNormal");
 
             Arch_Angel_Texture = content.Load<Texture2D>("Arch_Angel");
@@ -222,6 +224,17 @@ namespace Angels_Vs_Demons.BoardObjects
         }
 
         /// <summary>
+        ///  Gets a tile specified by two float values: x and y.
+        /// </summary>
+        /// <param name="x">x position</param>
+        /// <param name="y">y position</param>
+        /// <returns>tile specified by the x and y values</returns>
+        public Tile GetTile(float x, float y)
+        {
+            return grid[(int)x][(int)y];
+        }
+
+        /// <summary>
         /// Gets a tile specified by a Vector2.
         /// </summary>
         /// <param name="position">the position vector</param>
@@ -240,7 +253,7 @@ namespace Angels_Vs_Demons.BoardObjects
             return grid[(int)Cursor.position.X][(int)Cursor.position.Y];
         }
 
-        
+
         /// <summary>
         ///  Moves the cursor by the amount input, resets current tile
         /// </summary>
@@ -307,6 +320,35 @@ namespace Angels_Vs_Demons.BoardObjects
         }
 
         /// <summary>
+        /// Checks to see if a Unit is a Champion.
+        /// </summary>
+        /// <param name="unit">the unit to check the type of</param>
+        /// <returns>true if this Unit is a Champion, false if not</returns>
+        private bool isChampion(Unit unit)
+        {
+            bool isChampion = false;
+            if (unit is Champion)
+            {
+                isChampion = true;
+            }
+            return isChampion;
+        }
+
+        /// <summary>
+        /// Checks to see if a Unit is a NonChampion.
+        /// </summary>
+        /// <param name="unit">the unit to check the type of</param>
+        /// <returns>true if this Unit is a NonChampion, false if not</returns>
+        private bool isNonChampion(Unit unit)
+        {
+            bool isNonChampion = false;
+            if (unit is NonChampion)
+            {
+                isNonChampion = true;
+            }
+            return isNonChampion;
+        }
+        /// <summary>
         /// Returns the last movement
         /// </summary>
         /// <returns>the most recent move</returns>
@@ -339,7 +381,11 @@ namespace Angels_Vs_Demons.BoardObjects
             movePhase = true;
             attackPhase = false;
             setTilesUsableByFaction(ControllingFaction);
-            bitMaskGetMoves();
+            if (!bitMaskGetMoves())
+            {
+                movePhase = false;
+                attackPhase = true;
+            }
         }
 
         /// <summary>
@@ -363,6 +409,11 @@ namespace Angels_Vs_Demons.BoardObjects
             movePhase = false;
             attackPhase = false;
             bitMaskAllTilesAsNotMovable();
+            bitMaskAllTilesAsNotAttackable();
+#if DEBUG
+            Console.WriteLine("TURN ENDED");
+            Console.WriteLine("Controlling Faction is now: " + ControllingFaction);
+#endif
         }
 
 
@@ -389,19 +440,30 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 attackPhase = false;
             }
+#if DEBUG
+            Console.WriteLine("DEBUG: turn applied, now ending turn");
+#endif
             endTurn();
         }
 
         /// <summary>
-        /// Applies a move to the board.
+        /// Applies a move to the board. If the move is null,
+        /// that means we want to just change to the attack phase without moving.
         /// </summary>
         /// <param name="move">the move to apply, containing a start tile and end tile</param>
         public void applyMove(Move move)
         {
-            bitMaskSwapTiles(move.NewTile, move.PreviousTile);
+            if (move != null)
+            {
+                bitMaskSwapTiles(move.NewTile, move.PreviousTile);
+            }
             selectedTile = null;
             movePhase = false;
             attackPhase = true;
+            bitMaskAllTilesAsNotMovable();
+#if DEBUG
+            Console.WriteLine("DEBUG: move applied");
+#endif
         }
 
         /// <summary>
@@ -410,7 +472,32 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <param name="attack">the attack to apply, containing a start tile and end tile</param>
         public void applyAttack(Attack attack)
         {
+            if (attack != null)
+            {
+                if (isNonChampion(attack.AttackerTile.Unit))
+                {
+#if DEBUG
+                    Console.Write("DEBUG: victim's HP before attack: ");
+                    Console.WriteLine(attack.VictimTile.Unit.CurrHP);
+#endif
+                    NonChampion nc = attack.AttackerTile.Unit as NonChampion;
+                    nc.attack(attack.VictimTile.Unit);
+#if DEBUG
+                    Console.WriteLine("DEBUG: attack applied");
+                    Console.Write("DEBUG: victim's HP after attack: ");
+                    Console.WriteLine(attack.VictimTile.Unit.CurrHP);
+#endif
+                }
+                if (isChampion(attack.AttackerTile.Unit))
+                {
+
+                }
+            }
             attackPhase = false;
+            bitMaskAllTilesAsNotAttackable();
+#if DEBUG
+            Console.WriteLine("DEBUG: attack applied");
+#endif
         }
 
 
@@ -424,90 +511,18 @@ namespace Angels_Vs_Demons.BoardObjects
 
         #endregion
 
-        /*
-        /// <summary>
-        /// Marks all tiles within a Units move range that are not occupied as movable.
-        /// </summary>
-        /// <param name="distance">The move range of a unit</param>
-        /// <param name="currentTile">The current tile we are checking</param>
-        public void makePaths(int distance, Tile currentTile)
-        {
-            distance--;
-            grid[(int)currentTile.position.X][(int)currentTile.position.Y].IsMovable = true;
-            if (distance >= 0)
-            {
-                // are there tiles left and the tile is not occupied, go left
-                if (currentTile.position.X - 1 >= 0 && 
-                    grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].IsOccupied == false)
-                {
-                    currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
-                    makePaths(distance, currentTile.PathLeft);
-                }
-                // are there tiles right and the tile is not occupied, go right
-                if (currentTile.position.X + 1 < x_size &&
-                    grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].IsOccupied == false)
-                {
-                    currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
-                    makePaths(distance, currentTile.PathRight);
-
-                }
-                // are there tiles above and the tile is not occupied, go up
-                if (currentTile.position.Y - 1 >= 0 &&
-                    grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].IsOccupied == false)
-                {
-                    currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
-                    makePaths(distance, currentTile.PathTop);
-                }
-                // are there tiles below and the tile is not occupied, go down
-                if (currentTile.position.Y + 1 < y_size &&
-                    grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].IsOccupied == false)
-                {
-                    currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
-                    makePaths(distance, currentTile.PathBottom);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Iterates through the grid and marks all tiles as not moveable
-        /// </summary>
-        private void markAllTilesAsNotMovable()
-        {
-            for (int i = 0; i < grid.Length; i++)
-            {
-                foreach (Tile tile in grid[i])
-                {
-                    tile.IsMovable = false;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Swaps the current tile with the selected tile
-        /// </summary>
-        /// <param name="currentTile">The tile that we are going to move to.</param>
-        private void swapTiles(Tile currentTile)
-        {
-            currentTile.Unit = selectedTile.Unit;
-            currentTile.IsOccupied = true;
-            selectedTile.Unit = null;
-            selectedTile.IsSelected = false;
-            selectedTile.IsOccupied = false;
-            selectedTile = null;
-            markAllTilesAsNotMovable();
-        }
-        */
         public Object clone()
         {
             Board copy = new Board(content);
 
-            copy.grid               = this.grid;
+            copy.grid = this.grid;
             copy.controllingFaction = this.controllingFaction;
-            copy.movePhase          = this.movePhase;
-            copy.attackPhase        = this.attackPhase;
-            
+            copy.movePhase = this.movePhase;
+            copy.attackPhase = this.attackPhase;
+
             return (Object)copy;
         }
+
 
         public List getValidMoves()
         {
@@ -526,8 +541,305 @@ namespace Angels_Vs_Demons.BoardObjects
             throw new NotImplementedException();
         }
 
+        #region Move methods
 
-        #region BitMasking
+#if DEBUG
+        /// <summary>
+        /// Debugging method that writes the move bitmask data of all tiles to the console.
+        /// </summary>
+        public void showMoveBitMasks()
+        {
+            Console.WriteLine("DEBUG: Move bitmasks");
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    showTileMoveBitMasks(tile);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Debugging method that writes the move bitmask data of a tile to the console.
+        /// </summary>
+        /// <param name="currentTile"> the current tile to get the bitmask of.</param>
+        private void showTileMoveBitMasks(Tile currentTile)
+        {
+            Console.Write("x = ");
+            Console.Write(currentTile.position.X);
+            Console.Write(", y = ");
+            Console.Write(currentTile.position.Y);
+            Console.Write(": id = ");
+            Console.WriteLine(GetTile(currentTile.position).MoveID);
+        }
+#endif
+
+        /// <summary>
+        /// Uses bit masking to mark the tiles as movable.
+        /// </summary>
+        public bool bitMaskGetMoves()
+        {
+            bool canMove = false;
+            int moveTotal = 0;
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    if (tile.Unit != null)
+                    {
+                        //if we're checking one of the controlling units
+                        if (tile.Unit.FactionType == controllingFaction)
+                        {
+                            int unitMoves = 0;
+                            unitMoves = bitMaskMoves(unitMoves, tile.Unit.Movement, tile.position, tile, tile.Unit.ID);
+                            moveTotal += unitMoves;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("moveTotal: " + moveTotal);
+            if (moveTotal > 0)
+            {
+                canMove = true;
+            }
+            return canMove;
+        }
+
+
+        /// <summary>
+        /// Uses bit masking to all tiles within a Units move range that are not occupied as movable.
+        /// </summary>
+        /// <param name="unitMoves">the number of moves this unit can make</param>
+        /// <param name="distance">The move range of a unit</param>
+        /// <param name="startPosition">The starting position of this recursive call</param>
+        /// <param name="currentTile">The current tile we are checking</param>
+        /// <param name="id">the ID of the unit we're checking</param>
+        /// <returns>how many moves the unit can make</returns>
+        private int bitMaskMoves(int unitMoves, int distance, Vector2 startPosition, Tile currentTile, int id)
+        {
+            distance--;
+            //as long as we're not checking the unit against itself
+            if (currentTile.position != startPosition)
+            {
+                //if we haven't moved to this tile before
+                if ((GetTile(currentTile.position).MoveID & id) == 0)
+                {
+                    unitMoves++;
+                    GetTile(currentTile.position).MoveID |= id;//OR EQUALS
+                }
+            }
+            if (distance >= 0)
+            {
+                // are there tiles left and the tile is not occupied, go left
+                if (currentTile.position.X - 1 >= 0 &&
+                    grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].IsOccupied == false)
+                {
+                    currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                    unitMoves = bitMaskMoves(unitMoves, distance, startPosition, currentTile.PathLeft, id);
+                }
+                // are there tiles right and the tile is not occupied, go right
+                if (currentTile.position.X + 1 < x_size &&
+                    grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].IsOccupied == false)
+                {
+                    currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                    unitMoves = bitMaskMoves(unitMoves, distance, startPosition, currentTile.PathRight, id);
+                }
+                // are there tiles above and the tile is not occupied, go up
+                if (currentTile.position.Y - 1 >= 0 &&
+                    grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].IsOccupied == false)
+                {
+                    currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                    unitMoves = bitMaskMoves(unitMoves, distance, startPosition, currentTile.PathTop, id);
+                }
+                // are there tiles below and the tile is not occupied, go down
+                if (currentTile.position.Y + 1 < y_size &&
+                    grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].IsOccupied == false)
+                {
+                    currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                    unitMoves = bitMaskMoves(unitMoves, distance, startPosition, currentTile.PathBottom, id);
+                }
+            }
+            return unitMoves;
+        }
+
+        /// <summary>
+        /// Iterates through the grid and masks all tiles as not moveable.
+        /// </summary>
+        private void bitMaskAllTilesAsNotMovable()
+        {
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    tile.MoveID = 0;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Attack methods
+#if DEBUG
+        /// <summary>
+        /// Debugging method that writes the attack bitmask data of all tiles to the console.
+        /// </summary>
+        public void showAttackBitMasks()
+        {
+            Console.WriteLine("DEBUG: Attack bitmasks");
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    showTileAttackBitMasks(tile);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Debugging method that writes the attack bitmask data of a tile to the console.
+        /// </summary>
+        /// <param name="currentTile"> the current tile to get the bitmask of.</param>
+        private void showTileAttackBitMasks(Tile currentTile)
+        {
+            Console.Write("x = ");
+            Console.Write(currentTile.position.X);
+            Console.Write(", y = ");
+            Console.Write(currentTile.position.Y);
+            Console.Write(": id = ");
+            Console.WriteLine(GetTile(currentTile.position).AttackID);
+        }
+#endif
+
+        /// <summary>
+        /// Uses bit masking to mark the tiles as attackable.
+        /// </summary>
+        /// <returns>Whether an attack can be made this turn</returns>
+        public bool bitMaskGetAttacks()
+        {
+#if DEBUG
+            Console.WriteLine("DEBUG: bit masking attacks");
+#endif
+            bool canAttack = false;
+            int attackTotal = 0;
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    if (tile.Unit != null)
+                    {
+                        //if we're checking one of the controlling units
+                        if (tile.Unit.FactionType == controllingFaction)
+                        {
+#if DEBUG
+                            Console.WriteLine("DEBUG: ckecking currently controllable unit: " + tile.Unit.Name);
+#endif
+                            if (isNonChampion(tile.Unit))
+                            {
+#if DEBUG
+                                Console.WriteLine("DEBUG: checking NonChampion");
+#endif
+                                NonChampion nc = tile.Unit as NonChampion;
+                                int unitAttacks = 0;
+                                unitAttacks = bitMaskAttacks(unitAttacks, nc.Range, tile.position, tile, tile.Unit.ID);
+                                attackTotal += unitAttacks;
+                            }
+                            if (isChampion(tile.Unit))
+                            {
+                                //do all the fancy magic stuff!
+                            }
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("DEBUG: attackTotal: " + attackTotal);
+            if (attackTotal > 0)
+            {
+                canAttack = true;
+            }
+            return canAttack;
+        }
+
+        /// <summary>
+        /// Uses bit masking to all tiles within a NonChampion's attack range that are not occupied as attackble.
+        /// </summary>
+        /// <param name="unitMAttacks">the number of attacks this unit can make</param>
+        /// <param name="range">The attack range of a NonChampion</param>
+        /// <param name="startPosition">The position of the unit that started the recursive call</param>
+        /// <param name="currentTile">The current tile we are checking</param>
+        /// <param name="id">the bitmask ID of the unit</param>
+        /// <returns>how many attacks the unit can make</returns>
+        private int bitMaskAttacks(int unitAttacks, int range, Vector2 startPosition, Tile currentTile, int id)
+        {
+            range--;
+            //as long as we're not checking the unit against itself
+            if (currentTile.position != startPosition)
+            {
+                //if there's a unit on the new tile
+                if (GetTile(currentTile.position).IsOccupied)
+                {
+                    //if it is an opponent unit
+                    //GetTile(currentTile.position).Unit.FactionType = Faction.ANGEL;
+                    if (GetTile(currentTile.position).Unit.FactionType != controllingFaction)
+                    {
+                        //mark that we can attack it
+                        GetTile(currentTile.position).AttackID |= id;//OR EQUALS
+                        unitAttacks++;
+                    }
+                    //don't continue looking past this unit
+                    return unitAttacks;
+                }
+            }
+            if (range >= 0)
+            {
+                // are there tiles left and the tile is not occupied, go left
+                if (currentTile.position.X - 1 >= 0)// &&
+                    //grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].IsOccupied == false)
+                {
+                    currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                    unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathLeft, id);
+                }
+                // are there tiles right and the tile is not occupied, go right
+                if (currentTile.position.X + 1 < x_size)// &&
+                    //grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].IsOccupied == false)
+                {
+                    currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                    unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathRight, id);
+                }
+                // are there tiles above and the tile is not occupied, go up
+                if (currentTile.position.Y - 1 >= 0)// &&
+                    //grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].IsOccupied == false)
+                {
+                    currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                    unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathTop, id);
+                }
+                // are there tiles below and the tile is not occupied, go down
+                if (currentTile.position.Y + 1 < y_size)// &&
+                    //grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].IsOccupied == false)
+                {
+                    currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                    unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathBottom, id);
+                }
+            }
+            return unitAttacks;
+        }
+
+        /// <summary>
+        /// Iterates through the grid and masks all tiles as not attackable.
+        /// </summary>
+        private void bitMaskAllTilesAsNotAttackable()
+        {
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    tile.AttackID = 0;
+                }
+            }
+        }
+
+        #endregion
+
+        #region BitMasking (swapping tiles)
 
         /// <summary>
         /// Swaps the current tile with the board's selected tile.
@@ -549,110 +861,15 @@ namespace Angels_Vs_Demons.BoardObjects
         public void bitMaskSwapTiles(Tile destTile, Tile srcTile)
         {
             destTile.Unit = srcTile.Unit;
+            destTile.IsUsable = true;
+            srcTile.IsUsable = false;
             srcTile.Unit = null;
+            srcTile.IsSelected = false;
+            selectedTile.Unit = null;
+            selectedTile.IsSelected = false;
+            selectedTile = null;
         }
 
-        /// <summary>
-        /// Uses bit masking to  mark the tiles as movable.
-        /// </summary>
-        public void bitMaskGetMoves()
-        {
-            for (int i = 0; i < grid.Length; i++)
-            {
-                foreach (Tile tile in grid[i])
-                {
-                    if (tile.Unit != null)
-                    {
-                        bitMaskPaths(tile.Unit.Movement, tile, tile.Unit.ID);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Iterates through the grid and masks all tiles as not moveable
-        /// </summary>
-        private void bitMaskAllTilesAsNotMovable()
-        {
-            for (int i = 0; i < grid.Length; i++)
-            {
-                foreach (Tile tile in grid[i])
-                {
-                    tile.MoveID = 0;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Debugging method that writes the bitmask data of all tiles to the console
-        /// </summary>
-        public void showBitMasks()
-        {
-            for (int i = 0; i < grid.Length; i++)
-            {
-                foreach (Tile tile in grid[i])
-                {
-                    showTileBitMasks(tile);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Debugging method that writes the bitmask data of a tile to the console
-        /// </summary>
-        /// <param name="currentTile"> the current tile to get the bitmask of</param>
-        private void showTileBitMasks(Tile currentTile)
-        {
-            Console.Write("x = ");
-            Console.Write(currentTile.position.X);
-            Console.Write(", y = ");
-            Console.Write(currentTile.position.Y);
-            Console.Write(": id = ");
-            Console.WriteLine(grid[(int)currentTile.position.X][(int)currentTile.position.Y].MoveID);
-        }
-
-        /// <summary>
-        /// Uses bit masking to all tiles within a Units move range that are not occupied as movable.
-        /// </summary>
-        /// <param name="distance">The move range of a unit</param>
-        /// <param name="currentTile">The current tile we are checking</param>
-        public void bitMaskPaths(int distance, Tile currentTile, int id)
-        {
-            distance--;
-            grid[(int)currentTile.position.X][(int)currentTile.position.Y].MoveID |= id;//OR EQUALS
-            if (distance >= 0)
-            {
-                // are there tiles left and the tile is not occupied, go left
-                if (currentTile.position.X - 1 >= 0 &&
-                    grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].IsOccupied == false)
-                {
-                    currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
-                    bitMaskPaths(distance, currentTile.PathLeft, id);
-                }
-                // are there tiles right and the tile is not occupied, go right
-                if (currentTile.position.X + 1 < x_size &&
-                    grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].IsOccupied == false)
-                {
-                    currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
-                    bitMaskPaths(distance, currentTile.PathRight, id);
-                }
-                // are there tiles above and the tile is not occupied, go up
-                if (currentTile.position.Y - 1 >= 0 &&
-                    grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].IsOccupied == false)
-                {
-                    currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
-                    bitMaskPaths(distance, currentTile.PathTop, id);
-                }
-                // are there tiles below and the tile is not occupied, go down
-                if (currentTile.position.Y + 1 < y_size &&
-                    grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].IsOccupied == false)
-                {
-                    currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
-                    bitMaskPaths(distance, currentTile.PathBottom, id);
-                }
-            }
-        }
-        
         #endregion
 
         #region Painting
@@ -679,7 +896,8 @@ namespace Angels_Vs_Demons.BoardObjects
                     {
                         spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Blue);
                     }
-                    else if (grid[i][j].IsAttackable)
+                    else if (selectedTile != null && selectedTile.Unit != null && (grid[i][j].AttackID & selectedTile.Unit.ID) != 0)
+                    //else if (grid[i][j].IsAttackable)
                     {
                         spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Red);
                     }
@@ -717,6 +935,10 @@ namespace Angels_Vs_Demons.BoardObjects
                     if (grid[i][j].IsCurrentTile)
                     {
                         spriteBatch.Draw(Cursor_Texture, grid[i][j].rect, Color.Silver);
+                    }
+                    if (grid[i][j].IsSelected)
+                    {
+
                     }
 
                 }

@@ -184,10 +184,10 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// Processes the move phase.
         /// This should be the same for all types of gameplay screen.
         /// </summary>
-        protected virtual void processMovePhase()
+        protected void processMovePhase()
         {
 #if DEBUG
-            board.showBitMasks();
+            //board.showMoveBitMasks();
 #endif
             Tile currentTile = board.GetCurrentTile();
 #if DEBUG
@@ -198,18 +198,23 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 //check that there is a tile selected
                 if (board.selectedTile != null)
                 {
-                    //if we've selected the same tile again
+                    //if we've selected the same tile again, this indicates the move phase is over
+                    //(not sure if this is the best implementation)
                     if (currentTile.position == board.selectedTile.position)
                     {
                         board.selectedTile = null;
 #if DEBUG
                         Console.WriteLine("selected tile = null");
 #endif
+                        //board.movePhase = false;
+                        //board.attackPhase = true;
+                        ////now get all the tiles that are attackable
+                        //board.bitMaskGetAttacks();
                     }
                     else
                     {
 #if DEBUG
-                        Console.WriteLine("updating seleted tile");
+                        Console.WriteLine("updating selected tile");
 #endif
                         board.selectedTile = currentTile;
                     }
@@ -217,18 +222,27 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 else
                 {
 #if DEBUG
-                    Console.WriteLine("updating seleted tile");
+                    Console.WriteLine("updating selected tile");
 #endif
                     board.selectedTile = currentTile;
                 }
             }
             else
             {
-                //the tile is not occupied, check to see if we can move to it
+                //we've selected a tile that is not one of ours.
+                //if there is a selected tile, check to see if the current tile is within our move range
                 if (board.selectedTile != null && (currentTile.MoveID & board.selectedTile.Unit.ID) != 0)
                 {
                     //execute the move phase
                     executeMovePhase(currentTile, board.selectedTile);
+
+                    //now get all the tiles that are attackable
+                    bool thereAreAttacks = board.bitMaskGetAttacks();
+                    if (!thereAreAttacks)
+                    {
+                        //there are no attacks to make
+                        board.endTurn();
+                    }
                 }
             }
         }
@@ -241,21 +255,80 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
         /// <summary>
         /// Processes the attack phase.
-        /// This should be overridden in each individual gameplayscreen, though they will be similar implementations
+        /// This should be the same for all types of gameplay screen.
         /// </summary>
-        protected virtual void processAttackPhase()
+        protected void processAttackPhase()
         {
-            ///this attack is just default for now, until we have attacking working
-            Attack attack = new Attack(null, null);
-            board.applyAttack(attack);
-            board.endTurn();
+#if DEBUG
+            //board.showAttackBitMasks();
+#endif
+            Tile currentTile = board.GetCurrentTile();
+#if DEBUG
+            Console.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
+#endif
+            if (currentTile.IsUsable)
+            {
+                //check that there is a tile selected
+                if (board.selectedTile != null)
+                {
+                    //if we've selected the same tile again, attack phase is over 
+                    //(not sure if this is the best implementation)
+                    if (currentTile.position == board.selectedTile.position)
+                    {
+                        board.selectedTile = null;
+#if DEBUG
+                        Console.WriteLine("selected the same tile again");
+                        Console.WriteLine("selected tile = null");
+#endif
+                        //board.endTurn();
+                    }
+                    else
+                    {
+#if DEBUG
+                        Console.WriteLine("selected a new tile");
+                        Console.WriteLine("updating selected tile");
+#endif
+                        board.selectedTile = currentTile;
+                    }
+                }
+                else
+                {
+#if DEBUG
+                    Console.WriteLine("no tile selected, selecting current tile");
+                    Console.WriteLine("updating selected tile");
+#endif
+                    board.selectedTile = currentTile;
+                }
+            }
+            else
+            {
+                //we've selected a tile that is not one of ours.
+                //if there is a selected tile, check to see if the current tile is within our attack range
+                if (board.selectedTile != null && (currentTile.AttackID & board.selectedTile.Unit.ID) != 0)
+                {
+                    //if the current tile has a unit on it
+                    if (currentTile.Unit != null)
+                    {
+#if DEBUG
+                        Console.WriteLine("executing attack phase");
+#endif
+                        //execute the attack phase
+                        executeAttackPhase(currentTile, board.selectedTile);
+
+                        //now end the turn
+                        board.endTurn();
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// Executes the attack phase.
         /// This should be overridden in each individual gameplayscreen, though they will be similar implementations
         /// </summary>
-        protected abstract void executeAttackPhase(Tile currentTile, Tile boardSelectedTile);
+        /// <param name="victimTile">the tile that is getting attacked</param>
+        /// <param name="attackerTile">the tile that is attacking</param>
+        protected abstract void executeAttackPhase(Tile victimTile, Tile attackerTile);
 
         /// <summary>
         /// Draws the gameplay screen.

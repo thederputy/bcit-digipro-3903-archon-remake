@@ -31,15 +31,15 @@ namespace Angels_Vs_Demons.BoardObjects
         void applyTurn(Turn turn);
 
         /// <summary>
-        /// Performs a game turn. This consists of a movement and/or attack.
+        /// Performs a game move.
         /// </summary>
-        /// <param name="turn">Turn object that contains details of a turn.</param>
+        /// <param name="move">Move object that contains details of a move.</param>
         void applyMove(Move move);
 
         /// <summary>
-        /// Performs a game turn. This consists of a movement and/or attack.
+        /// Performs a game attack.
         /// </summary>
-        /// <param name="turn">Turn object that contains details of a turn.</param>
+        /// <param name="attack">Attack object that contains details of an attack.</param>
         void applyAttack(Attack attack);
 
 

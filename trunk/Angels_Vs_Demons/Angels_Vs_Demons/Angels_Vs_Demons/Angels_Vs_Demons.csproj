@@ -59,6 +59,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <PlatformTarget>x86</PlatformTarget>
     <XnaCompressContent>true</XnaCompressContent>
+    <DocumentationFile>bin\x86\Release\Angels_Vs_Demons.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>70B8B7DCF3E87FE9FBF4C3E1A85E1E75FFA682AE</ManifestCertificateThumbprint>
