@@ -142,9 +142,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 {
                     //do the computer player stuff
                     ComputerPlayer cp = currentPlayer as ComputerPlayer;
-                    Turn turn = new Turn(new Move(null, null), new Attack(null, null));
-                    turn.Move = cp.getMove(this);
-                    turn.Attack = cp.getAttack(this);
+                    Turn turn = cp.getTurn(board);
                     board.applyTurn(turn);
                 }
 
@@ -229,7 +227,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// This is the main loop that processes the gamestate.
         /// </summary>
         protected virtual void makeAction()
-        {
+        {          
             if (board.movePhase)
             {
                 processMovePhase();

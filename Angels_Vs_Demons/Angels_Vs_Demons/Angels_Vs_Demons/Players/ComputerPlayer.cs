@@ -60,7 +60,7 @@ namespace Angels_Vs_Demons.Players
             }
         }
 
-        public Turn getMove(Board board)
+        public Turn getTurn(Board board)
         {
             CurrentBoard = board;
 
@@ -82,7 +82,8 @@ namespace Angels_Vs_Demons.Players
         /// </value>
         private bool mayPlay(List moves)
         {
-            return !moves.isEmpty() && !((List)moves.peek_head()).isEmpty();
+            return !moves.isEmpty();
+                //&& !((List)moves.peek_head()).isEmpty();
         }
 
         /// <sumary> 
@@ -98,13 +99,13 @@ namespace Angels_Vs_Demons.Players
         /// </value>
         private Turn minimax(Board board)
         {
-            List sucessors, bestMove = null;
+            List sucessors, bestMove = new List();
             Turn move, turn = null;
             Board nextBoard;
             int totalMoves;
             int value, maxValue = Int32.MinValue;
 
-            sucessors = board.getValidMoves();
+            sucessors = board.getValidTurns();
             while (mayPlay(sucessors))
             {
                 move = (Turn)sucessors.pop_front();
@@ -133,7 +134,7 @@ namespace Angels_Vs_Demons.Players
 
             if (totalMoves > 1)
             {
-                turn = (Turn)bestMove.get(random.Next(totalMoves)); // No larger than 108
+                turn = (Turn)bestMove.get(random.Next(totalMoves-1)); // Select Turn randomly from 0 to totalMoves.
             }
 
             return turn;
@@ -174,7 +175,7 @@ namespace Angels_Vs_Demons.Players
             Debug.WriteLine("Max node at depth : " + depth + " with alpha : " + alpha +
                                 " beta : " + beta);
 
-            sucessors = board.getValidMoves();
+            sucessors = board.getValidTurns();
             while (mayPlay(sucessors))
             {
                 move = (Turn)sucessors.pop_front();
@@ -236,7 +237,7 @@ namespace Angels_Vs_Demons.Players
             Debug.WriteLine("Min node at depth : " + depth + " with alpha : " + alpha +
                                 " beta : " + beta);
 
-            sucessors = (List)board.getValidMoves();
+            sucessors = (List)board.getValidTurns();
             while (mayPlay(sucessors))
             {
                 move = (Turn)sucessors.pop_front();
