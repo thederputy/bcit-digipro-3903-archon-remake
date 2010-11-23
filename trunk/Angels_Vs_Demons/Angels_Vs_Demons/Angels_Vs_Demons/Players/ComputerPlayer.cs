@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Angels_Vs_Demons.BoardObjects;
+using Angels_Vs_Demons.Screens.GameplayScreens;
 using Angels_Vs_Demons.Util;
 #endregion
 
@@ -31,6 +32,16 @@ namespace Angels_Vs_Demons.Players
             : base(faction)
         {
 
+        }
+
+        public Move getMove(GameplayScreen game)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Attack getAttack(GameplayScreen game)
+        {
+            throw new NotImplementedException();
         }
 
         /// <sumary> 

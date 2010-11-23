@@ -10,19 +10,26 @@ namespace Angels_Vs_Demons.BoardObjects
     class Turn
     {
         #region Fields
-        private Move move;
 
+        /// <summary>
+        /// The move associated with this turn.
+        /// </summary>
         public Move Move
         {
             get { return move; }
+            set { move = value; }
         }
+        private Move move;
 
-        private Attack attack;
-
+        /// <summary>
+        /// The attack associated with this turn.
+        /// </summary>
         public Attack Attack
         {
             get { return attack; }
+            set { attack = value; }
         }
+        private Attack attack;
 
         #endregion
 

@@ -29,6 +29,21 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         protected Player player1;
         protected Player player2;
 
+        /// <summary>
+        /// The player who is currently moving.  null if the game is over.
+        /// </summary>
+        protected Player currentPlayer;
+
+        /// <summary>
+        /// The player who will go after this turn is completed.  null if the game is over.
+        /// </summary>
+        protected Player nextPlayer;
+
+        /// <summary>
+        /// The player that won the game.  null if there is no winner yet or if the game is tied.
+        /// </summary>
+        protected Player winnerPlayer;
+
         protected Board board;
 
         UnitDisplayWindow unitDisplayWindow;
@@ -45,6 +60,24 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         {
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
+        }
+
+        /// <summary>
+        /// Copy constructor. The tictactoe game has one, so I thought I'd add it.
+        /// </summary>
+        /// <param name="game"></param>
+        public GameplayScreen(GameplayScreen game)
+        {
+            content = game.content;
+            previousKeyboardState = game.previousKeyboardState;
+            previousGamePadState = game.previousGamePadState;
+            player1 = game.player1;
+            player2 = game.player2;
+            currentPlayer = game.currentPlayer;
+            nextPlayer = game.nextPlayer;
+            winnerPlayer = game.winnerPlayer;
+            board = game.board;
+            unitDisplayWindow = game.unitDisplayWindow;
         }
 
 
@@ -96,11 +129,37 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         {
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
-            //check for end of turn
-            if (!board.movePhase && !board.attackPhase)
+            if (winnerPlayer == null)
             {
-                board.endTurn();    //end the current turn
-                board.beginTurn();  //begin the next turn
+                //will only get called at the beginning of the game
+                if (currentPlayer == null)
+                {
+                    currentPlayer = player1;
+                    nextPlayer = player2;
+                }
+
+                if (currentPlayer is ComputerPlayer)
+                {
+                    //do the computer player stuff
+                    ComputerPlayer cp = currentPlayer as ComputerPlayer;
+                    Turn turn = new Turn(new Move(null, null), new Attack(null, null));
+                    turn.Move = cp.getMove(this);
+                    turn.Attack = cp.getAttack(this);
+                    board.applyTurn(turn);
+                }
+
+                //check for end of turn
+                if (!board.movePhase && !board.attackPhase)
+                {
+                    board.endTurn();    //end the current turn
+                    
+                    //switch the controlling players
+                    Player tempPlayer = currentPlayer;
+                    currentPlayer = nextPlayer;
+                    nextPlayer = tempPlayer;
+
+                    board.beginTurn();  //begin the next turn
+                }
             }
         }
 
@@ -185,7 +244,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// Processes the move phase.
         /// This should be the same for all types of gameplay screen.
         /// </summary>
-        protected void processMovePhase()
+        public void processMovePhase()
         {
 #if DEBUG
             //board.showMoveBitMasks();
@@ -251,13 +310,16 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// Executes the move phase.
         /// This should be overridden in each individual gameplayscreen, though they will be similar implementations
         /// </summary>
-        protected abstract void executeMovePhase(Tile currentTile, Tile boardSelectedTile);
+        protected virtual void executeMovePhase(Tile currentTile, Tile boardSelectedTile)
+        {
+            board.applyMove(new Move(currentTile, boardSelectedTile));
+        }
 
         /// <summary>
         /// Processes the attack phase.
         /// This should be the same for all types of gameplay screen.
         /// </summary>
-        protected void processAttackPhase()
+        public void processAttackPhase()
         {
 #if DEBUG
             //board.showAttackBitMasks();
@@ -324,7 +386,10 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// </summary>
         /// <param name="victimTile">the tile that is getting attacked</param>
         /// <param name="attackerTile">the tile that is attacking</param>
-        protected abstract void executeAttackPhase(Tile victimTile, Tile attackerTile);
+        protected virtual void executeAttackPhase(Tile victimTile, Tile attackerTile)
+        {
+            board.applyAttack(new Attack(victimTile, attackerTile));
+        }
 
         /// <summary>
         /// Draws the gameplay screen.
