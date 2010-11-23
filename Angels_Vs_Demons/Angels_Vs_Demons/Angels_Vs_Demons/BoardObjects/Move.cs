@@ -45,7 +45,8 @@ namespace Angels_Vs_Demons.BoardObjects
         #endregion
 
         /// <summary>
-        /// Creates a move based on an new and old tile.
+        /// Creates a move based on an new and old tile. If null is passed in for one or both of the parameters,
+        /// then this move is not executable.
         /// </summary>
         /// <param name="newTile">The new grid position</param>
         /// <param name="oldTile">The old grid position</param>

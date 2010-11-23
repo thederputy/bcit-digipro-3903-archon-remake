@@ -32,6 +32,15 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         #region Move/Attack Phases
 
         /// <summary>
+        /// Gets called when you press enter on the board.
+        /// This is the main loop that processes the gamestate.
+        /// </summary>
+        protected override void makeAction()
+        {
+            base.makeAction();
+        }
+
+        /// <summary>
         /// Executes the move phase for a human vs AI game.
         /// </summary>
         /// <param name="currentTile">the tile that the cursor is now on.</param>

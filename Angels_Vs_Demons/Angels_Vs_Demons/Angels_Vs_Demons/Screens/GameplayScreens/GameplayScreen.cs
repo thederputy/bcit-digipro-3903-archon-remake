@@ -237,8 +237,8 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     //execute the move phase
                     executeMovePhase(currentTile, board.selectedTile);
 
-                    //after execting the move phase, check for valid attacks
-                    if (!board.bitMaskGetAttacks())
+                    //after executing the move phase, check for valid attacks for the tile that we moved
+                    if (!board.bitMaskGetAttacksForTile(currentTile))
                     {
                         //there are no valid attacks
                         board.attackPhase = false;
