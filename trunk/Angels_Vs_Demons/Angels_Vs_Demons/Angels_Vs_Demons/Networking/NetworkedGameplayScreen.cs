@@ -422,14 +422,7 @@ namespace Angels_Vs_Demons.Networking
             HumanPlayer hPlayer = localGamer.Tag as HumanPlayer;
             if (hPlayer.Faction == board.ControllingFaction)
             {
-                if (board.movePhase)
-                {
-                    processMovePhase();
-                }
-                if (board.attackPhase)
-                {
-                    processAttackPhase();
-                }
+                base.makeAction();
             }
 #if DEBUG
             else

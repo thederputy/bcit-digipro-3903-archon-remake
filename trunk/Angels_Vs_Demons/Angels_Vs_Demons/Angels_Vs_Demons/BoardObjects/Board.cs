@@ -28,7 +28,8 @@ namespace Angels_Vs_Demons.BoardObjects
         private int y_size;
         private int tile_size;
 
-        public Move lastMove;
+        private Move lastMove;
+        private int lastCurrRecharge;
 
         private Faction controllingFaction;
 
@@ -188,6 +189,7 @@ namespace Angels_Vs_Demons.BoardObjects
             beginTurn();
         }
 
+        #region Getters
         /// <summary>
         /// Gets the current state of the board
         /// </summary>
@@ -255,8 +257,9 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             return grid[(int)Cursor.position.X][(int)Cursor.position.Y];
         }
+        #endregion
 
-
+        #region Cursor methods
         /// <summary>
         ///  Moves the cursor by the amount input, resets current tile
         /// </summary>
@@ -289,6 +292,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 grid[(int)Cursor.position.X][(int)Cursor.position.Y].IsCurrentTile = true;
             }
         }
+        #endregion
 
         /// <summary>
         /// Called at the beginning of a turn, decrements the recharge of the units.
@@ -408,6 +412,7 @@ namespace Angels_Vs_Demons.BoardObjects
 
         /// <summary>
         /// Gets called once each turn.
+        /// - decrements the recharge.
         /// - Sets the tiles to movable based on the controlling faction.
         /// - Performs bitmask pathing for the turn.
         /// </summary>
@@ -423,6 +428,7 @@ namespace Angels_Vs_Demons.BoardObjects
             setTilesUsableByControllingFaction();
             //get all the valid moves
             bool thereAreMoves = bitMaskGetMoves();
+
             //if there are no moves, check for attacks
             if (!thereAreMoves)
             {
@@ -501,10 +507,12 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Console.WriteLine("\nDEBUG: entering applyMove()");
 #endif
+            lastMove = move;
             if (move.IsExecutable)
             {
                 bitMaskSwapTiles(move.NewTile, move.PreviousTile);
                 //set the recharge on the unit that just moved
+                lastCurrRecharge = move.NewTile.Unit.CurrRecharge;
                 move.NewTile.Unit.CurrRecharge = move.NewTile.Unit.TotalRecharge;
 #if DEBUG
                 Console.WriteLine("DEBUG: move applied");
@@ -516,6 +524,33 @@ namespace Angels_Vs_Demons.BoardObjects
             bitMaskAllTilesAsNotMovable();
 #if DEBUG
             Console.WriteLine("DEBUG: leaving applyMove()");
+#endif
+        }
+
+        /// <summary>
+        /// Undoes the last move. Sets the board back to the state that it was before the move was applied.
+        /// </summary>
+        /// <param name="move">the move to un-apply</param>
+        public void undoLastMove()
+        {
+#if DEBUG
+            Console.WriteLine("\nDEBUG: entering undoLastMove()");
+#endif
+            if (lastMove.IsExecutable)
+            {
+                //undo the recharge reset
+                lastMove.NewTile.Unit.CurrRecharge = lastCurrRecharge;
+                bitMaskSwapTiles(lastMove.PreviousTile, lastMove.NewTile);
+#if DEBUG
+                Console.WriteLine("DEBUG: move UNapplied");
+#endif
+            }
+            selectedTile = null;
+            movePhase = true;
+            attackPhase = false;
+            bitMaskGetMoves();
+#if DEBUG
+            Console.WriteLine("DEBUG: leaving undoLastMove()");
 #endif
         }
 
@@ -577,6 +612,10 @@ namespace Angels_Vs_Demons.BoardObjects
 
         #endregion
 
+        /// <summary>
+        /// Performs a shallow (memberwise) copy.
+        /// </summary>
+        /// <returns></returns>
         public Object clone()
         {
             Board copy = new Board(content);
@@ -589,22 +628,110 @@ namespace Angels_Vs_Demons.BoardObjects
             return (Object)copy;
         }
 
-
+        /// <summary>
+        /// Gets all the valid moves.
+        /// </summary>
+        /// <returns>a list of valid moves</returns>
         public List getValidMoves()
         {
-            throw new NotImplementedException();
+            List moves = new List();
+
+            //create the move where we don't actually move
+            moves.push_back(new Move(null, null));
+
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile iTile in grid[i])
+                {
+                    if (iTile.IsUsable)
+                    {
+                        for (int j = 0; j < grid.Length; j++)
+                        {
+                            foreach (Tile jTile in grid[i])
+                            {
+                                if ((iTile.Unit.ID & jTile.MoveID) != 0)
+                                {
+                                    moves.push_back(new Move(jTile, iTile));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return moves;
         }
 
-        public List getValidAttacks()
+        /// <summary>
+        /// Gets all the attacks based on a move.
+        /// </summary>
+        /// <param name="move">the move to base the attack on</param>
+        /// <returns>a list of valid attacks</returns>
+        public List getValidAttacks(Move move)
         {
-            throw new NotImplementedException();
+            List attacks = new List();
+
+            //create the attack where we don't actually attack
+            attacks.push_back(new Attack(null, null));
+
+            if (move.IsExecutable)
+            {
+                //apply the move to the board and get the attacks we can do
+                applyMove(move);
+                if (bitMaskGetAttacksForTile(move.NewTile))
+                {
+                    for (int i = 0; i < grid.Length; i++)
+                    {
+                        foreach (Tile tile in grid[i])
+                        {
+                            if ((move.NewTile.Unit.ID & tile.AttackID) != 0)
+                            {
+                                attacks.push_back(new Attack(tile, move.NewTile));
+                            }
+                        }
+                    }
+                }
+                //un-apply the move
+                undoLastMove();
+            }
+            return attacks;
         }
 
+        /// <summary>
+        /// Gets a list of valid turns for the AI to use.
+        /// </summary>
+        /// <returns>a list of valid turns</returns>
         public List getValidTurns()
         {
-            getValidMoves();
-            getValidAttacks();
-            throw new NotImplementedException();
+            List moves = getValidMoves();
+            List attacks = new List();
+            List turns = new List();
+            int moveCount = 0;
+            int attackCount = 0;
+            int turnCount = 0;
+
+            while (!moves.isEmpty())
+            {
+                Move currentMove = (Move)moves.pop_front();
+                moveCount++;
+                attacks = getValidAttacks(currentMove);
+                Attack currentAttack;
+
+                if(attacks.isEmpty())
+                {
+                    currentAttack = new Attack(null, null);
+                    attackCount++;
+                    turns.push_back(new Turn(currentMove, currentAttack));
+                    turnCount++;
+                }
+                while (!attacks.isEmpty())
+                {
+                    currentAttack = (Attack)attacks.pop_front();
+                    attackCount++;
+                    turns.push_back(new Turn(currentMove, currentAttack));
+                    turnCount++;
+                }
+            }
+            return turns;
         }
 
         #region Move methods
@@ -827,6 +954,37 @@ namespace Angels_Vs_Demons.BoardObjects
             return canAttack;
         }
 
+
+        public bool bitMaskGetAttacksForTile(Tile tile)
+        {
+            bool canAttack = false;
+            int attackTotal = 0;
+            //if we're checking one of the controlling units and it is usable
+            if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
+            {
+#if DEBUG
+                Console.WriteLine("DEBUG: ckecking currently controllable unit: " + tile.Unit.Name);
+#endif
+                if (isNonChampion(tile.Unit))
+                {
+#if DEBUG
+                    Console.WriteLine("DEBUG: checking NonChampion");
+#endif
+                    NonChampion nc = tile.Unit as NonChampion;
+                    attackTotal = bitMaskAttacks(attackTotal, nc.Range, tile.position, tile, tile.Unit.ID);
+                }
+                if (isChampion(tile.Unit))
+                {
+                    //do the fancy magic stuff
+                }
+            }
+            Console.WriteLine("DEBUG: attackTotal: " + attackTotal);
+            if (attackTotal > 0)
+            {
+                canAttack = true;
+            }
+            return canAttack;
+        }
         /// <summary>
         /// Uses bit masking to all tiles within a NonChampion's attack range that are not occupied as attackble.
         /// </summary>
@@ -846,7 +1004,6 @@ namespace Angels_Vs_Demons.BoardObjects
                 if (GetTile(currentTile.position).IsOccupied)
                 {
                     //if it is an opponent unit
-                    //GetTile(currentTile.position).Unit.FactionType = Faction.ANGEL;
                     if (GetTile(currentTile.position).Unit.FactionType != controllingFaction)
                     {
                         //mark that we can attack it
