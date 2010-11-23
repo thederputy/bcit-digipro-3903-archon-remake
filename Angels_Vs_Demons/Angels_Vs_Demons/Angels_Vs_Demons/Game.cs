@@ -24,20 +24,15 @@ namespace Angels_Vs_Demons
 
         #region Initialization
 
-
         /// <summary>
         /// The main game constructor.
         /// </summary>
-        
-        
-
         public GameStateManagementGame()
         {
             Content.RootDirectory = "Content";
 
             graphics = new GraphicsDeviceManager(this);
             
-
             // Create the screen manager component.
             screenManager = new ScreenManager(this);
 
@@ -51,11 +46,9 @@ namespace Angels_Vs_Demons
             screenManager.AddScreen(new MainMenuScreen(), null);
         }
 
-
         #endregion
 
         #region Draw
-
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -67,7 +60,6 @@ namespace Angels_Vs_Demons
             // The real drawing happens inside the screen manager component.
             base.Draw(gameTime);
         }
-
 
         #endregion
     }

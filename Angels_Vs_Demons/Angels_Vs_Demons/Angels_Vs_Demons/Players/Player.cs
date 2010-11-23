@@ -9,11 +9,9 @@ using Angels_Vs_Demons.BoardObjects;
 
 namespace Angels_Vs_Demons.Players
 {
-    class Player
+    abstract class Player
     {
         #region Properties
-
-        protected Faction faction;
 
         /// <summary>
         /// A player's associated faction.
@@ -23,8 +21,7 @@ namespace Angels_Vs_Demons.Players
             get { return faction; }
             set { faction = value; }
         }
-
-        protected Turn turn;
+        protected Faction faction;
 
         /// <summary>
         /// Represents a player's turn.
@@ -34,6 +31,7 @@ namespace Angels_Vs_Demons.Players
             get { return turn; }
             set { turn = value; }
         }
+        protected Turn turn;
 
         #endregion
 
