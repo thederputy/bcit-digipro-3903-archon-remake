@@ -24,7 +24,7 @@ namespace Angels_Vs_Demons.Screens
         Vector2 textOrigin;
         Color titleColor;
         float titleScale;
-        String Name, HP, Recharge, Armor;
+        String Name, HP, Recharge, Armor, Movement, Attack, Power, Range;
 
         #endregion
 
@@ -35,9 +35,9 @@ namespace Angels_Vs_Demons.Screens
             content = Content;
             font = content.Load<SpriteFont>("MenuFont");
 
-            textPosition = new Vector2(0, 0);
-            textOrigin = new Vector2(0, 0);
-            titleColor = new Color(0, 0, 0, 100);
+            textPosition = new Vector2(100, 400);
+            textOrigin = new Vector2(100, 400);
+            titleColor = new Color(0, 0, 0, 255);
             titleScale = 0.75f;
 
         }
@@ -72,9 +72,23 @@ namespace Angels_Vs_Demons.Screens
             {
                 displayedUnit = currentTileUnit;
                 Name = "Name: " + currentTileUnit.Name;
-                HP = "HP: " + currentTileUnit.CurrHP;
-                Recharge = "Recharge: " + currentTileUnit.CurrRecharge;
+                HP = "HP: " + currentTileUnit.CurrHP + "/" + currentTileUnit.TotalHP;
+                Recharge = "Recharge: " + currentTileUnit.CurrRecharge + "/" + currentTileUnit.TotalRecharge;
                 Armor = "Armor: " + currentTileUnit.Armor;
+                Movement = "Movement: " + currentTileUnit.Movement;
+                if (currentTileUnit is NonChampion)
+                {
+                    NonChampion nc = currentTileUnit as NonChampion;
+                    Attack = "Attack: " + nc.AttackTypeVal;
+                    Power = "Power: " + nc.AttackPower;
+                    Range = "Range: " + nc.Range;
+                }
+                else
+                {
+                    Attack = "Attack: --";
+                    Power = "Power: --";
+                    Range = "Range: --";
+                }
                     
             }
             else
@@ -83,16 +97,20 @@ namespace Angels_Vs_Demons.Screens
                 HP = "HP: ";
                 Recharge = "Recharge: ";
                 Armor = "Armor: ";
+                Movement = "Movement: ";
+                Attack = "Attack: ";
+                Power = "Power: ";
+                Range = "Range: ";
             }
             
             spritebatch = spriteBatch;
 
-            Vector2 position = new Vector2(100, 350);
-
             spritebatch.Begin();
 
-            textPosition.Y = 0;
-            textOrigin.Y = 0;
+            textPosition.Y = 1470;
+            textOrigin.Y = 1470;
+            textPosition.X = 950;
+            textOrigin.X = 950;
 
             spritebatch.DrawString(font, Name, textPosition, titleColor, 0,
                                    textOrigin, titleScale, SpriteEffects.None, 0);
@@ -109,7 +127,30 @@ namespace Angels_Vs_Demons.Screens
 
             textPosition.Y += font.LineSpacing;
 
+            spritebatch.DrawString(font, Movement, textPosition, titleColor, 0,
+                                   textOrigin, titleScale, SpriteEffects.None, 0);
+
+            textPosition.Y = 1470;
+            textOrigin.Y = 1470;
+            textPosition.X += 950;
+            textOrigin.X += 950;
+
             spritebatch.DrawString(font, Armor, textPosition, titleColor, 0,
+                                   textOrigin, titleScale, SpriteEffects.None, 0);
+
+            textPosition.Y += font.LineSpacing;
+
+            spritebatch.DrawString(font, Attack, textPosition, titleColor, 0,
+                                   textOrigin, titleScale, SpriteEffects.None, 0);
+
+            textPosition.Y += font.LineSpacing;
+
+            spritebatch.DrawString(font, Power, textPosition, titleColor, 0,
+                                   textOrigin, titleScale, SpriteEffects.None, 0);
+
+            textPosition.Y += font.LineSpacing;
+
+            spritebatch.DrawString(font, Range, textPosition, titleColor, 0,
                                    textOrigin, titleScale, SpriteEffects.None, 0);
 
             spritebatch.End();

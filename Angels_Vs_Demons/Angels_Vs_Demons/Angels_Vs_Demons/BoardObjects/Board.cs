@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -33,6 +34,10 @@ namespace Angels_Vs_Demons.BoardObjects
             set { grid = value; }
         }
         private Tile[][] grid;
+
+
+        public Dictionary<int, Unit> Angels = new Dictionary<int, Unit>();
+        public Dictionary<int, Unit> Demons = new Dictionary<int, Unit>();
 
         private int x_size;
         private int y_size;
@@ -175,6 +180,18 @@ namespace Angels_Vs_Demons.BoardObjects
             Guard AngelicGuard1 = new Guard(Angelic_Guard_Texture, angel, "AngelicGuard", BitMask.angelBits[8]);
             Guard AngelicGuard2 = new Guard(Angelic_Guard_Texture, angel, "AngelicGuard", BitMask.angelBits[9]);
 
+            // Add Angel army to the Angels Dictionary
+            Angels.Add(ArchAngel.ID, ArchAngel);
+            Angels.Add(Pegasus.ID, Pegasus);
+            Angels.Add(HighAngel.ID, HighAngel);
+            Angels.Add(ChosenOne1.ID, ChosenOne1);
+            Angels.Add(ChosenOne2.ID, ChosenOne2);
+            Angels.Add(Soldier1.ID, Soldier1);
+            Angels.Add(Soldier2.ID, Soldier2);
+            Angels.Add(Soldier3.ID, Soldier3);
+            Angels.Add(AngelicGuard1.ID, AngelicGuard1);
+            Angels.Add(AngelicGuard2.ID, AngelicGuard2);
+
             // Place Angel army on grid
             grid[0][4].Unit = ArchAngel;
             grid[0][3].Unit = Pegasus;
@@ -200,6 +217,18 @@ namespace Angels_Vs_Demons.BoardObjects
             Peon Imp3 = new Peon(Imp_Texture, demon, "Imp", BitMask.demonBits[7]);
             Guard BloodGuard1 = new Guard(Blood_Guard_Texture, demon, "BloodGuard", BitMask.demonBits[8]);
             Guard BloodGuard2 = new Guard(Blood_Guard_Texture, demon, "BloodGuard", BitMask.demonBits[9]);
+
+            // Add Demon army to the Demons Dictionary
+            Demons.Add(ArchDemon.ID, ArchDemon);
+            Demons.Add(Nightmare.ID, Nightmare);
+            Demons.Add(DemonLord.ID, DemonLord);
+            Demons.Add(SkeletonArcher1.ID, SkeletonArcher1);
+            Demons.Add(SkeletonArcher2.ID, SkeletonArcher2);
+            Demons.Add(Imp1.ID, Imp1);
+            Demons.Add(Imp2.ID, Imp2);
+            Demons.Add(Imp3.ID, Imp3);
+            Demons.Add(BloodGuard1.ID, BloodGuard1);
+            Demons.Add(BloodGuard2.ID, BloodGuard2);
 
             // Place Demon army on grid
             grid[9][4].Unit = ArchDemon;
