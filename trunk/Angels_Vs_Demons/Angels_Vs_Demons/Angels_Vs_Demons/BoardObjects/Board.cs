@@ -24,7 +24,16 @@ namespace Angels_Vs_Demons.BoardObjects
 
         public GameObject Cursor;
 
-        public Tile[][] grid;
+        /// <summary>
+        /// Gets/sets the grid.
+        /// </summary>
+        public Tile[][] Grid
+        {
+            get { return grid; }
+            set { grid = value; }
+        }
+        private Tile[][] grid;
+
         private int x_size;
         private int y_size;
         private int tile_size;
@@ -32,16 +41,35 @@ namespace Angels_Vs_Demons.BoardObjects
         private Move lastMove;
         private int lastCurrRecharge;
 
-        private Faction controllingFaction;
-
+        /// <summary>
+        /// Gets/sets the controlling faction.
+        /// </summary>
         public Faction ControllingFaction
         {
             get { return controllingFaction; }
             set { controllingFaction = value; }
         }
+        private Faction controllingFaction;
 
-        public bool movePhase;
-        public bool attackPhase;
+        /// <summary>
+        /// Gets/sets the move phase.
+        /// </summary>
+        public bool MovePhase
+        {
+            get { return movePhase; }
+            set { movePhase = value; }
+        }
+        private bool movePhase;
+
+        /// <summary>
+        /// Gets/sets the attack phase.
+        /// </summary>
+        public bool AttackPhase
+        {
+            get { return attackPhase; }
+            set { attackPhase = value; }
+        }
+        private bool attackPhase;
 
         public Tile selectedTile;
 
@@ -191,14 +219,6 @@ namespace Angels_Vs_Demons.BoardObjects
         }
 
         #region Getters
-        /// <summary>
-        /// Gets the current state of the board
-        /// </summary>
-        /// <returns>current state of the board</returns>
-        public Tile[][] GetBoard()
-        {
-            return grid;
-        }
 
         /// <summary>
         /// Gets the x size of the grid.
@@ -621,10 +641,10 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             Board copy = new Board(content);
 
-            copy.grid = this.grid;
-            copy.controllingFaction = this.controllingFaction;
-            copy.movePhase = this.movePhase;
-            copy.attackPhase = this.attackPhase;
+            copy.Grid = Grid;
+            copy.ControllingFaction = ControllingFaction;
+            copy.MovePhase = MovePhase;
+            copy.AttackPhase = AttackPhase;
 
             return (Object)copy;
         }
