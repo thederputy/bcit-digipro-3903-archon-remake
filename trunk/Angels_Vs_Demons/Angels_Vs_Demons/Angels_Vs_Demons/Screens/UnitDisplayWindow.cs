@@ -15,20 +15,31 @@ namespace Angels_Vs_Demons.Screens
 {
     class UnitDisplayWindow : GameScreen
     {
+        ContentManager content;
+        SpriteBatch spritebatch;
         #region Fields
-        Vector2 size;
-        List<String> fields = new List<String>();
-        string menuTitle;
         SpriteFont font;
         Unit displayedUnit;
+        Vector2 textPosition;
+        Vector2 textOrigin;
+        Color titleColor;
+        float titleScale;
+        String Name, HP, Recharge, Armor;
 
         #endregion
 
         #region Properties
 
-        public int HP
+        public UnitDisplayWindow(ContentManager Content)
         {
-            set { HP = value; }
+            content = Content;
+            font = content.Load<SpriteFont>("MenuFont");
+
+            textPosition = new Vector2(0, 0);
+            textOrigin = new Vector2(0, 0);
+            titleColor = new Color(0, 0, 0, 100);
+            titleScale = 0.75f;
+
         }
 
         public Unit DisplayedUnit
@@ -43,22 +54,7 @@ namespace Angels_Vs_Demons.Screens
 
         public UnitDisplayWindow()
         {
-            size.X = ScreenManager.screenWidth;
-            size.Y = 200;
-
-            String Name = "Unit: ";
-            String HP = "HP: ";
-            String Recharge = "Recharge: ";
-            String Armour = "Armour: ";
-            String AP = "AP: ";
-            String MOV = "MOV: ";
-
-            fields.Add(Name);
-            fields.Add(HP);
-            fields.Add(Recharge);
-            fields.Add(Armour);
-            fields.Add(AP);
-            fields.Add(MOV);
+            
             
         }
 
@@ -69,27 +65,54 @@ namespace Angels_Vs_Demons.Screens
         /// <summary>
         /// Draws display window.
         /// </summary>
-        public override void Draw(GameTime gameTime)
+        public void Draw(SpriteBatch spriteBatch, Unit currentTileUnit)
         {
-            ScreenManager.GraphicsDevice.Clear(ClearOptions.Target,
-                                               Color.AliceBlue, 0, 0);
-            SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
             //SpriteFont font = ScreenManager.Font;
+            if (currentTileUnit != null)
+            {
+                displayedUnit = currentTileUnit;
+                Name = "Name: " + currentTileUnit.Name;
+                HP = "HP: " + currentTileUnit.CurrHP;
+                Recharge = "Recharge: " + currentTileUnit.CurrRecharge;
+                Armor = "Armor: " + currentTileUnit.Armor;
+                    
+            }
+            else
+            {
+                Name = "Name: ";
+                HP = "HP: ";
+                Recharge = "Recharge: ";
+                Armor = "Armor: ";
+            }
+            
+            spritebatch = spriteBatch;
 
             Vector2 position = new Vector2(100, 350);
 
-            spriteBatch.Begin();
+            spritebatch.Begin();
 
-            // Draw the unit display window.
-            Vector2 titlePosition = new Vector2(426, 80);
-            Vector2 titleOrigin = new Vector2(10, 500);
-            Color titleColor = new Color(192, 192, 192, TransitionAlpha);
-            float titleScale = 1.25f;
+            textPosition.Y = 0;
+            textOrigin.Y = 0;
 
-            spriteBatch.DrawString(font, menuTitle, titlePosition, titleColor, 0,
-                                   titleOrigin, titleScale, SpriteEffects.None, 0);
+            spritebatch.DrawString(font, Name, textPosition, titleColor, 0,
+                                   textOrigin, titleScale, SpriteEffects.None, 0);
 
-            spriteBatch.End();
+            textPosition.Y += font.LineSpacing;
+
+            spritebatch.DrawString(font, HP, textPosition, titleColor, 0,
+                                   textOrigin, titleScale, SpriteEffects.None, 0);
+
+            textPosition.Y += font.LineSpacing;
+
+            spritebatch.DrawString(font, Recharge, textPosition, titleColor, 0,
+                                   textOrigin, titleScale, SpriteEffects.None, 0);
+
+            textPosition.Y += font.LineSpacing;
+
+            spritebatch.DrawString(font, Armor, textPosition, titleColor, 0,
+                                   textOrigin, titleScale, SpriteEffects.None, 0);
+
+            spritebatch.End();
 
         #endregion
         }

@@ -58,7 +58,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
             board = new Board(content);
             //create new unit display window
-            unitDisplayWindow = new UnitDisplayWindow();
+            unitDisplayWindow = new UnitDisplayWindow(content);
 
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
@@ -341,7 +341,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             board.PaintGrid(spriteBatch);
 
             board.PaintUnits(spriteBatch);
-
+            unitDisplayWindow.Draw(spriteBatch, board.GetCurrentTile().Unit);
             
             //unitDisplayWindow.Draw(gameTime);
 
