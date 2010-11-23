@@ -300,7 +300,7 @@ namespace Angels_Vs_Demons.Util
                 node = node.next;
             }                
 
-            return node;
+            return node.value;
         }
 
         /// <sumary>

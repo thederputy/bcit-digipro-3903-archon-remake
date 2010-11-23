@@ -529,7 +529,7 @@ namespace Angels_Vs_Demons.BoardObjects
             Debug.WriteLine("\nDEBUG: entering applyMove()");
 #endif
             lastMove = move;
-            if (move.checkIsExecutable())
+            if (move.IsExecutable)
             {
                 if ((move.PreviousTile.Unit == null))
                 {
@@ -561,7 +561,7 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Debug.WriteLine("\nDEBUG: entering undoLastMove()");
 #endif
-            if (lastMove.checkIsExecutable())
+            if (lastMove.IsExecutable)
             {
                 //undo the recharge reset
                 lastMove.NewTile.Unit.CurrRecharge = lastCurrRecharge;
@@ -588,7 +588,7 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Debug.WriteLine("\nDEBUG: entering applyAttack()");
 #endif
-            if (attack.checkIsExecutable())
+            if (attack.IsExecutable)
             {
                 if (isNonChampion(attack.AttackerTile.Unit))
                 {
@@ -702,18 +702,15 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 //apply the move to the board and get the attacks we can do
                 applyMove(move);
-                if(move.NewTile.Unit != null)
+                if (bitMaskGetAttacksForTile(move.NewTile))
                 {
-                    if (bitMaskGetAttacksForTile(move.NewTile))
+                    for (int i = 0; i < grid.Length; i++)
                     {
-                        for (int i = 0; i < grid.Length; i++)
+                        foreach (Tile tile in grid[i])
                         {
-                            foreach (Tile tile in grid[i])
+                            if ((move.NewTile.Unit.ID & tile.AttackID) != 0)
                             {
-                                if ((move.NewTile.Unit.ID & tile.AttackID) != 0)
-                                {
-                                    attacks.push_back(new Attack(tile, move.NewTile));
-                                }
+                                attacks.push_back(new Attack(tile, move.NewTile));
                             }
                         }
                     }
@@ -1040,26 +1037,31 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             bool canAttack = false;
             int attackTotal = 0;
-            //if we're checking one of the controlling units and it is usable
-            if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
+            if (tile.Unit != null)
             {
+                //if we're checking one of the controlling units and it is usable
+                if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
+                {
 #if DEBUG
                 Debug.WriteLine("DEBUG: ckecking currently controllable unit: " + tile.Unit.Name);
 #endif
-                if (isNonChampion(tile.Unit))
-                {
+                    if (isNonChampion(tile.Unit))
+                    {
 #if DEBUG
                     Debug.WriteLine("DEBUG: checking NonChampion");
 #endif
-                    NonChampion nc = tile.Unit as NonChampion;
-                    attackTotal = bitMaskAttacks(attackTotal, nc.Range, tile.position, tile, tile.Unit.ID);
-                }
-                if (isChampion(tile.Unit))
-                {
-                    //do the fancy magic stuff
+                        NonChampion nc = tile.Unit as NonChampion;
+                        attackTotal = bitMaskAttacks(attackTotal, nc.Range, tile.position, tile, tile.Unit.ID);
+                    }
+                    if (isChampion(tile.Unit))
+                    {
+                        //do the fancy magic stuff
+                    }
                 }
             }
+#if DEBUG
             Debug.WriteLine("DEBUG: attackTotal: " + attackTotal);
+#endif
             if (attackTotal > 0)
             {
                 canAttack = true;

@@ -1,6 +1,7 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
@@ -13,17 +14,18 @@ namespace Angels_Vs_Demons.BoardObjects
     {
         #region Fields
 
-        private bool isExecutable;
-
         /// <summary>
         /// Stores whether this move can be executed or not
         /// </summary>
         public bool IsExecutable
         {
-            get { return isExecutable; }
+            get
+            {
+                updateIsExecutable();
+                return isExecutable;
+            }
         }
-
-        private Tile previousTile;
+        private bool isExecutable;
 
         /// <summary>
         /// Sets and gets the previousTile member
@@ -31,9 +33,13 @@ namespace Angels_Vs_Demons.BoardObjects
         public Tile PreviousTile
         {
             get { return previousTile; }
+            set
+            {
+                previousTile = value;
+                updateIsExecutable();
+            }
         }
-
-        private Tile newTile;
+        private Tile previousTile;
 
         /// <summary>
         /// Sets and gets the newTile member
@@ -41,46 +47,41 @@ namespace Angels_Vs_Demons.BoardObjects
         public Tile NewTile
         {
             get { return newTile; }
+            set
+            {
+                newTile = value;
+                updateIsExecutable();
+            }
         }
+        private Tile newTile;
+
         #endregion
 
         /// <summary>
         /// Creates a move based on an new and old tile. If null is passed in for one or both of the parameters,
         /// then this move is not executable.
         /// </summary>
-        /// <param name="newTile">The new grid position</param>
-        /// <param name="oldTile">The old grid position</param>
-        public Move(Tile newTile, Tile oldTile)
+        /// <param name="newNewTile">The new grid position</param>
+        /// <param name="newPreviousTile">The previous grid position</param>
+        public Move(Tile newNewTile, Tile newPreviousTile)
         {
-            if (newTile == null || oldTile == null)
-            {
-                isExecutable = false;
-            }
-            else if (oldTile.Unit == null)
-            {
-                isExecutable = false;               
-            }
-            else
-            {
-                isExecutable = true;
-            }
-
-
-            this.newTile = newTile;
-            this.previousTile = oldTile;
+            NewTile = newNewTile;
+            PreviousTile = newPreviousTile;
         }
 
         /// <summary>
         /// Checks and if the move is executable and returns the result.
         /// </summary>
-        /// <returns>True if this move is executable.</returns>
-        public bool checkIsExecutable()
+        public void updateIsExecutable()
         {
-            if (this.newTile == null || this.previousTile == null)
+#if DEBUG
+            Debug.WriteLine("DEBUG: updating isExecutable");
+#endif
+            if (newTile == null || previousTile == null)
             {
                 isExecutable = false;
             }
-            else if (this.previousTile.Unit == null)
+            else if (previousTile.Unit == null)
             {
                 isExecutable = false;
             }
@@ -88,8 +89,9 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 isExecutable = true;
             }
-
-            return isExecutable;
+#if DEBUG
+            Debug.WriteLine("DEBUG: isExecutable is now: " + isExecutable);
+#endif
         }
     }
 }
