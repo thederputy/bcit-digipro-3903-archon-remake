@@ -1,6 +1,7 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -115,7 +116,7 @@ namespace Angels_Vs_Demons.Networking
                     {
                         errorMessage = "No network sessions found.";
                         //spriteBatch.DrawString(board.debugFont, errorMessage, new Vector2(100, 400), Color.Black);
-                        Console.WriteLine(errorMessage);
+                        Debug.WriteLine(errorMessage);
                         return;
                     }
 
@@ -258,7 +259,7 @@ namespace Angels_Vs_Demons.Networking
                 // Send the data to everyone in the session.
                 gamer.SendData(packetWriter, SendDataOptions.InOrder);
 #if DEBUG
-                Console.WriteLine("DEBUG: SENDING TURN DATA");
+                Debug.WriteLine("DEBUG: SENDING TURN DATA");
 #endif
 
                 //make our local turn null, so we don't send it again
@@ -320,7 +321,7 @@ namespace Angels_Vs_Demons.Networking
                 //move our cursor to match what the remote player did
                 board.setCursor((int)hPlayer.Position.X, (int)hPlayer.Position.Y);
 #if DEBUG
-                Console.WriteLine("Moved remote player's cursor from " + board.GetCurrentTile().position.X
+                Debug.WriteLine("Moved remote player's cursor from " + board.GetCurrentTile().position.X
                     + "," + board.GetCurrentTile().position.Y + " to "
                     + hPlayer.Position.X + "," + hPlayer.Position.Y);
 #endif
@@ -427,7 +428,7 @@ namespace Angels_Vs_Demons.Networking
 #if DEBUG
             else
             {
-                Console.WriteLine("NOT YOUR TURN, DUMMY!");
+                Debug.WriteLine("NOT YOUR TURN, DUMMY!");
             }
 #endif
         }

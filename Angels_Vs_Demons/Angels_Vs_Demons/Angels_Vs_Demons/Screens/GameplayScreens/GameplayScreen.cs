@@ -1,5 +1,6 @@
 ﻿#region Using Statements
 using System;
+using System.Diagnostics;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -249,7 +250,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 #endif
             Tile currentTile = board.GetCurrentTile();
 #if DEBUG
-            Console.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
+            Debug.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
 #endif
             if (currentTile.IsUsable)
             {
@@ -262,7 +263,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         board.selectedTile = null;
 #if DEBUG
-                        Console.WriteLine("selected tile = null");
+                        Debug.WriteLine("selected tile = null");
 #endif
                         //board.movePhase = false;
                         //board.attackPhase = true;
@@ -272,7 +273,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     else
                     {
 #if DEBUG
-                        Console.WriteLine("updating selected tile");
+                        Debug.WriteLine("updating selected tile");
 #endif
                         board.selectedTile = currentTile;
                     }
@@ -280,7 +281,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 else
                 {
 #if DEBUG
-                    Console.WriteLine("updating selected tile");
+                    Debug.WriteLine("updating selected tile");
 #endif
                     board.selectedTile = currentTile;
                 }
@@ -324,7 +325,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 #endif
             Tile currentTile = board.GetCurrentTile();
 #if DEBUG
-            Console.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
+            Debug.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
 #endif
             if (currentTile.IsUsable)
             {
@@ -337,15 +338,15 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         board.selectedTile = null;
 #if DEBUG
-                        Console.WriteLine("selected the same tile again");
-                        Console.WriteLine("selected tile = null");
+                        Debug.WriteLine("selected the same tile again");
+                        Debug.WriteLine("selected tile = null");
 #endif
                     }
                     else
                     {
 #if DEBUG
-                        Console.WriteLine("selected a new tile");
-                        Console.WriteLine("updating selected tile");
+                        Debug.WriteLine("selected a new tile");
+                        Debug.WriteLine("updating selected tile");
 #endif
                         board.selectedTile = currentTile;
                     }
@@ -353,8 +354,8 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 else
                 {
 #if DEBUG
-                    Console.WriteLine("no tile selected, selecting current tile");
-                    Console.WriteLine("updating selected tile");
+                    Debug.WriteLine("no tile selected, selecting current tile");
+                    Debug.WriteLine("updating selected tile");
 #endif
                     board.selectedTile = currentTile;
                 }
@@ -369,7 +370,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     if (currentTile.Unit != null)
                     {
 #if DEBUG
-                        Console.WriteLine("executing attack phase");
+                        Debug.WriteLine("executing attack phase");
 #endif
                         //execute the attack phase
                         executeAttackPhase(currentTile, board.selectedTile);

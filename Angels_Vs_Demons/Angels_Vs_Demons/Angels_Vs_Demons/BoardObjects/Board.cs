@@ -1,5 +1,6 @@
 ﻿#region Using Statements
 using System;
+using System.Diagnostics;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -323,7 +324,7 @@ namespace Angels_Vs_Demons.BoardObjects
         private void setTilesUsableByControllingFaction()
         {
 #if DEBUG
-            Console.WriteLine("Setting tiles to usable with factionType: " + controllingFaction);
+            Debug.WriteLine("Setting tiles to usable with factionType: " + controllingFaction);
 #endif
             for (int i = 0; i < grid.Length; i++)
             {
@@ -336,15 +337,15 @@ namespace Angels_Vs_Demons.BoardObjects
                             if (tile.Unit.CurrRecharge == 0)
                             {
 #if DEBUG
-                                Console.WriteLine("" + tile.Unit.Name + " is usable this turn");
+                                Debug.WriteLine("" + tile.Unit.Name + " is usable this turn");
 #endif
                                 tile.IsUsable = true;
                             }
                             else
                             {
 #if DEBUG
-                                Console.Write("" + tile.Unit.Name + " is NOT usable this turn.");
-                                Console.WriteLine(" Current recharge is: " + tile.Unit.CurrRecharge);
+                                Debug.Write("" + tile.Unit.Name + " is NOT usable this turn.");
+                                Debug.WriteLine(" Current recharge is: " + tile.Unit.CurrRecharge);
 #endif
                                 tile.IsUsable = false;
                             }
@@ -419,8 +420,8 @@ namespace Angels_Vs_Demons.BoardObjects
         public void beginTurn()
         {
 #if DEBUG
-            Console.WriteLine("\nDEBUG: entering beginTurn()");
-            Console.WriteLine("Controlling Faction: " + ControllingFaction);
+            Debug.WriteLine("\nDEBUG: entering beginTurn()");
+            Debug.WriteLine("Controlling Faction: " + ControllingFaction);
 #endif
             movePhase = true;
             attackPhase = false;
@@ -444,7 +445,7 @@ namespace Angels_Vs_Demons.BoardObjects
             }
 
 #if DEBUG
-            Console.WriteLine("DEBUG: leaving beginTurn()");
+            Debug.WriteLine("DEBUG: leaving beginTurn()");
 #endif
         }
 
@@ -454,7 +455,7 @@ namespace Angels_Vs_Demons.BoardObjects
         public void endTurn()
         {
 #if DEBUG
-            Console.WriteLine("\nDEBUG: entering endTurn()");
+            Debug.WriteLine("\nDEBUG: entering endTurn()");
 #endif
             //switch the controlling faction
             if (ControllingFaction == Faction.ANGEL)
@@ -475,7 +476,7 @@ namespace Angels_Vs_Demons.BoardObjects
             bitMaskAllTilesAsNotMovable();
             bitMaskAllTilesAsNotAttackable();
 #if DEBUG
-            Console.WriteLine("DEBUG: leaving endTurn()");
+            Debug.WriteLine("DEBUG: leaving endTurn()");
 #endif
         }
 
@@ -487,13 +488,13 @@ namespace Angels_Vs_Demons.BoardObjects
         public void applyTurn(Turn turn)
         {
 #if DEBUG
-            Console.WriteLine("\nDEBUG: entering applyTurn()");
+            Debug.WriteLine("\nDEBUG: entering applyTurn()");
 #endif
             applyMove(turn.Move);
             applyAttack(turn.Attack);
 #if DEBUG
-            Console.WriteLine("DEBUG: turn applied");
-            Console.WriteLine("DEBUG: leaving applyTurn()");
+            Debug.WriteLine("DEBUG: turn applied");
+            Debug.WriteLine("DEBUG: leaving applyTurn()");
 #endif
         }
 
@@ -505,7 +506,7 @@ namespace Angels_Vs_Demons.BoardObjects
         public void applyMove(Move move)
         {
 #if DEBUG
-            Console.WriteLine("\nDEBUG: entering applyMove()");
+            Debug.WriteLine("\nDEBUG: entering applyMove()");
 #endif
             lastMove = move;
             if (move.IsExecutable)
@@ -515,7 +516,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 lastCurrRecharge = move.NewTile.Unit.CurrRecharge;
                 move.NewTile.Unit.CurrRecharge = move.NewTile.Unit.TotalRecharge;
 #if DEBUG
-                Console.WriteLine("DEBUG: move applied");
+                Debug.WriteLine("DEBUG: move applied");
 #endif
             }
             selectedTile = null;
@@ -523,7 +524,7 @@ namespace Angels_Vs_Demons.BoardObjects
             attackPhase = true;
             bitMaskAllTilesAsNotMovable();
 #if DEBUG
-            Console.WriteLine("DEBUG: leaving applyMove()");
+            Debug.WriteLine("DEBUG: leaving applyMove()");
 #endif
         }
 
@@ -534,7 +535,7 @@ namespace Angels_Vs_Demons.BoardObjects
         public void undoLastMove()
         {
 #if DEBUG
-            Console.WriteLine("\nDEBUG: entering undoLastMove()");
+            Debug.WriteLine("\nDEBUG: entering undoLastMove()");
 #endif
             if (lastMove.IsExecutable)
             {
@@ -542,7 +543,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 lastMove.NewTile.Unit.CurrRecharge = lastCurrRecharge;
                 bitMaskSwapTiles(lastMove.PreviousTile, lastMove.NewTile);
 #if DEBUG
-                Console.WriteLine("DEBUG: move UNapplied");
+                Debug.WriteLine("DEBUG: move UNapplied");
 #endif
             }
             selectedTile = null;
@@ -550,7 +551,7 @@ namespace Angels_Vs_Demons.BoardObjects
             attackPhase = false;
             bitMaskGetMoves();
 #if DEBUG
-            Console.WriteLine("DEBUG: leaving undoLastMove()");
+            Debug.WriteLine("DEBUG: leaving undoLastMove()");
 #endif
         }
 
@@ -561,24 +562,24 @@ namespace Angels_Vs_Demons.BoardObjects
         public void applyAttack(Attack attack)
         {
 #if DEBUG
-            Console.WriteLine("\nDEBUG: entering applyAttack()");
+            Debug.WriteLine("\nDEBUG: entering applyAttack()");
 #endif
             if (attack.IsExecutable)
             {
                 if (isNonChampion(attack.AttackerTile.Unit))
                 {
 #if DEBUG
-                    Console.Write("DEBUG: victim's HP before attack: ");
-                    Console.WriteLine(attack.VictimTile.Unit.CurrHP);
+                    Debug.Write("DEBUG: victim's HP before attack: ");
+                    Debug.WriteLine(attack.VictimTile.Unit.CurrHP);
 #endif
                     NonChampion nc = attack.AttackerTile.Unit as NonChampion;
                     nc.attack(attack.VictimTile.Unit);
                     //set the recharge on the unit that just attacked
                     attack.AttackerTile.Unit.CurrRecharge = attack.AttackerTile.Unit.TotalRecharge;
 #if DEBUG
-                    Console.WriteLine("DEBUG: attack applied");
-                    Console.Write("DEBUG: victim's HP after attack: ");
-                    Console.WriteLine(attack.VictimTile.Unit.CurrHP);
+                    Debug.WriteLine("DEBUG: attack applied");
+                    Debug.Write("DEBUG: victim's HP after attack: ");
+                    Debug.WriteLine(attack.VictimTile.Unit.CurrHP);
 #endif
                 }
                 if (isChampion(attack.AttackerTile.Unit))
@@ -590,14 +591,14 @@ namespace Angels_Vs_Demons.BoardObjects
                 {
                     attack.VictimTile.Unit = null;
 #if DEBUG
-                    Console.WriteLine("DEBUG: victim is dead");
+                    Debug.WriteLine("DEBUG: victim is dead");
 #endif
                 }
             }
             attackPhase = false;
             bitMaskAllTilesAsNotAttackable();
 #if DEBUG
-            Console.WriteLine("DEBUG: leaving applyAttack()");
+            Debug.WriteLine("DEBUG: leaving applyAttack()");
 #endif
         }
 
@@ -738,11 +739,11 @@ namespace Angels_Vs_Demons.BoardObjects
 
 #if DEBUG
         /// <summary>
-        /// Debugging method that writes the move bitmask data of all tiles to the console.
+        /// Debugging method that writes the move bitmask data of all tiles to the debug console.
         /// </summary>
         public void showMoveBitMasks()
         {
-            Console.WriteLine("\nDEBUG: entering showMoveBitMasks()");
+            Debug.WriteLine("\nDEBUG: entering showMoveBitMasks()");
             for (int i = 0; i < grid.Length; i++)
             {
                 foreach (Tile tile in grid[i])
@@ -750,21 +751,21 @@ namespace Angels_Vs_Demons.BoardObjects
                     showTileMoveBitMasks(tile);
                 }
             }
-            Console.WriteLine("DEBUG: leaving showMoveBitMasks()");
+            Debug.WriteLine("DEBUG: leaving showMoveBitMasks()");
         }
 
         /// <summary>
-        /// Debugging method that writes the move bitmask data of a tile to the console.
+        /// Debugging method that writes the move bitmask data of a tile to the debug console.
         /// </summary>
         /// <param name="currentTile"> the current tile to get the bitmask of.</param>
         private void showTileMoveBitMasks(Tile currentTile)
         {
-            Console.Write("DEBUG: x = ");
-            Console.Write(currentTile.position.X);
-            Console.Write(", y = ");
-            Console.Write(currentTile.position.Y);
-            Console.Write(": id = ");
-            Console.WriteLine(GetTile(currentTile.position).MoveID);
+            Debug.Write("DEBUG: x = ");
+            Debug.Write(currentTile.position.X);
+            Debug.Write(", y = ");
+            Debug.Write(currentTile.position.Y);
+            Debug.Write(": id = ");
+            Debug.WriteLine(GetTile(currentTile.position).MoveID);
         }
 #endif
 
@@ -799,7 +800,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     }
                 }
             }
-            Console.WriteLine("moveTotal: " + moveTotal);
+            Debug.WriteLine("moveTotal: " + moveTotal);
             if (moveTotal > 0)
             {
                 canMove = true;
@@ -924,11 +925,11 @@ namespace Angels_Vs_Demons.BoardObjects
         #region Attack methods
 #if DEBUG
         /// <summary>
-        /// Debugging method that writes the attack bitmask data of all tiles to the console.
+        /// Debugging method that writes the attack bitmask data of all tiles to the debug console.
         /// </summary>
         public void showAttackBitMasks()
         {
-            Console.WriteLine("\nDEBUG: entering showAttackBitMasks()");
+            Debug.WriteLine("\nDEBUG: entering showAttackBitMasks()");
             for (int i = 0; i < grid.Length; i++)
             {
                 foreach (Tile tile in grid[i])
@@ -936,21 +937,21 @@ namespace Angels_Vs_Demons.BoardObjects
                     showTileAttackBitMasks(tile);
                 }
             }
-            Console.WriteLine("DEBUG: leaving showAttackBitMasks()");
+            Debug.WriteLine("DEBUG: leaving showAttackBitMasks()");
         }
 
         /// <summary>
-        /// Debugging method that writes the attack bitmask data of a tile to the console.
+        /// Debugging method that writes the attack bitmask data of a tile to the debug console.
         /// </summary>
         /// <param name="currentTile"> the current tile to get the bitmask of.</param>
         private void showTileAttackBitMasks(Tile currentTile)
         {
-            Console.Write("DEBUG: x = ");
-            Console.Write(currentTile.position.X);
-            Console.Write(", y = ");
-            Console.Write(currentTile.position.Y);
-            Console.Write(": id = ");
-            Console.WriteLine(GetTile(currentTile.position).AttackID);
+            Debug.Write("DEBUG: x = ");
+            Debug.Write(currentTile.position.X);
+            Debug.Write(", y = ");
+            Debug.Write(currentTile.position.Y);
+            Debug.Write(": id = ");
+            Debug.WriteLine(GetTile(currentTile.position).AttackID);
         }
 #endif
 
@@ -961,7 +962,7 @@ namespace Angels_Vs_Demons.BoardObjects
         public bool bitMaskGetAttacks()
         {
 #if DEBUG
-            Console.WriteLine("DEBUG: bit masking attacks");
+            Debug.WriteLine("DEBUG: bit masking attacks");
 #endif
             bool canAttack = false;
             int attackTotal = 0;
@@ -975,12 +976,12 @@ namespace Angels_Vs_Demons.BoardObjects
                         if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
                         {
 #if DEBUG
-                            Console.WriteLine("DEBUG: ckecking currently controllable unit: " + tile.Unit.Name);
+                            Debug.WriteLine("DEBUG: ckecking currently controllable unit: " + tile.Unit.Name);
 #endif
                             if (isNonChampion(tile.Unit))
                             {
 #if DEBUG
-                                Console.WriteLine("DEBUG: checking NonChampion");
+                                Debug.WriteLine("DEBUG: checking NonChampion");
 #endif
                                 NonChampion nc = tile.Unit as NonChampion;
                                 int unitAttacks = 0;
@@ -995,7 +996,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     }
                 }
             }
-            Console.WriteLine("DEBUG: attackTotal: " + attackTotal);
+            Debug.WriteLine("DEBUG: attackTotal: " + attackTotal);
             if (attackTotal > 0)
             {
                 canAttack = true;
@@ -1016,12 +1017,12 @@ namespace Angels_Vs_Demons.BoardObjects
             if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
             {
 #if DEBUG
-                Console.WriteLine("DEBUG: ckecking currently controllable unit: " + tile.Unit.Name);
+                Debug.WriteLine("DEBUG: ckecking currently controllable unit: " + tile.Unit.Name);
 #endif
                 if (isNonChampion(tile.Unit))
                 {
 #if DEBUG
-                    Console.WriteLine("DEBUG: checking NonChampion");
+                    Debug.WriteLine("DEBUG: checking NonChampion");
 #endif
                     NonChampion nc = tile.Unit as NonChampion;
                     attackTotal = bitMaskAttacks(attackTotal, nc.Range, tile.position, tile, tile.Unit.ID);
@@ -1031,7 +1032,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     //do the fancy magic stuff
                 }
             }
-            Console.WriteLine("DEBUG: attackTotal: " + attackTotal);
+            Debug.WriteLine("DEBUG: attackTotal: " + attackTotal);
             if (attackTotal > 0)
             {
                 canAttack = true;
