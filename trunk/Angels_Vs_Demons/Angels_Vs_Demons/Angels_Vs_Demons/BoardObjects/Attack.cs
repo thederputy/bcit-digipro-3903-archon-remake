@@ -64,5 +64,27 @@ namespace Angels_Vs_Demons.BoardObjects
             VictimTile = victimTile;
             AttackerTile = attackerTile;
         }
+
+        /// <summary>
+        /// Checks and if the attack is executable and returns the result.
+        /// </summary>
+        /// <returns>True if this attack is executable.</returns>
+        public bool checkIsExecutable()
+        {
+            if (victimTile == null || attackerTile == null)
+            {
+                IsExecutable = false;
+            }
+            else if (victimTile.Unit == null)
+            {
+                isExecutable = false;
+            }
+            else
+            {
+                isExecutable = true;
+            }
+
+            return isExecutable;
+        }
     }
 }

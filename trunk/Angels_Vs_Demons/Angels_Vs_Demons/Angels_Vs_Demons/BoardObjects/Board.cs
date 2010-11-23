@@ -529,8 +529,12 @@ namespace Angels_Vs_Demons.BoardObjects
             Debug.WriteLine("\nDEBUG: entering applyMove()");
 #endif
             lastMove = move;
-            if (move.IsExecutable)
+            if (move.checkIsExecutable())
             {
+                if ((move.PreviousTile.Unit == null))
+                {
+                    Debug.WriteLine("Found a Tile with null unit");
+                }
                 bitMaskSwapTiles(move.NewTile, move.PreviousTile);
                 //set the recharge on the unit that just moved
                 lastCurrRecharge = move.NewTile.Unit.CurrRecharge;
@@ -557,7 +561,7 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Debug.WriteLine("\nDEBUG: entering undoLastMove()");
 #endif
-            if (lastMove.IsExecutable)
+            if (lastMove.checkIsExecutable())
             {
                 //undo the recharge reset
                 lastMove.NewTile.Unit.CurrRecharge = lastCurrRecharge;
@@ -584,7 +588,7 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Debug.WriteLine("\nDEBUG: entering applyAttack()");
 #endif
-            if (attack.IsExecutable)
+            if (attack.checkIsExecutable())
             {
                 if (isNonChampion(attack.AttackerTile.Unit))
                 {
@@ -698,15 +702,18 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 //apply the move to the board and get the attacks we can do
                 applyMove(move);
-                if (bitMaskGetAttacksForTile(move.NewTile))
+                if(move.NewTile.Unit != null)
                 {
-                    for (int i = 0; i < grid.Length; i++)
+                    if (bitMaskGetAttacksForTile(move.NewTile))
                     {
-                        foreach (Tile tile in grid[i])
+                        for (int i = 0; i < grid.Length; i++)
                         {
-                            if ((move.NewTile.Unit.ID & tile.AttackID) != 0)
+                            foreach (Tile tile in grid[i])
                             {
-                                attacks.push_back(new Attack(tile, move.NewTile));
+                                if ((move.NewTile.Unit.ID & tile.AttackID) != 0)
+                                {
+                                    attacks.push_back(new Attack(tile, move.NewTile));
+                                }
                             }
                         }
                     }

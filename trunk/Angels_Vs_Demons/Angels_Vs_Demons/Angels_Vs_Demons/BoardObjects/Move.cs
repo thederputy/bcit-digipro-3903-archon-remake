@@ -69,5 +69,27 @@ namespace Angels_Vs_Demons.BoardObjects
             this.newTile = newTile;
             this.previousTile = oldTile;
         }
+
+        /// <summary>
+        /// Checks and if the move is executable and returns the result.
+        /// </summary>
+        /// <returns>True if this move is executable.</returns>
+        public bool checkIsExecutable()
+        {
+            if (this.newTile == null || this.previousTile == null)
+            {
+                isExecutable = false;
+            }
+            else if (this.previousTile.Unit == null)
+            {
+                isExecutable = false;
+            }
+            else
+            {
+                isExecutable = true;
+            }
+
+            return isExecutable;
+        }
     }
 }
