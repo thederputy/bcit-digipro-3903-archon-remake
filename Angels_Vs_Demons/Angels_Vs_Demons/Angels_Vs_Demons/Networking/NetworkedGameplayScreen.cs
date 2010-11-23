@@ -132,7 +132,7 @@ namespace Angels_Vs_Demons.Networking
             }
         }
 
-        // <summary>
+        /// <summary>
         /// After creating or joining a network session, we must subscribe to
         /// some events so we will be notified when the session changes state.
         /// </summary>

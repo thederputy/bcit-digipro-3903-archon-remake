@@ -148,7 +148,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 }
 
                 //check for end of turn
-                if (!board.movePhase && !board.attackPhase)
+                if (!board.MovePhase && !board.AttackPhase)
                 {
                     board.endTurn();    //end the current turn
                     
@@ -229,11 +229,11 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// </summary>
         protected virtual void makeAction()
         {          
-            if (board.movePhase)
+            if (board.MovePhase)
             {
                 processMovePhase();
             }
-            if (board.attackPhase)
+            if (board.AttackPhase)
             {
                 processAttackPhase();
             }
@@ -266,7 +266,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                         Debug.WriteLine("selected tile = null");
 #endif
                         //board.movePhase = false;
-                        //board.attackPhase = true;
+                        //board.AttackPhase = true;
                         ////now get all the tiles that are attackable
                         //board.bitMaskGetAttacks();
                     }
@@ -299,7 +299,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     if (!board.bitMaskGetAttacksForTile(currentTile))
                     {
                         //there are no valid attacks
-                        board.attackPhase = false;
+                        board.AttackPhase = false;
                     }
                 }
             }
