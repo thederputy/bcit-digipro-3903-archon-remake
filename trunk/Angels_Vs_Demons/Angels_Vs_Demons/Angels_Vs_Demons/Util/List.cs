@@ -279,6 +279,31 @@ namespace Angels_Vs_Demons.Util
         }
 
         /// <sumary>
+        ///  Returns element at given position in list
+        /// </sumary>
+        /// <param name="index">
+        ///  Index to return element at
+        /// </param>
+        /// <value>
+        ///  The element at given index.
+        /// </value>
+        public object get(int index)
+        {
+            if(index >= this.length()) {
+                throw new IndexOutOfRangeException();
+            }
+
+            ListNode node = head;
+
+            for (int i = 0; i < index; i++)
+            {
+                node = node.next;
+            }                
+
+            return node;
+        }
+
+        /// <sumary>
         ///  Clones the list, in shallow copy
         /// </sumary>
         /// <value>
