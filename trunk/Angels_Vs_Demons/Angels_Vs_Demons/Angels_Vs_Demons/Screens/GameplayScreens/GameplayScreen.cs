@@ -2,12 +2,14 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Angels_Vs_Demons.BoardObjects;
 using Angels_Vs_Demons.GameObjects;
+using Angels_Vs_Demons.GameObjects.Units;
 using Angels_Vs_Demons.Players;
 using Angels_Vs_Demons.Screens.ScreenManagers;
 using Angels_Vs_Demons.Screens;
@@ -46,6 +48,9 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         protected Player winnerPlayer;
 
         protected Board board;
+
+        private SpriteFont mapFont, gameFont;
+        private Vector2 fontPosition;
 
         UnitDisplayWindow unitDisplayWindow;
 
@@ -93,6 +98,9 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             board = new Board(content);
             //create new unit display window
             unitDisplayWindow = new UnitDisplayWindow(content);
+
+            mapFont = content.Load<SpriteFont>("MapFont");
+            gameFont = content.Load<SpriteFont>("MenuFont");
 
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
@@ -400,10 +408,83 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
-            board.PaintGrid(spriteBatch);
+            //Painting the grid
 
+            board.PaintGrid(spriteBatch);
             board.PaintUnits(spriteBatch);
+
+            //Painting information text
+
             unitDisplayWindow.Draw(spriteBatch, board.GetCurrentTile().Unit);
+
+            spriteBatch.Begin();
+
+            if (board.ControllingFaction == Faction.ANGEL)
+            {
+                fontPosition.X = 20;
+                fontPosition.Y = 20;
+                spriteBatch.DrawString(gameFont, "Angel Turn", fontPosition, Color.Black);
+            }
+            else
+            {
+                fontPosition.X = ScreenManager.screenWidth - 200;
+                fontPosition.Y = 20;
+                spriteBatch.DrawString(gameFont, "Demon Turn", fontPosition, Color.Black);
+            }
+
+            fontPosition.X = 5;
+            fontPosition.Y = 70;
+
+            Dictionary<int, Unit>.ValueCollection AngelValues = board.Angels.Values;
+
+            foreach (Unit u in AngelValues)
+            {
+                spriteBatch.DrawString(mapFont, u.Name + "HP: " + u.CurrHP + "/" + u.TotalHP, fontPosition, Color.Black);
+                fontPosition.Y += mapFont.LineSpacing + 2;
+            }
+
+            fontPosition.X = 635;
+            fontPosition.Y = 70;
+
+            Dictionary<int, Unit>.ValueCollection DemonValues = board.Demons.Values;
+
+            foreach (Unit u in DemonValues)
+            {
+                spriteBatch.DrawString(mapFont, u.Name + "HP: " + u.CurrHP + "/" + u.TotalHP, fontPosition, Color.Black);
+                fontPosition.Y += mapFont.LineSpacing + 2;
+            }
+
+            spriteBatch.End();
+
+
+            //debugging information
+#if DEBUG
+            //Vector2 debugLocation = new Vector2(10,10);
+            //Vector2 debugLocation2 = new Vector2(10, 50);
+
+            //if (board.ControllingFaction == Faction.ANGEL)
+            //    spriteBatch.DrawString(board.gameFont, "Angel Turn", debugLocation, Color.Black);
+            //else
+            //    spriteBatch.DrawString(board.gameFont, "Demon Turn", debugLocation, Color.Black);
+
+            //String debugString = "";
+
+            //if(board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].Unit != null)
+            //    debugString += "Faction: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].Unit.FactionType.ToString() + '\n';
+            
+            //debugString += "Faction: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].ToString() + '\n';
+            //debugString += "Attackable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsAttackable.ToString() + '\n';
+            //debugString += "CurrentTile: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsCurrentTile.ToString() + '\n';
+            //debugString += "Movable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsMovable.ToString() + '\n';
+            //debugString += "Occupied: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsOccupied.ToString() + '\n';
+            //debugString += "Selected: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsSelected.ToString() + '\n';
+            //debugString += "Usable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsUsable.ToString() + '\n';
+            //debugString += "Move Phase: " + board.movePhase.ToString() + '\n';
+            //debugString += "Attack Phase: " + board.attackPhase.ToString() + '\n';
+
+
+            //spriteBatch.DrawString(board.debugFont, debugString, debugLocation2, Color.Black);
+#endif
             
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0)
