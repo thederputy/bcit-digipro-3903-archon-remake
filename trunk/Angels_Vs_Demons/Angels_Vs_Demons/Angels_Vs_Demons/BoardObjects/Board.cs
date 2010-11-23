@@ -640,7 +640,7 @@ namespace Angels_Vs_Demons.BoardObjects
 
                 }
                 //check to see if we killed the unit
-                if (attack.VictimTile.Unit.CurrHP < 1)
+                if (attack.VictimTile.Unit.CurrHP == 0)
                 {
                     attack.VictimTile.Unit = null;
 #if DEBUG

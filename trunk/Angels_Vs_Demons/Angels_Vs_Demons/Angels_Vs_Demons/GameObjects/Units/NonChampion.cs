@@ -83,6 +83,10 @@ namespace Angels_Vs_Demons.GameObjects.Units
         public virtual void attack(Unit victim)
         {
             victim.CurrHP -= victim.applyMitigation(AttackPower, AttackTypeVal);
+            if (victim.CurrHP < 0)
+            {
+                victim.CurrHP = 0;
+            }
         }
 
 
