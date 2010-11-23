@@ -56,10 +56,15 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 isExecutable = false;
             }
+            else if (oldTile.Unit == null)
+            {
+                isExecutable = false;               
+            }
             else
             {
                 isExecutable = true;
             }
+
 
             this.newTile = newTile;
             this.previousTile = oldTile;
