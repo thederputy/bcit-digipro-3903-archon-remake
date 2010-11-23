@@ -129,7 +129,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
         /// <summary>
         /// Special Type(s), if any, of this unit.
         /// </summary>
-        protected specialType[] Special
+        public specialType[] Special
         {
             get { return special; }
             set { special = value; }
