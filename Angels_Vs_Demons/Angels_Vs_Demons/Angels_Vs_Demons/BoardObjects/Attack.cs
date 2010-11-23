@@ -12,18 +12,18 @@ namespace Angels_Vs_Demons.BoardObjects
     {
         #region Fields
 
-        private bool isExecutable;
-
         /// <summary>
         /// Stores whether this move can be executed or not
         /// </summary>
         public bool IsExecutable
         {
-            get { return isExecutable; }
-            set { isExecutable = value; }
+            get
+            {
+                updateIsExecutable();
+                return isExecutable;
+            }
         }
-
-        private Tile attackerTile;
+        private bool isExecutable;
 
         /// <summary>
         /// Sets and gets the previousTile member
@@ -31,10 +31,13 @@ namespace Angels_Vs_Demons.BoardObjects
         public Tile AttackerTile
         {
             get { return attackerTile; }
-            set { attackerTile = value; }
+            set
+            {
+                attackerTile = value;
+                updateIsExecutable();
+            }
         }
-
-        private Tile victimTile;
+        private Tile attackerTile;
 
         /// <summary>
         /// Sets and gets the victimTile member
@@ -42,38 +45,35 @@ namespace Angels_Vs_Demons.BoardObjects
         public Tile VictimTile
         {
             get { return victimTile; }
-            set { victimTile = value; }
+            set
+            {
+                victimTile = value;
+                updateIsExecutable();
+            }
         }
+        private Tile victimTile;
+
         #endregion
 
         /// <summary>
-        /// Creates an attack based on an attacker and a  and attacker tile.
+        /// Creates an attack based on an attacker and an attacker tile.
         /// </summary>
-        /// <param name="victimTile">the tile containing the victim</param>
-        /// <param name="attackerTile">the tile containing the attacker</param>
-        public Attack(Tile victimTile, Tile attackerTile)
+        /// <param name="newVictimTile">the tile containing the victim</param>
+        /// <param name="newAttackerTile">the tile containing the attacker</param>
+        public Attack(Tile newVictimTile, Tile newAttackerTile)
         {
-            if (victimTile == null || attackerTile == null)
-            {
-                IsExecutable = false;
-            }
-            else
-            {
-                IsExecutable = true;
-            }
-            VictimTile = victimTile;
-            AttackerTile = attackerTile;
+            VictimTile = newVictimTile;
+            AttackerTile = newAttackerTile;
         }
 
         /// <summary>
-        /// Checks and if the attack is executable and returns the result.
+        /// Updates the isExecutable value.
         /// </summary>
-        /// <returns>True if this attack is executable.</returns>
-        public bool checkIsExecutable()
+        private void updateIsExecutable()
         {
             if (victimTile == null || attackerTile == null)
             {
-                IsExecutable = false;
+                isExecutable = false;
             }
             else if (victimTile.Unit == null)
             {
@@ -83,8 +83,6 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 isExecutable = true;
             }
-
-            return isExecutable;
         }
     }
 }

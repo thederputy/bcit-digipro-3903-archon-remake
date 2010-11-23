@@ -396,53 +396,19 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         public override void Draw(GameTime gameTime)
         {
             // This game has a blue background
-            ScreenManager.GraphicsDevice.Clear(ClearOptions.Target,
-                                               Color.Azure, 0, 0);
+            ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.Azure, 0, 0);
             
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
-
 
             board.PaintGrid(spriteBatch);
 
             board.PaintUnits(spriteBatch);
             unitDisplayWindow.Draw(spriteBatch, board.GetCurrentTile().Unit);
             
-            //unitDisplayWindow.Draw(gameTime);
-
-            //debugging information
-#if DEBUG
-            //Vector2 debugLocation = new Vector2(10,10);
-            //Vector2 debugLocation2 = new Vector2(10, 50);
-
-            //if (board.ControllingFaction == Faction.ANGEL)
-            //    spriteBatch.DrawString(board.gameFont, "Angel Turn", debugLocation, Color.Black);
-            //else
-            //    spriteBatch.DrawString(board.gameFont, "Demon Turn", debugLocation, Color.Black);
-
-            //String debugString = "";
-
-            //if(board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].Unit != null)
-            //    debugString += "Faction: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].Unit.FactionType.ToString() + '\n';
-            
-            //debugString += "Faction: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].ToString() + '\n';
-            //debugString += "Attackable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsAttackable.ToString() + '\n';
-            //debugString += "CurrentTile: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsCurrentTile.ToString() + '\n';
-            //debugString += "Movable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsMovable.ToString() + '\n';
-            //debugString += "Occupied: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsOccupied.ToString() + '\n';
-            //debugString += "Selected: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsSelected.ToString() + '\n';
-            //debugString += "Usable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsUsable.ToString() + '\n';
-            //debugString += "Move Phase: " + board.movePhase.ToString() + '\n';
-            //debugString += "Attack Phase: " + board.attackPhase.ToString() + '\n';
-
-
-            //spriteBatch.DrawString(board.debugFont, debugString, debugLocation2, Color.Black);
-#endif
-            
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0)
                 ScreenManager.FadeBackBufferToBlack(255 - TransitionAlpha);
         }
-
 
         #endregion
     }
