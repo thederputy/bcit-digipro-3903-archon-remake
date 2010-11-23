@@ -15,6 +15,9 @@ namespace Angels_Vs_Demons.Players
         // Board used for the computer moves
         private Board currentBoard;
 
+        // Used for generation of random numbers
+        private Random random = new Random();
+
         internal Board CurrentBoard
         {
           get { return currentBoard; }
@@ -46,12 +49,12 @@ namespace Angels_Vs_Demons.Players
             }
         }
 
-        public Move getMove(Board board)
+        public Turn getMove(Board board)
         {
             CurrentBoard = board;
 
             Debug.WriteLine("******************************************************************");
-            Debug.WriteLine("Turn number: ");
+            Debug.WriteLine("Computing AI move...");
             Debug.WriteLine("******************************************************************");
 
             return minimax(CurrentBoard);
@@ -82,34 +85,47 @@ namespace Angels_Vs_Demons.Players
         /// <value>
         ///  A list with the computer game movements.
         /// </value>
-        private Move minimax(Board board)
+        private Turn minimax(Board board)
         {
-            List sucessors;
-            Move move, bestMove = null;
+            List sucessors, bestMove = null;
+            Turn move, turn = null;
             Board nextBoard;
+            int totalMoves;
             int value, maxValue = Int32.MinValue;
 
             sucessors = board.getValidMoves();
             while (mayPlay(sucessors))
             {
-                move = (Move)sucessors.pop_front();
+                move = (Turn)sucessors.pop_front();
                 nextBoard = (Board)board.clone();
 
                 Debug.WriteLine("******************************************************************");
-                nextBoard.move(move);
+                nextBoard.applyTurn(move);
                 value = minMove(nextBoard, 1, maxValue, Int32.MaxValue);
 
                 if (value > maxValue)
                 {
                     Debug.WriteLine("Max value : " + value + " at depth : 0");
                     maxValue = value;
-                    bestMove = move;
+                    bestMove.clear();
+                    bestMove.push_front(move);
+                } else if (value == maxValue){
+                    Debug.WriteLine("Max value (equal): " + value + " at depth : 0");
+                    bestMove.push_front(move);
                 }
             }
 
-            Debug.WriteLine("Move value selected : " + maxValue + " at depth : 0");
+            totalMoves = bestMove.length();
 
-            return bestMove;
+            Debug.WriteLine("Move value selected : " + maxValue + " at depth : 0");
+            Debug.WriteLine("Total number of moves to select from: " + totalMoves);
+
+            if (totalMoves > 1)
+            {
+                turn = (Turn)bestMove.get(random.Next(totalMoves)); // No larger than 108
+            }
+
+            return turn;
         }
 
         /// <sumary> 
@@ -140,7 +156,7 @@ namespace Angels_Vs_Demons.Players
             }
 
             List sucessors;
-            Move move;
+            Turn move;
             Board nextBoard;
             int value;
 
@@ -150,9 +166,9 @@ namespace Angels_Vs_Demons.Players
             sucessors = board.getValidMoves();
             while (mayPlay(sucessors))
             {
-                move = (Move)sucessors.pop_front();
+                move = (Turn)sucessors.pop_front();
                 nextBoard = (Board)board.clone();
-                nextBoard.move(move);
+                nextBoard.applyTurn(move);
                 value = minMove(nextBoard, depth + 1, alpha, beta);
 
                 if (value > alpha)
@@ -202,7 +218,7 @@ namespace Angels_Vs_Demons.Players
             }
 
             List sucessors;
-            Move move;
+            Turn move;
             Board nextBoard;
             int value;
 
@@ -212,9 +228,9 @@ namespace Angels_Vs_Demons.Players
             sucessors = (List)board.getValidMoves();
             while (mayPlay(sucessors))
             {
-                move = (Move)sucessors.pop_front();
+                move = (Turn)sucessors.pop_front();
                 nextBoard = (Board)board.clone();
-                nextBoard.move(move);
+                nextBoard.applyTurn(move);
                 value = maxMove(nextBoard, depth + 1, alpha, beta);
 
                 if (value < beta)
