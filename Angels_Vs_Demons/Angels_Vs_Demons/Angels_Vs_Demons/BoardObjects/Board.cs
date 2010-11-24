@@ -1,18 +1,16 @@
 ﻿#region Using Statements
 using System;
-using System.Diagnostics;
-using System.Threading;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.GameObjects.Units;
 using Angels_Vs_Demons.Players;
 using Angels_Vs_Demons.Screens.ScreenManagers;
-using Angels_Vs_Demons.Screens;
 using Angels_Vs_Demons.Util;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects
@@ -584,7 +582,6 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <summary>
         /// Undoes the last move. Sets the board back to the state that it was before the move was applied.
         /// </summary>
-        /// <param name="move">the move to un-apply</param>
         public void undoLastMove()
         {
 #if DEBUG
@@ -672,13 +669,13 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <returns></returns>
         public Object clone()
         {
-            Board copy = new Board(content);
+            Board copy = ObjectCopier.Clone(this);
 
             copy.Grid = Grid;
             copy.ControllingFaction = ControllingFaction;
             copy.MovePhase = MovePhase;
             copy.AttackPhase = AttackPhase;
-
+            Console.WriteLine("cloning board");
             return (Object)copy;
         }
 
@@ -962,7 +959,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <summary>
         /// Iterates through the grid and masks all tiles as not moveable.
         /// </summary>
-        private void bitMaskAllTilesAsNotMovable()
+        public void bitMaskAllTilesAsNotMovable()
         {
             for (int i = 0; i < grid.Length; i++)
             {
@@ -1160,7 +1157,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <summary>
         /// Iterates through the grid and masks all tiles as not attackable.
         /// </summary>
-        private void bitMaskAllTilesAsNotAttackable()
+        public void bitMaskAllTilesAsNotAttackable()
         {
             for (int i = 0; i < grid.Length; i++)
             {

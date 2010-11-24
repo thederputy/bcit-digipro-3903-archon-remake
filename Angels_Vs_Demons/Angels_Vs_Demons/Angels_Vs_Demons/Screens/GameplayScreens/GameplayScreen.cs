@@ -206,39 +206,37 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 {
                     board.moveCursor(-1, 0);
                 }
-
-                if (keyboardState.IsKeyDown(Keys.Right) && !previousKeyboardState.IsKeyDown(Keys.Right))
+                else if (keyboardState.IsKeyDown(Keys.Right) && !previousKeyboardState.IsKeyDown(Keys.Right))
                 {
                     board.moveCursor(1, 0);
                 }
-
-                if (keyboardState.IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
+                else if (keyboardState.IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
                 {
                     board.moveCursor(0, -1);
                 }
-
-                if (keyboardState.IsKeyDown(Keys.Down) && !previousKeyboardState.IsKeyDown(Keys.Down))
+                else if (keyboardState.IsKeyDown(Keys.Down) && !previousKeyboardState.IsKeyDown(Keys.Down))
                 {
                     board.moveCursor(0, 1);
                 }
-
-                if (keyboardState.IsKeyDown(Keys.Enter) && !previousKeyboardState.IsKeyDown(Keys.Enter))
+                else if (keyboardState.IsKeyDown(Keys.Enter) && !previousKeyboardState.IsKeyDown(Keys.Enter))
                 {
                     makeAction();
                 }
-
-                if (keyboardState.IsKeyDown(Keys.E) && !previousKeyboardState.IsKeyDown(Keys.E))
+                else if (keyboardState.IsKeyDown(Keys.E) && !previousKeyboardState.IsKeyDown(Keys.E))
                 {
                     
                     if (board.MovePhase == true)
                     {
                         board.MovePhase = false;
                         board.AttackPhase = true;
+                        board.bitMaskAllTilesAsNotMovable();
+                        board.bitMaskGetAttacks();
                     }
                     else if (board.AttackPhase == true)
                     {
                         board.MovePhase = false;
                         board.AttackPhase = false;
+                        board.bitMaskAllTilesAsNotAttackable();
                     }
                 }
             }
