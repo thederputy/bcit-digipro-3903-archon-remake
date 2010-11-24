@@ -11,6 +11,7 @@ namespace Angels_Vs_Demons.BoardObjects.Spells
         public Bolt(Tile newVictimTile, Tile newAttackerTile)
             : base(newVictimTile, newAttackerTile)
         {
+            MpCost = 20;
         }
     }
 }

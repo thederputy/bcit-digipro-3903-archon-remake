@@ -24,7 +24,7 @@ namespace Angels_Vs_Demons.Screens
         Vector2 textOrigin;
         Color titleColor;
         float titleScale;
-        String Name, HP, Recharge, Armor, Movement, Attack, Power, Range;
+        String Name, HP, Recharge, Armor, Movement, Attack, Power, Range, MP;
 
         #endregion
 
@@ -85,22 +85,25 @@ namespace Angels_Vs_Demons.Screens
                 }
                 else
                 {
-                    Attack = "Attack: --";
-                    Power = "Power: --";
-                    Range = "Range: --";
+                    Champion c = currentTileUnit as Champion;
+                    Attack = "";
+                    Power = "";
+                    Range = "";
+                    MP = "MP: " + c.CurrMP + "/" + c.TotalMP;
                 }
                     
             }
             else
             {
-                Name = "Name: ";
-                HP = "HP: ";
-                Recharge = "Recharge: ";
-                Armor = "Armor: ";
-                Movement = "Movement: ";
-                Attack = "Attack: ";
-                Power = "Power: ";
-                Range = "Range: ";
+                Name = "";
+                HP = "";
+                Recharge = "";
+                Armor = "";
+                Movement = "";
+                Attack = "";
+                Power = "";
+                Range = "";
+                MP = "";
             }
             
             spritebatch = spriteBatch;
@@ -140,18 +143,26 @@ namespace Angels_Vs_Demons.Screens
 
             textPosition.Y += font.LineSpacing;
 
-            spritebatch.DrawString(font, Attack, textPosition, titleColor, 0,
+            if (currentTileUnit is NonChampion)
+            {
+                spritebatch.DrawString(font, Attack, textPosition, titleColor, 0,
                                    textOrigin, titleScale, SpriteEffects.None, 0);
 
-            textPosition.Y += font.LineSpacing;
+                textPosition.Y += font.LineSpacing;
 
-            spritebatch.DrawString(font, Power, textPosition, titleColor, 0,
-                                   textOrigin, titleScale, SpriteEffects.None, 0);
+                spritebatch.DrawString(font, Power, textPosition, titleColor, 0,
+                                       textOrigin, titleScale, SpriteEffects.None, 0);
 
-            textPosition.Y += font.LineSpacing;
+                textPosition.Y += font.LineSpacing;
 
-            spritebatch.DrawString(font, Range, textPosition, titleColor, 0,
-                                   textOrigin, titleScale, SpriteEffects.None, 0);
+                spritebatch.DrawString(font, Range, textPosition, titleColor, 0,
+                                       textOrigin, titleScale, SpriteEffects.None, 0);
+            }
+            else
+            {
+                spritebatch.DrawString(font, MP, textPosition, titleColor, 0,
+                                       textOrigin, titleScale, SpriteEffects.None, 0);
+            }
 
             spritebatch.End();
 
