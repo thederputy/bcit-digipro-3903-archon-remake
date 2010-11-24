@@ -7,6 +7,8 @@ using System.Text;
 using Angels_Vs_Demons.BoardObjects;
 using Angels_Vs_Demons.Screens.GameplayScreens;
 using Angels_Vs_Demons.Util;
+using Angels_Vs_Demons.GameObjects.Units;
+using Angels_Vs_Demons.GameObjects;
 #endregion
 
 namespace Angels_Vs_Demons.Players
@@ -18,6 +20,11 @@ namespace Angels_Vs_Demons.Players
 
         // Used for generation of random numbers
         private Random random = new Random();
+
+        /// <summary>
+        /// Stores values of all units.
+        /// </summary>
+        private Dictionary<string, int> unitValues = new Dictionary<string, int>();
 
         internal Board CurrentBoard
         {
@@ -31,17 +38,12 @@ namespace Angels_Vs_Demons.Players
         public ComputerPlayer(Faction faction)
             : base(faction)
         {
-
-        }
-
-        public Move getMove(GameplayScreen game)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Attack getAttack(GameplayScreen game)
-        {
-            throw new NotImplementedException();
+            unitValues.Add("Champion", 100);
+            unitValues.Add("Archer", 25);
+            unitValues.Add("Guard", 20);
+            unitValues.Add("Knight", 30);
+            unitValues.Add("Mage", 30);
+            unitValues.Add("Peon", 10);
         }
 
         /// <sumary> 
@@ -62,7 +64,7 @@ namespace Angels_Vs_Demons.Players
 
         public Turn getTurn(Board board)
         {
-            CurrentBoard = board;
+            CurrentBoard = (Board)board.clone();
 
             Debug.WriteLine("******************************************************************");
             Debug.WriteLine("Computing AI move...");
@@ -276,6 +278,27 @@ namespace Angels_Vs_Demons.Players
         {
             int colorForce = 0;
             int enemyForce = 0;
+            Unit unit;
+
+            for (int i = 0; i < board.Grid.Length; i++)
+            {
+                foreach (Tile tile in board.Grid[i])
+                {
+                    if (tile.IsOccupied)
+                    {
+                        unit = tile.Unit;
+
+                        if (tile.Unit.FactionType == this.Faction)
+                        {
+                            colorForce += calculateValue(unit);
+                        }
+                        else
+                        {
+                            enemyForce += calculateValue(unit);
+                        }
+                    }
+                }
+            }
 
             return colorForce - enemyForce;
         }
@@ -292,9 +315,12 @@ namespace Angels_Vs_Demons.Players
         /// <value>
         ///  Piece value
         /// </value>
-        private int calculateValue(int piece, int pos)
+        private int calculateValue(Unit unit)
         {
-            int value = 0;
+            int value = unitValues[unit.GetType().Name];
+            Debug.WriteLine("Calculating value for unit: " +unit.Name);
+
+            value = value + unit.CurrHP;
 
             return value;
         }
