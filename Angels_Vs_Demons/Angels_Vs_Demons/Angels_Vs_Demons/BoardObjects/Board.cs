@@ -15,6 +15,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Angels_Vs_Demons.BoardObjects
 {
+    [Serializable]
     class Board : AbstractBoard
     {
         public ContentManager content;

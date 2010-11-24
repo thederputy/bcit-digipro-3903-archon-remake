@@ -9,6 +9,7 @@ using Angels_Vs_Demons.BoardObjects;
 
 namespace Angels_Vs_Demons.Players
 {
+    [Serializable]
     abstract class Player
     {
         #region Properties

@@ -7,9 +7,10 @@ using System.Text;
 
 namespace Angels_Vs_Demons.Players
 {
-
-    /// Rpresents a faction, either ANGEL or DEMON
+    /// <summary>
+    /// Represents a faction, either ANGEL or DEMON
     /// </summary>
+    [Serializable]
     public enum Faction
     {
         ANGEL,
