@@ -129,6 +129,12 @@
   <ItemGroup>
     <Compile Include="BoardObjects\Attack.cs" />
     <Compile Include="BoardObjects\Spell.cs" />
+    <Compile Include="BoardObjects\Spells\Bolt.cs" />
+    <Compile Include="BoardObjects\Spells\Buff.cs" />
+    <Compile Include="BoardObjects\Spells\Heal.cs" />
+    <Compile Include="BoardObjects\Spells\Rest.cs" />
+    <Compile Include="BoardObjects\Spells\Stun.cs" />
+    <Compile Include="BoardObjects\Spells\Teleport.cs" />
     <Compile Include="BoardObjects\Turn.cs" />
     <Compile Include="Players\Faction.cs" />
     <Compile Include="Players\NetworkedHumanPlayer.cs" />
@@ -213,9 +219,7 @@
     <None Include="Angels_Vs_Demons_TemporaryKey.pfx" />
     <None Include="Properties\app.manifest" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BoardObjects\Spells\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!--
