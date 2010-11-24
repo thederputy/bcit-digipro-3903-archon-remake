@@ -226,6 +226,21 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 {
                     makeAction();
                 }
+
+                if (keyboardState.IsKeyDown(Keys.E) && !previousKeyboardState.IsKeyDown(Keys.E))
+                {
+                    
+                    if (board.MovePhase == true)
+                    {
+                        board.MovePhase = false;
+                        board.AttackPhase = true;
+                    }
+                    else if (board.AttackPhase == true)
+                    {
+                        board.MovePhase = false;
+                        board.AttackPhase = false;
+                    }
+                }
             }
             previousKeyboardState = keyboardState;
             previousGamePadState = gamePadState;
@@ -424,16 +439,40 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 fontPosition.X = 20;
                 fontPosition.Y = 20;
                 spriteBatch.DrawString(gameFont, "Angel Turn", fontPosition, Color.Black);
+                if (board.MovePhase)
+                {
+                    fontPosition.X = 35;
+                    fontPosition.Y = 50;
+                    spriteBatch.DrawString(mapFont, "Move Phase", fontPosition, Color.Black);
+                }
+                if (board.AttackPhase)
+                {
+                    fontPosition.X = 35;
+                    fontPosition.Y = 50;
+                    spriteBatch.DrawString(mapFont, "Attack Phase", fontPosition, Color.Black);
+                }
             }
             else
             {
                 fontPosition.X = ScreenManager.screenWidth - 200;
                 fontPosition.Y = 20;
                 spriteBatch.DrawString(gameFont, "Demon Turn", fontPosition, Color.Black);
+                if (board.MovePhase)
+                {
+                    fontPosition.X = ScreenManager.screenWidth - 185;
+                    fontPosition.Y = 50;
+                    spriteBatch.DrawString(mapFont, "Move Phase", fontPosition, Color.Black);
+                }
+                if (board.AttackPhase)
+                {
+                    fontPosition.X = ScreenManager.screenWidth - 185;
+                    fontPosition.Y = 50;
+                    spriteBatch.DrawString(mapFont, "Attack Phase", fontPosition, Color.Black);
+                }
             }
 
             fontPosition.X = 5;
-            fontPosition.Y = 70;
+            fontPosition.Y = 120;
 
             Dictionary<int, Unit>.ValueCollection AngelValues = board.Angels.Values;
 
@@ -444,7 +483,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             }
 
             fontPosition.X = 635;
-            fontPosition.Y = 70;
+            fontPosition.Y = 120;
 
             Dictionary<int, Unit>.ValueCollection DemonValues = board.Demons.Values;
 
