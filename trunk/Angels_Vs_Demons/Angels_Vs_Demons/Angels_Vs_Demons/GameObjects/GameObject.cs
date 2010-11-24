@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Angels_Vs_Demons.GameObjects
 {
+    [Serializable]
     class GameObject
     {
         public Texture2D sprite;
