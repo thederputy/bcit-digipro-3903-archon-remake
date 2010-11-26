@@ -32,8 +32,16 @@ namespace Angels_Vs_Demons.GameObjects.Units
             totalRecharge = 2;
         }
 
-
         #endregion
 
+        /// <summary>
+        /// Performs a deep clone of the Knight.
+        /// </summary>
+        /// <returns>A new Knight instance populated with the same data as this Knight.</returns>
+        public override Object Clone()
+        {
+            Knight other = base.Clone() as Knight;
+            return other;
+        }
     }
 }

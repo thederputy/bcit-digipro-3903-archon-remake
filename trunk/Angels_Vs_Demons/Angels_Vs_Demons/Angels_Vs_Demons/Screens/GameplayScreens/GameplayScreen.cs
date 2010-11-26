@@ -24,28 +24,58 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
     {
         #region Fields
 
-        public ContentManager content;
+        private Player player1;
 
-        protected KeyboardState previousKeyboardState;
-        protected GamePadState previousGamePadState;
+        public Player Player1
+        {
+            get { return player1; }
+            set { player1 = value; }
+        }
+        private Player player2;
 
-        protected Player player1;
-        protected Player player2;
+        public Player Player2
+        {
+            get { return player2; }
+            set { player2 = value; }
+        }
 
         /// <summary>
         /// The player who is currently moving.  null if the game is over.
         /// </summary>
-        protected Player currentPlayer;
+        private Player currentPlayer;
+
+        public Player CurrentPlayer
+        {
+            get { return currentPlayer; }
+            set { currentPlayer = value; }
+        }
 
         /// <summary>
         /// The player who will go after this turn is completed.  null if the game is over.
         /// </summary>
-        protected Player nextPlayer;
+        private Player nextPlayer;
+
+        public Player NextPlayer
+        {
+            get { return nextPlayer; }
+            set { nextPlayer = value; }
+        }
 
         /// <summary>
         /// The player that won the game.  null if there is no winner yet or if the game is tied.
         /// </summary>
-        protected Player winnerPlayer;
+        private Player winnerPlayer;
+
+        public Player WinnerPlayer
+        {
+            get { return winnerPlayer; }
+            set { winnerPlayer = value; }
+        }
+
+        public ContentManager content;
+
+        protected KeyboardState previousKeyboardState;
+        protected GamePadState previousGamePadState;
 
         protected Board board;
 
@@ -75,15 +105,15 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         public GameplayScreen(GameplayScreen game)
         {
             content = game.content;
-            previousKeyboardState = game.previousKeyboardState;
-            previousGamePadState = game.previousGamePadState;
-            player1 = game.player1;
-            player2 = game.player2;
-            currentPlayer = game.currentPlayer;
-            nextPlayer = game.nextPlayer;
-            winnerPlayer = game.winnerPlayer;
-            board = game.board;
-            unitDisplayWindow = game.unitDisplayWindow;
+            //previousKeyboardState = game.previousKeyboardState;
+            //previousGamePadState = game.previousGamePadState;
+            //player1 = game.player1;
+            //player2 = game.player2;
+            //currentPlayer = game.currentPlayer;
+            //nextPlayer = game.nextPlayer;
+            //winnerPlayer = game.winnerPlayer;
+            //board = game.board;
+            //unitDisplayWindow = game.unitDisplayWindow;
         }
 
 
@@ -138,21 +168,22 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         {
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
-            if (winnerPlayer == null)
+            if (WinnerPlayer == null)
             {
                 //will only get called at the beginning of the game
-                if (currentPlayer == null)
+                if (CurrentPlayer == null)
                 {
-                    currentPlayer = player1;
-                    nextPlayer = player2;
+                    CurrentPlayer = Player1;
+                    NextPlayer = Player2;
                 }
 
-                if (currentPlayer is ComputerPlayer)
+                if (CurrentPlayer is ComputerPlayer)
                 {
                     //do the computer player stuff
-                    ComputerPlayer cp = currentPlayer as ComputerPlayer;
+                    ComputerPlayer cp = CurrentPlayer as ComputerPlayer;
                     Turn turn = cp.getTurn(board);
                     board.applyTurn(turn);
+                    Console.WriteLine("DONE CHANGING STUFF");
                 }
 
                 //check for end of turn
@@ -161,10 +192,17 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     board.endTurn();    //end the current turn
                     
                     //switch the controlling players
-                    Player tempPlayer = currentPlayer;
-                    currentPlayer = nextPlayer;
-                    nextPlayer = tempPlayer;
+                    Player tempPlayer = CurrentPlayer;
+                    CurrentPlayer = NextPlayer;
+                    NextPlayer = tempPlayer;
+                    if (CurrentPlayer is ComputerPlayer && NextPlayer is ComputerPlayer)
+                    {
+                        //do something useful
+                        //while (Keyboard.GetState != Keys.Enter)
+                        //{
 
+                        //}
+                    }
                     board.beginTurn();  //begin the next turn
                 }
             }
@@ -238,6 +276,10 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                         board.AttackPhase = false;
                         board.bitMaskAllTilesAsNotAttackable();
                     }
+                }
+                else if (keyboardState.IsKeyDown(Keys.U) && !previousKeyboardState.IsKeyDown(Keys.U))
+                {
+                    board.undoLastMove();
                 }
             }
             previousKeyboardState = keyboardState;
@@ -317,11 +359,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     executeMovePhase(currentTile, board.selectedTile);
 
                     //after executing the move phase, check for valid attacks for the tile that we moved
-                    if (!board.bitMaskGetAttacksForTile(currentTile))
-                    {
-                        //there are no valid attacks
-                        board.AttackPhase = false;
-                    }
+                    board.bitMaskGetAttacksForTile(currentTile);
                 }
             }
         }
@@ -332,7 +370,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// </summary>
         protected virtual void executeMovePhase(Tile currentTile, Tile boardSelectedTile)
         {
-            board.applyMove(new Move(currentTile, boardSelectedTile));
+            board.applyMove(new Move(currentTile.position, boardSelectedTile.position));
         }
 
         /// <summary>
@@ -388,7 +426,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 if (board.selectedTile != null && (currentTile.AttackID & board.selectedTile.Unit.ID) != 0)
                 {
                     //if the current tile has a unit on it
-                    if (currentTile.Unit != null)
+                    if (currentTile.IsOccupied)
                     {
 #if DEBUG
                         Debug.WriteLine("executing attack phase");
@@ -506,7 +544,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
             //String debugString = "";
 
-            //if(board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].Unit != null)
+            //if(board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsOccupied)
             //    debugString += "Faction: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].Unit.FactionType.ToString() + '\n';
             
             //debugString += "Faction: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].ToString() + '\n';

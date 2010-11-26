@@ -32,8 +32,16 @@ namespace Angels_Vs_Demons.GameObjects.Units
             totalRecharge = 2;
         }
 
-
         #endregion
 
+        /// <summary>
+        /// Performs a deep clone of the Archer.
+        /// </summary>
+        /// <returns>A new Archer instance populated with the same data as this Archer.</returns>
+        public override Object Clone()
+        {
+            Archer other = base.Clone() as Archer;
+            return other;
+        }
     }
 }

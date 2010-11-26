@@ -21,8 +21,19 @@ namespace Angels_Vs_Demons.Screens.ScreenManagers
 
         #region Fields
 
+        /// <summary>
+        /// The width in pixels of the game window.
+        /// </summary>
         public static int screenWidth = 853;
+
+        /// <summary>
+        /// The height in pixels of the game window.
+        /// </summary>
         public static int screenHeight = 480;
+
+        /// <summary>
+        /// The vector containing the screen size.
+        /// </summary>
         public static Vector2 screenSize = new Vector2(screenWidth, screenHeight);
 
         List<GameScreen> screens = new List<GameScreen>();

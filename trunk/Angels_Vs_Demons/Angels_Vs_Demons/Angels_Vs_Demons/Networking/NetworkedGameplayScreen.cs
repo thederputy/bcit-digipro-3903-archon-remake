@@ -50,8 +50,8 @@ namespace Angels_Vs_Demons.Networking
         {
             sessionType = type;
             previousCursorPosition = new Vector2(0, 0);
-            player1 = new HumanPlayer(Faction.ANGEL);
-            player2 = new HumanPlayer(Faction.DEMON);
+            Player1 = new HumanPlayer(Faction.ANGEL);
+            Player2 = new HumanPlayer(Faction.DEMON);
 
             localMove = null;
             localAttack = null;
@@ -154,11 +154,11 @@ namespace Angels_Vs_Demons.Networking
 
             if (gamerIndex == 0)
             {
-                e.Gamer.Tag = player1;
+                e.Gamer.Tag = Player1;
             }
             else
             {
-                e.Gamer.Tag = player2;
+                e.Gamer.Tag = Player2;
             }
 
         }
@@ -244,8 +244,8 @@ namespace Angels_Vs_Demons.Networking
                 if (hPlayer.Turn.Move.IsExecutable)
                 {
                     //send the Move data
-                    packetWriter.Write(hPlayer.Turn.Move.NewTile.position);
-                    packetWriter.Write(hPlayer.Turn.Move.PreviousTile.position);
+                    packetWriter.Write(hPlayer.Turn.Move.NewTile);
+                    packetWriter.Write(hPlayer.Turn.Move.PreviousTile);
                 }
 
                 packetWriter.Write(hPlayer.Turn.Attack.IsExecutable);
@@ -344,11 +344,14 @@ namespace Angels_Vs_Demons.Networking
                 {
                     newTilePosition = packetReader.ReadVector2();       //Turn.Move.NewTile.position
                     previousTilePosition = packetReader.ReadVector2();  //Turn.Move.PreviousTile.position
-                    remoteMove = new Move(board.GetTile(newTilePosition), board.GetTile(previousTilePosition));
+                    remoteMove = new Move(newTilePosition, previousTilePosition);
                 }
                 else
                 {
-                    remoteMove = new Move(null, null);
+                    
+                    Vector2 v1 = new Vector2(-1, -1);
+                    Vector2 v = Vector2.Zero - Vector2.One;
+                    remoteMove = new Move(v1, v);
                 }
 
                 //process remote player's attack
@@ -440,7 +443,7 @@ namespace Angels_Vs_Demons.Networking
         /// <param name="boardSelectedTile">the tile that was selected</param>
         protected override void executeMovePhase(Tile currentTile, Tile boardSelectedTile)
         {
-            localMove = new Move(currentTile, board.selectedTile);
+            localMove = new Move(currentTile.position, board.selectedTile.position);
             board.applyMove(localMove);
             //localTurn = new Turn(localMove, new Attack(null, null));
         }

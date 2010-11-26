@@ -17,8 +17,17 @@ namespace Angels_Vs_Demons.GameObjects.Units
     /// </summary>
     public enum attackType
     {
+        /// <summary>
+        /// Melee type
+        /// </summary>
         MELEE,
+        /// <summary>
+        /// Projectile type
+        /// </summary>
         PROJECTILE,
+        /// <summary>
+        /// Magic type
+        /// </summary>
         MAGIC
     }
 
@@ -87,6 +96,16 @@ namespace Angels_Vs_Demons.GameObjects.Units
             {
                 victim.CurrHP = 0;
             }
+        }
+
+        /// <summary>
+        /// Performs a deep clone of the NonChampion.
+        /// </summary>
+        /// <returns>A new NonChampion instance populated with the same data as this NonChampion.</returns>
+        public override Object Clone()
+        {
+            NonChampion other = base.Clone() as NonChampion;
+            return other;
         }
 
 

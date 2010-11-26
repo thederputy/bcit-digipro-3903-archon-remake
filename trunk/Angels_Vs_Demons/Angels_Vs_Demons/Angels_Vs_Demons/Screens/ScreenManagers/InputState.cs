@@ -15,14 +15,32 @@ namespace Angels_Vs_Demons.Screens.ScreenManagers
     {
         #region Fields
 
+        /// <summary>
+        /// The max number of people that can play
+        /// </summary>
         public const int MaxInputs = 4;
 
+        /// <summary>
+        /// The current keyboardstates.
+        /// </summary>
         public readonly KeyboardState[] CurrentKeyboardStates;
+        /// <summary>
+        /// The current gamepad states.
+        /// </summary>
         public readonly GamePadState[] CurrentGamePadStates;
 
+        /// <summary>
+        /// The previous keyboard states.
+        /// </summary>
         public readonly KeyboardState[] LastKeyboardStates;
+        /// <summary>
+        /// The previous gamepad states.
+        /// </summary>
         public readonly GamePadState[] LastGamePadStates;
 
+        /// <summary>
+        /// Boolean valus to store if the gamepads were ever connected.
+        /// </summary>
         public readonly bool[] GamePadWasConnected;
 
         #endregion

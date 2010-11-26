@@ -64,7 +64,7 @@ namespace Angels_Vs_Demons.Players
 
         public Turn getTurn(Board board)
         {
-            CurrentBoard = (Board)board.clone();
+            CurrentBoard = (Board)board.Clone();
 
             Debug.WriteLine("******************************************************************");
             Debug.WriteLine("Computing AI move...");
@@ -111,10 +111,13 @@ namespace Angels_Vs_Demons.Players
             while (mayPlay(sucessors))
             {
                 move = (Turn)sucessors.pop_front();
-                nextBoard = (Board)board.clone();
+                nextBoard = (Board)board.Clone();
 
                 Debug.WriteLine("******************************************************************");
                 nextBoard.applyTurn(move);
+                nextBoard.endTurn();
+                nextBoard.beginTurn();
+
                 value = minMove(nextBoard, 1, maxValue, Int32.MaxValue);
 
                 if (value > maxValue)
@@ -181,8 +184,11 @@ namespace Angels_Vs_Demons.Players
             while (mayPlay(sucessors))
             {
                 move = (Turn)sucessors.pop_front();
-                nextBoard = (Board)board.clone();
+                nextBoard = (Board)board.Clone();
                 nextBoard.applyTurn(move);
+                nextBoard.endTurn();
+                nextBoard.beginTurn();
+
                 value = minMove(nextBoard, depth + 1, alpha, beta);
 
                 if (value > alpha)
@@ -243,8 +249,11 @@ namespace Angels_Vs_Demons.Players
             while (mayPlay(sucessors))
             {
                 move = (Turn)sucessors.pop_front();
-                nextBoard = (Board)board.clone();
+                nextBoard = (Board)board.Clone();
                 nextBoard.applyTurn(move);
+                nextBoard.endTurn();
+                nextBoard.beginTurn();
+
                 value = maxMove(nextBoard, depth + 1, alpha, beta);
 
                 if (value < beta)

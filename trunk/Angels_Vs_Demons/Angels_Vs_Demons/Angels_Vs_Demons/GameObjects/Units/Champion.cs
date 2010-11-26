@@ -94,5 +94,15 @@ namespace Angels_Vs_Demons.GameObjects.Units
             CurrMP = TotalMP;
             CurrRecharge = 5;
         }
+
+        /// <summary>
+        /// Performs a deep clone of the Champion.
+        /// </summary>
+        /// <returns>A new Champion instance populated with the same data as this Champion.</returns>
+        public override Object Clone()
+        {
+            Champion other = base.Clone() as Champion;
+            return other;
+        }
     }
 }

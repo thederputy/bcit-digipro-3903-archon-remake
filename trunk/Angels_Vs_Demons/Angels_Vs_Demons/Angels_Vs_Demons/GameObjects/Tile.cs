@@ -5,15 +5,15 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Angels_Vs_Demons.BoardObjects;
 using Angels_Vs_Demons.GameObjects.Units;
+using System.Collections.Generic;
 #endregion
 
 namespace Angels_Vs_Demons.GameObjects
 {
-    class Tile : GameObject
+    class Tile : GameObject, ICloneable
     {
-        private int moveID;
-
         /// <summary>
         /// The bitmasked value of who can move to this tile.
         /// </summary>
@@ -22,8 +22,7 @@ namespace Angels_Vs_Demons.GameObjects
             get { return moveID; }
             set { moveID = value; }
         }
-
-        private int attackID;
+        private int moveID;
 
         /// <summary>
         /// The bitmasked value of who can attack to this tile.
@@ -33,6 +32,17 @@ namespace Angels_Vs_Demons.GameObjects
             get { return attackID; }
             set { attackID = value; }
         }
+        private int attackID;
+
+        /// <summary>
+        /// The bitmasked value of what spells can be performed on this tile.
+        /// </summary>
+        public int SpellID
+        {
+            get { return spellID; }
+            set { spellID = value; }
+        }
+        private int spellID;
 
         private Unit unit;
 
@@ -118,6 +128,7 @@ namespace Angels_Vs_Demons.GameObjects
             get { return tileColor; }
             set { tileColor = value; }
         }
+        
         public Tile pathLeft, pathRight, pathTop, pathBottom;
 
         internal Tile PathBottom
@@ -144,6 +155,10 @@ namespace Angels_Vs_Demons.GameObjects
             set { pathLeft = value; }
         }
 
+        /// <summary>
+        /// Texture constructor.
+        /// </summary>
+        /// <param name="loadedTexture"></param>
         public Tile(Texture2D loadedTexture): base(loadedTexture)
         {
             this.pathLeft = null;
@@ -163,6 +178,21 @@ namespace Angels_Vs_Demons.GameObjects
             this.sprite = loadedTexture;
             moveID = 0;
             attackID = 0;
+            spellID = 0;
+        }
+
+        /// <summary>
+        /// Performs a deep clone of the Tile.
+        /// </summary>
+        /// <returns>A new Tile instance populated with the same data as this Tile.</returns>
+        public override Object Clone()
+        {
+            Tile other = base.Clone() as Tile;
+            if (this.IsOccupied)
+            {
+                other.Unit = this.Unit.Clone() as Unit;
+            }
+            return other;
         }
     }
 }
