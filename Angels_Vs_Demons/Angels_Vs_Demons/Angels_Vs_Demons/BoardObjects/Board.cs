@@ -784,7 +784,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     Debug.WriteLine("Found a Tile with null unit");
                 }
             }
-            selectedTile = null;
+            selectedTile = GetTile(move.NewTile);
             movePhase = false;
             attackPhase = true;
             bitMaskAllTilesAsNotMovable();
@@ -910,6 +910,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     }
                 }
             }
+            other.ControllingFaction = this.ControllingFaction;
             return other;
         }
 
@@ -929,19 +930,40 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 foreach (Tile iTile in grid[i])
                 {
-                    if (iTile.IsUsable)
+                    if (ControllingFaction == Faction.ANGEL)
                     {
-                        for (int j = 0; j < grid.Length; j++)
+                        //check the angels
+                        for (int j = 0; j < BitMask.angelBits.Length; j++)
                         {
-                            foreach (Tile jTile in grid[i])
+                            if ((iTile.MoveID & BitMask.angelBits[j]) != 0)
                             {
-                                if ((iTile.Unit.ID & jTile.MoveID) != 0)
-                                {
-                                    moves.push_back(new Move(jTile.position, iTile.position));
-                                }
+                                Tile unitTile = GetTileFromUnitID(BitMask.angelBits[j]);
+                                moves.push_back(new Move(iTile.position, unitTile.position));
                             }
                         }
                     }
+                    else
+                    {
+                        //check the demons
+                        for (int j = 0; j < BitMask.demonBits.Length; j++)
+                        {
+                            if ((iTile.MoveID & BitMask.demonBits[j]) != 0)
+                            {
+                                Tile unitTile = GetTileFromUnitID(BitMask.demonBits[j]);
+                                moves.push_back(new Move(iTile.position, unitTile.position));
+                            }
+                        }
+                    }
+                        //for (int j = 0; j < grid.Length; j++)
+                        //{
+                        //    foreach (Tile jTile in grid[i])
+                        //    {
+                        //        if ((iTile.Unit.ID & jTile.MoveID) != 0)
+                        //        {
+                        //            moves.push_back(new Move(jTile.position, iTile.position));
+                        //        }
+                        //    }
+                        //}
                 }
             }
             return moves;
@@ -966,15 +988,16 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 //apply the move to the board and get the attacks we can do
                 applyMove(move);
-                if (bitMaskGetAttacksForTile(GetTile(move.NewTile)))
+                Tile attacker = GetTile(move.NewTile);
+                if (bitMaskGetAttacksForTile(attacker))
                 {
                     for (int i = 0; i < grid.Length; i++)
                     {
                         foreach (Tile tile in grid[i])
                         {
-                            if ((GetTile(move.NewTile).Unit.ID & tile.AttackID) != 0)
+                            if ((tile.AttackID & attacker.Unit.ID) != 0)
                             {
-                                attacks.push_back(new Attack(tile, GetTile(move.NewTile)));
+                                attacks.push_back(new Attack(tile, attacker));
                             }
                         }
                     }
