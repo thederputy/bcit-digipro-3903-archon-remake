@@ -102,7 +102,7 @@ namespace Angels_Vs_Demons.Players
         private Turn minimax(Board board)
         {
             List sucessors, bestMove = new List();
-            Turn move, turn = null;
+            Turn candidateTurn, bestTurn = null;
             Board nextBoard;
             int totalMoves;
             int value, maxValue = Int32.MinValue;
@@ -110,11 +110,11 @@ namespace Angels_Vs_Demons.Players
             sucessors = board.getValidTurns();
             while (mayPlay(sucessors))
             {
-                move = (Turn)sucessors.pop_front();
+                candidateTurn = (Turn)sucessors.pop_front();
                 nextBoard = (Board)board.Clone();
 
                 Debug.WriteLine("******************************************************************");
-                nextBoard.applyTurn(move);
+                nextBoard.applyTurn(candidateTurn);
                 nextBoard.endTurn();
                 nextBoard.beginTurn();
 
@@ -125,10 +125,10 @@ namespace Angels_Vs_Demons.Players
                     Debug.WriteLine("Max value : " + value + " at depth : 0");
                     maxValue = value;
                     bestMove.clear();
-                    bestMove.push_front(move);
+                    bestMove.push_front(candidateTurn);
                 } else if (value == maxValue){
                     Debug.WriteLine("Max value (equal): " + value + " at depth : 0");
-                    bestMove.push_front(move);
+                    bestMove.push_front(candidateTurn);
                 }
             }
 
@@ -139,10 +139,10 @@ namespace Angels_Vs_Demons.Players
 
             if (totalMoves > 1)
             {
-                turn = (Turn)bestMove.get(random.Next(totalMoves-1)); // Select Turn randomly from 0 to totalMoves.
+                bestTurn = (Turn)bestMove.get(random.Next(totalMoves-1)); // Select Turn randomly from 0 to totalMoves.
             }
 
-            return turn;
+            return bestTurn;
         }
 
         /// <sumary> 
@@ -349,7 +349,7 @@ namespace Angels_Vs_Demons.Players
         /// </value>
         private bool cutOffTest(Board board, int depth)
         {
-            return depth > maxDepth; 
+            return depth > maxDepth;
                 //TODO: check for win
                 //|| board.hasEnded();
         }
