@@ -23,33 +23,8 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         public AvAGameplayScreen()
             :base()
         {
-            player1 = new ComputerPlayer(Faction.ANGEL);
-            player2 = new ComputerPlayer(Faction.DEMON);
-        }
-
-        #endregion
-
-        #region Move/Attack Phases
-
-        /// <summary>
-        /// Executes the move phase for an AI vs AI game.
-        /// </summary>
-        /// <param name="currentTile">the tile that the cursor is now on.</param>
-        /// <param name="boardSelectedTile">the tile that was selected</param>
-        protected override void executeMovePhase(Tile currentTile, Tile boardSelectedTile)
-        {
-            board.applyMove(new Move(currentTile, boardSelectedTile));
-        }
-
-
-        /// <summary>
-        /// Executes the attack phase for an AI vs AI game.
-        /// </summary>
-        /// <param name="victimTile">the tile that is getting attacked</param>
-        /// <param name="attackerTile">the tile that is attacking</param>
-        protected override void executeAttackPhase(Tile victimTile, Tile attackerTile)
-        {
-            board.applyAttack(new Attack(victimTile, attackerTile));
+            Player1 = new ComputerPlayer(Faction.ANGEL);
+            Player2 = new ComputerPlayer(Faction.DEMON);
         }
 
         #endregion

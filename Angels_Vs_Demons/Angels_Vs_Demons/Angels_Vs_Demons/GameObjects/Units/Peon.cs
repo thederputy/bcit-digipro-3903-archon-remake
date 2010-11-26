@@ -32,8 +32,16 @@ namespace Angels_Vs_Demons.GameObjects.Units
             totalRecharge = 2;
         }
 
-
         #endregion
 
+        /// <summary>
+        /// Performs a deep clone of the Peon.
+        /// </summary>
+        /// <returns>A new Peon instance populated with the same data as this Peon.</returns>
+        public override Object Clone()
+        {
+            Peon other = base.Clone() as Peon;
+            return other;
+        }
     }
 }

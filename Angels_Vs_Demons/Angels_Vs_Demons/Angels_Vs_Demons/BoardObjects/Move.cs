@@ -10,7 +10,8 @@ using Angels_Vs_Demons.GameObjects;
 
 namespace Angels_Vs_Demons.BoardObjects
 {
-    class Move
+    [Serializable]
+    class Move : ICloneable
     {
         #region Fields
 
@@ -30,7 +31,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <summary>
         /// Sets and gets the previousTile member
         /// </summary>
-        public Tile PreviousTile
+        public Vector2 PreviousTile
         {
             get { return previousTile; }
             set
@@ -39,12 +40,12 @@ namespace Angels_Vs_Demons.BoardObjects
                 updateIsExecutable();
             }
         }
-        private Tile previousTile;
+        private Vector2 previousTile;
 
         /// <summary>
         /// Sets and gets the newTile member
         /// </summary>
-        public Tile NewTile
+        public Vector2 NewTile
         {
             get { return newTile; }
             set
@@ -53,7 +54,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 updateIsExecutable();
             }
         }
-        private Tile newTile;
+        private Vector2 newTile;
 
         #endregion
 
@@ -63,7 +64,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// </summary>
         /// <param name="newNewTile">The new grid position</param>
         /// <param name="newPreviousTile">The previous grid position</param>
-        public Move(Tile newNewTile, Tile newPreviousTile)
+        public Move(Vector2 newNewTile, Vector2 newPreviousTile)
         {
             NewTile = newNewTile;
             PreviousTile = newPreviousTile;
@@ -81,10 +82,10 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 isExecutable = false;
             }
-            else if (previousTile.Unit == null)
-            {
-                isExecutable = false;
-            }
+            //else if (previousTile.Unit == null)
+            //{
+            //    isExecutable = false;
+            //}
             else
             {
                 isExecutable = true;
@@ -92,6 +93,18 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Debug.WriteLine("DEBUG: isExecutable is now: " + isExecutable);
 #endif
+        }
+
+        /// <summary>
+        /// Performs a deep clone of the Move.
+        /// </summary>
+        /// <returns>A new Move instance populated with the same data as this Move.</returns>
+        public Object Clone()
+        {
+            Move other = this.MemberwiseClone() as Move;
+            //other.NewTile = this.NewTile.Clone() as Tile;
+            //other.PreviousTile = this.PreviousTile.Clone() as Tile;
+            return other;
         }
     }
 }

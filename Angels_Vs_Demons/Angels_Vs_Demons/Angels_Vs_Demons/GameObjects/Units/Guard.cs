@@ -35,5 +35,15 @@ namespace Angels_Vs_Demons.GameObjects.Units
 
         #endregion
 
+        /// <summary>
+        /// Performs a deep clone of the Guard.
+        /// </summary>
+        /// <returns>A new Guard instance populated with the same data as this Guard.</returns>
+        public override Object Clone()
+        {
+            Guard other = base.Clone() as Guard;
+            return other;
+        }
+
     }
 }

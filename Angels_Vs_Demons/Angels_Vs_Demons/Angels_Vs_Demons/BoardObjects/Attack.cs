@@ -8,7 +8,7 @@ using Angels_Vs_Demons.GameObjects;
 
 namespace Angels_Vs_Demons.BoardObjects
 {
-    class Attack
+    class Attack : ICloneable
     {
         #region Fields
 
@@ -23,7 +23,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 return isExecutable;
             }
         }
-        private bool isExecutable;
+        protected bool isExecutable;
 
         /// <summary>
         /// Sets and gets the previousTile member
@@ -37,7 +37,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 updateIsExecutable();
             }
         }
-        private Tile attackerTile;
+        protected Tile attackerTile;
 
         /// <summary>
         /// Sets and gets the victimTile member
@@ -51,7 +51,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 updateIsExecutable();
             }
         }
-        private Tile victimTile;
+        protected Tile victimTile;
 
         #endregion
 
@@ -69,7 +69,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <summary>
         /// Updates the isExecutable value.
         /// </summary>
-        private void updateIsExecutable()
+        protected virtual void updateIsExecutable()
         {
             if (victimTile == null || attackerTile == null)
             {
@@ -83,6 +83,18 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 isExecutable = true;
             }
+        }
+
+        /// <summary>
+        /// Performs a deep clone of the Attack.
+        /// </summary>
+        /// <returns>A new Attack instance populated with the same data as this Attack.</returns>
+        public Object Clone()
+        {
+            Attack other = this.MemberwiseClone() as Attack;
+            other.VictimTile = this.VictimTile.Clone() as Tile;
+            other.AttackerTile = this.AttackerTile.Clone() as Tile;
+            return other;
         }
     }
 }

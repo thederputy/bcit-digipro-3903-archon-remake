@@ -25,8 +25,8 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         public HvHGameplayScreen()
             :base()
         {
-            player1 = new HumanPlayer(Faction.ANGEL);
-            player2 = new HumanPlayer(Faction.DEMON);
+            Player1 = new HumanPlayer(Faction.ANGEL);
+            Player2 = new HumanPlayer(Faction.DEMON);
         }
 
         #endregion

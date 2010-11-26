@@ -130,8 +130,8 @@ namespace Angels_Vs_Demons.Networking
         #endregion
 
         #region Session Initialization
-        /// I will be moving all the session initialization here.
-        /// That way I will just pass the network session to the Networked Gameplayscreen.
+        // I will be moving all the session initialization here.
+        // That way I will just pass the network session to the Networked Gameplayscreen.
         #endregion
     }
 }

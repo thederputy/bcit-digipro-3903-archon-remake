@@ -10,19 +10,13 @@ namespace Angels_Vs_Demons.BoardObjects
 {
     interface AbstractBoard
     {
-        /// <summary>
-        /// create a 'deep' clone of this board object.
-        /// </summary>
-        /// <returns>deep clone of this board</returns>
-        Object clone();
-
         /// <sumary>
-        ///   Finds all valid moves for the current player in this board.
+        ///   Finds all valid turns for the current player in this board.
         /// </sumary>    
         /// <value>
-        ///  A list with all the valid moves.
+        ///  A list with all the valid turns.
         /// </value>
-        List getValidMoves();
+        List getValidTurns();
 
         /// <summary>
         /// Performs a game turn. This consists of a movement and/or attack.

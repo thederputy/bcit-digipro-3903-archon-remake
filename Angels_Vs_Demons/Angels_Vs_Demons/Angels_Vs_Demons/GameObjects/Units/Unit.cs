@@ -18,10 +18,29 @@ namespace Angels_Vs_Demons.GameObjects.Units
     /// </summary>
     public enum armorType
     {
+        /// <summary>
+        /// Reduces damage from melee and projectile attacks by 5. Increases damage taken from magic attacks by 5.
+        /// </summary>
         HEAVY,
+
+        /// <summary>
+        /// No mitigation
+        /// </summary>
         MEDIUM,
+
+        /// <summary>
+        /// Increases damage taken from melee attacks by 5.
+        /// </summary>
         LIGHT,
+
+        /// <summary>
+        /// Reduces damage from magic attacks by 10.
+        /// </summary>
         MAGIC,
+
+        /// <summary>
+        /// Reduces damage from all attacks by 15 to a minimum of 5.
+        /// </summary>
         IMBUED
     }
 
@@ -31,11 +50,34 @@ namespace Angels_Vs_Demons.GameObjects.Units
     /// </summary>
     public enum specialType
     {
+        /// <summary>
+        /// Does nothing
+        /// </summary>
         NONE,
+
+        /// <summary>
+        /// Ignores unit collision; can pass over any unit in its path.
+        /// </summary>
         FLYING,
+
+        /// <summary>
+        /// Attacks effect a cross 2 area from the initial point.
+        /// </summary>
         SPLASH,
+
+        /// <summary>
+        /// Can target any unit in attack range (no collision).
+        /// </summary>
         PROJECTILE,
+
+        /// <summary>
+        /// Damage received above 25 is ignored.
+        /// </summary>
         HULKING,
+
+        /// <summary>
+        /// You lose the game when this unit is defeated.
+        /// </summary>
         CHAMPION
     }
 
@@ -162,7 +204,14 @@ namespace Angels_Vs_Demons.GameObjects.Units
 
         #endregion
 
-        protected Unit(Texture2D loadedTexture, Faction factionType, string name, int id)
+        /// <summary>
+        /// Creates a new unit.
+        /// </summary>
+        /// <param name="loadedTexture"></param>
+        /// <param name="factionType"></param>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        public Unit(Texture2D loadedTexture, Faction factionType, string name, int id)
             : base(loadedTexture)
         {
             FactionType = factionType;
@@ -175,6 +224,16 @@ namespace Angels_Vs_Demons.GameObjects.Units
         public override string ToString()
         {
             return name;
+        }
+
+        /// <summary>
+        /// Performs a deep clone of the Unit.
+        /// </summary>
+        /// <returns>A new Unit instance populated with the same data as this Unit.</returns>
+        public override Object Clone()
+        {
+            Unit other = base.Clone() as Unit;
+            return other;
         }
 
         public int applyMitigation(int attackerAP, attackType attackerType)

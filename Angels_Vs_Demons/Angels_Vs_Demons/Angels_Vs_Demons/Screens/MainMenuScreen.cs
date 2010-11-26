@@ -24,9 +24,9 @@ namespace Angels_Vs_Demons.Screens
             // Create our menu entries.
             MenuEntry HvHMenuEntry = new MenuEntry("Hotseat game");
             MenuEntry HvAMenuEntry = new MenuEntry("Vs Computer");
-#if DEBUG
+//#if DEBUG
             MenuEntry AvAMenuEntry = new MenuEntry("Ai Vs Ai");
-#endif
+//#endif
             MenuEntry networkedGameMenuEntry = new MenuEntry("Networked Game");
             MenuEntry optionsMenuEntry = new MenuEntry("Options");
             MenuEntry exitMenuEntry = new MenuEntry("Exit");
@@ -34,9 +34,9 @@ namespace Angels_Vs_Demons.Screens
             // Hook up menu event handlers.
             HvHMenuEntry.Selected += HvHMenuEntrySelected;
             HvAMenuEntry.Selected += HvAMenuEntrySelected;
-#if DEBUG
+//#if DEBUG
             AvAMenuEntry.Selected += AvAMenuEntrySelected;
-#endif
+//#endif
             networkedGameMenuEntry.Selected += networkedGameMenuEntrySelected;
             optionsMenuEntry.Selected += OptionsMenuEntrySelected;
             exitMenuEntry.Selected += OnCancel;
@@ -44,9 +44,9 @@ namespace Angels_Vs_Demons.Screens
             // Add entries to the menu.
             MenuEntries.Add(HvHMenuEntry);
             MenuEntries.Add(HvAMenuEntry);
-#if DEBUG
+//#if DEBUG
             MenuEntries.Add(AvAMenuEntry);
-#endif
+//#endif
             MenuEntries.Add(networkedGameMenuEntry);
             MenuEntries.Add(optionsMenuEntry);
             MenuEntries.Add(exitMenuEntry);
@@ -71,12 +71,12 @@ namespace Angels_Vs_Demons.Screens
             ScreenManager.AddScreen(new HvAGameplayScreen(), e.PlayerIndex);
         }
 
-#if DEBUG
+//#if DEBUG
         void AvAMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
             ScreenManager.AddScreen(new AvAGameplayScreen(), e.PlayerIndex);
         }
-#endif
+//#endif
 
         void networkedGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {

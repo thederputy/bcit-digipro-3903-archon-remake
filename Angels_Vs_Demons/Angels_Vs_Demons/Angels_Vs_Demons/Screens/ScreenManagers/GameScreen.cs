@@ -10,9 +10,21 @@ namespace Angels_Vs_Demons.Screens.ScreenManagers
     /// </summary>
     public enum ScreenState
     {
+        /// <summary>
+        /// Screen is transitioning on.
+        /// </summary>
         TransitionOn,
+        /// <summary>
+        /// Screen is active.
+        /// </summary>
         Active,
+        /// <summary>
+        /// Screen is transitioning off.
+        /// </summary>
         TransitionOff,
+        /// <summary>
+        /// Screen is hidden.
+        /// </summary>
         Hidden,
     }
 

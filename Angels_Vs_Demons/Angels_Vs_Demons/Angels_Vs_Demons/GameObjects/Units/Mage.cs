@@ -32,16 +32,25 @@ namespace Angels_Vs_Demons.GameObjects.Units
             totalRecharge = 4;
         }
 
-
         #endregion
 
         /// <summary>
-        /// Overriddev attack methos for the mage as he does splash damage.
+        /// Overridden attack method for the mage as he does splash damage.
         /// </summary>
         /// <param name="victim">the unit we are attacking</param>
         public override void attack(Unit victim)
         {
             victim.CurrHP -= victim.applyMitigation(AttackPower, AttackTypeVal);
+        }
+
+        /// <summary>
+        /// Performs a deep clone of the Mage.
+        /// </summary>
+        /// <returns>A new Mage instance populated with the same data as this Mage.</returns>
+        public override Object Clone()
+        {
+            Mage other = base.Clone() as Mage;
+            return other;
         }
     }
 }

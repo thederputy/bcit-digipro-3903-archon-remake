@@ -10,18 +10,23 @@ using Angels_Vs_Demons.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects
 {
     [Serializable]
-    class Board : AbstractBoard
+    class Board : AbstractBoard, ICloneable
     {
+        [NonSerialized]
         public ContentManager content;
+        [NonSerialized]
         public SpriteFont gameFont;
+        [NonSerialized]
         public SpriteFont debugFont;
-
+        [NonSerialized]
         public GameObject Cursor;
 
         /// <summary>
@@ -34,8 +39,9 @@ namespace Angels_Vs_Demons.BoardObjects
         }
         private Tile[][] grid;
 
-
+        [NonSerialized]
         public Dictionary<int, Unit> Angels = new Dictionary<int, Unit>();
+        [NonSerialized]
         public Dictionary<int, Unit> Demons = new Dictionary<int, Unit>();
 
         private int x_size;
@@ -78,26 +84,43 @@ namespace Angels_Vs_Demons.BoardObjects
         public Tile selectedTile;
 
         #region Textures (not needed for AI)
+        [NonSerialized]
         private Texture2D AttackableTile_Texture;
+        [NonSerialized]
         private Texture2D Cursor_Texture;
+        [NonSerialized]
         private Texture2D SelectedTile_Texture;
+        [NonSerialized]
         private Texture2D TileTexture;
 
+        [NonSerialized]
         private Texture2D Arch_Demon_Texture;
+        [NonSerialized]
         private Texture2D Nightmare_Texture;
+        [NonSerialized]
         private Texture2D Demon_Lord_Texture;
+        [NonSerialized]
         private Texture2D Skeleton_Archer_Texture;
+        [NonSerialized]
         private Texture2D Imp_Texture;
+        [NonSerialized]
         private Texture2D Blood_Guard_Texture;
 
+        [NonSerialized]
         private Texture2D Arch_Angel_Texture;
+        [NonSerialized]
         private Texture2D Pegasus_Texture;
+        [NonSerialized]
         private Texture2D High_Angel_Texture;
+        [NonSerialized]
         private Texture2D Chosen_One_Texture;
+        [NonSerialized]
         private Texture2D Soldier_Texture;
+        [NonSerialized]
         private Texture2D Angelic_Guard_Texture;
         #endregion
 
+        #region Texture constructor
         /// <summary>
         /// Constructor for the board.
         /// </summary>
@@ -106,9 +129,6 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             content = CONTENT;
             selectedTile = null;
-
-            //creates a blank recent move for the class
-            //lastMove = new Move();
 
             // Loads the textures
             gameFont = content.Load<SpriteFont>("MenuFont");
@@ -133,7 +153,7 @@ namespace Angels_Vs_Demons.BoardObjects
             Blood_Guard_Texture = content.Load<Texture2D>("Blood_Guard");
 
 
-            /// Initializes the screen with an empty grid of tiles
+            // Initializes the screen with an empty grid of tiles
             x_size = 10;
             y_size = 9;
             tile_size = 40;
@@ -245,6 +265,140 @@ namespace Angels_Vs_Demons.BoardObjects
             controllingFaction = Faction.ANGEL;
             beginTurn();
         }
+        #endregion
+
+        //#region Copy-ish constructor
+        ///// <summary>
+        ///// Constructs a board that the AI can use
+        ///// </summary>
+        //public Board(Board board)
+        //{
+        //    selectedTile = null;
+
+        //    /// Initializes the screen with an empty grid of tiles
+        //    x_size = 10;
+        //    y_size = 9;
+        //    tile_size = 40;
+        //    int grid_totalwidth = tile_size * x_size;
+        //    int grid_x_center = grid_totalwidth / 2;
+        //    int screen_x_center = (ScreenManager.screenWidth / 2);
+
+        //    grid = new Tile[x_size][];
+        //    for (int i = 0; i < x_size; i++)
+        //    {
+        //        grid[i] = new Tile[y_size];
+        //        for (int j = 0; j < y_size; j++)
+        //        {
+        //            grid[i][j] = new Tile();
+        //            grid[i][j].rect.X = (i * tile_size) + (screen_x_center - grid_x_center);
+        //            grid[i][j].rect.Y = j * tile_size;
+        //            grid[i][j].rect.Width = tile_size;
+        //            grid[i][j].rect.Height = tile_size;
+        //            grid[i][j].position.X = i;
+        //            grid[i][j].position.Y = j;
+        //        }
+        //    }
+
+        //    // Initializes the cursor
+        //    Cursor = new GameObject();
+        //    Cursor.rect.X = grid[0][0].rect.X;
+        //    Cursor.rect.Y = grid[0][0].rect.Y;
+        //    Cursor.rect.Width = tile_size;
+        //    Cursor.rect.Height = tile_size;
+        //    grid[(int)Cursor.position.X][(int)Cursor.position.Y].IsCurrentTile = true;
+
+        //    // Initialize Angel Army
+        //    Faction angel = Faction.ANGEL;
+
+        //    //List angels = new List();
+
+        //    //angels.push_back(new Champion(angel, "ArchAngel", BitMask.angelBits[0]));
+        //    //angels.push_back(new Knight(angel, "Pegasus", BitMask.angelBits[1]));
+        //    //angels.push_back(new Mage(angel, "HighAngel", BitMask.angelBits[2]));
+        //    //angels.push_back(new Archer(angel, "Archer", BitMask.angelBits[3]));
+        //    //angels.push_back(new Archer(angel, "Archer", BitMask.angelBits[4]));
+        //    //angels.push_back(new Peon(angel, "Soldier", BitMask.angelBits[5]));
+        //    //angels.push_back(new Peon(angel, "Soldier", BitMask.angelBits[6]));
+        //    //angels.push_back(new Peon(angel, "Soldier", BitMask.angelBits[7]));
+        //    //angels.push_back(new Guard(angel, "AngelicGuard", BitMask.angelBits[8]));
+        //    //angels.push_back(new Guard(angel, "AngelicGuard", BitMask.angelBits[9]));
+
+        //    Unit[] angels = new Unit[10];
+
+        //    angels[0] = (new Champion(angel, "ArchAngel", BitMask.angelBits[0]));
+        //    angels[1] = (new Knight(angel, "Pegasus", BitMask.angelBits[1]));
+        //    angels[2] = (new Mage(angel, "HighAngel", BitMask.angelBits[2]));
+        //    angels[3] = (new Archer(angel, "Archer", BitMask.angelBits[3]));
+        //    angels[4] = (new Archer(angel, "Archer", BitMask.angelBits[4]));
+        //    angels[5] = (new Peon(angel, "Soldier", BitMask.angelBits[5]));
+        //    angels[6] = (new Peon(angel, "Soldier", BitMask.angelBits[6]));
+        //    angels[7] = (new Peon(angel, "Soldier", BitMask.angelBits[7]));
+        //    angels[8] = (new Guard(angel, "AngelicGuard", BitMask.angelBits[8]));
+        //    angels[9] = (new Guard(angel, "AngelicGuard", BitMask.angelBits[9]));
+
+        //    // Initialize Demon Army
+        //    Faction demon = Faction.DEMON;
+
+        //    Unit[] demons = new Unit[10];
+
+        //    demons[0] = (new Champion(demon, "ArchDemon", BitMask.demonBits[0]));
+        //    demons[1] = (new Knight(demon, "Nightmare", BitMask.demonBits[1]));
+        //    demons[2] = (new Mage(demon, "DemonLord", BitMask.demonBits[2]));
+        //    demons[3] = (new Archer(demon, "SkeletonArcher", BitMask.demonBits[3]));
+        //    demons[4] = (new Archer(demon, "SkeletonArcher", BitMask.demonBits[4]));
+        //    demons[5] = (new Peon(demon, "Imp", BitMask.demonBits[5]));
+        //    demons[6] = (new Peon(demon, "Imp", BitMask.demonBits[6]));
+        //    demons[7] = (new Peon(demon, "Imp", BitMask.demonBits[7]));
+        //    demons[8] = (new Guard(demon, "BloodGuard", BitMask.demonBits[8]));
+        //    demons[9] = (new Guard(demon, "BloodGuard", BitMask.demonBits[9]));
+        //    //demons.push_back(new Knight(demon, "Nightmare", BitMask.demonBits[1]));
+        //    //demons.push_back(new Mage(demon, "DemonLord", BitMask.demonBits[2]));
+        //    //demons.push_back(new Archer(demon, "SkeletonArcher", BitMask.demonBits[3]));
+        //    //demons.push_back(new Archer(demon, "SkeletonArcher", BitMask.demonBits[4]));
+        //    //demons.push_back(new Peon(demon, "Imp", BitMask.demonBits[5]));
+        //    //demons.push_back(new Peon(demon, "Imp", BitMask.demonBits[6]));
+        //    //demons.push_back(new Peon(demon, "Imp", BitMask.demonBits[7]));
+        //    //demons.push_back(new Guard(demon, "BloodGuard", BitMask.demonBits[8]));
+        //    //demons.push_back(new Guard(demon, "BloodGuard", BitMask.demonBits[9]));
+
+        //    // Place the armies on grid
+        //    Tile tmpTile, copyTile;
+
+        //    //place angel army on the grid
+        //    for (int i = 0; i < BitMask.angelBits.Length; i++)
+        //    {
+        //        tmpTile = board.GetTileFromUnitID(BitMask.angelBits[i]);
+        //        copyTile = GetTileFromUnitID(BitMask.angelBits[i]);
+        //        if (tmpTile != null)
+        //        {
+        //            //this unit is still alive
+        //            grid[(int)tmpTile.position.X][(int)tmpTile.position.Y].Unit = angels[i];
+        //        }
+        //        else
+        //        {
+        //            copyTile.Unit = null;
+        //        }
+        //    }
+
+        //    //place demon army on the grid
+        //    for (int i = 0; i < BitMask.demonBits.Length; i++)
+        //    {
+        //        tmpTile = board.GetTileFromUnitID(BitMask.demonBits[i]);
+        //        copyTile = GetTileFromUnitID(BitMask.demonBits[i]);
+        //        if (tmpTile != null)
+        //        {
+        //            //this unit is still alive
+        //            grid[(int)tmpTile.position.X][(int)tmpTile.position.Y].Unit = demons[i];
+        //        }
+        //        else
+        //        {
+        //            copyTile.Unit = null;
+        //        }
+        //    }
+        //    ControllingFaction = board.ControllingFaction;
+        //    beginTurn();
+        //}
+        //#endregion
 
         #region Getters
 
@@ -296,6 +450,30 @@ namespace Angels_Vs_Demons.BoardObjects
         public Tile GetTile(Vector2 position)
         {
             return grid[(int)position.X][(int)position.Y];
+        }
+
+        /// <summary>
+        /// Gets a tile specified by a unit's ID.
+        /// </summary>
+        /// <param name="ID">the unit ID to search for.</param>
+        /// <returns>tile specified by the unitID</returns>
+        public Tile GetTileFromUnitID(int ID)
+        {
+            Tile returnTile = null;
+            for (int i = 0; i < grid.Length; i++)
+            {
+                foreach (Tile tile in grid[i])
+                {
+                    if (tile.IsOccupied)
+                    {
+                        if (tile.Unit.ID == ID)
+                        {
+                            return tile;
+                        }
+                    }
+                }
+            }
+            return returnTile;
         }
 
         /// <summary>
@@ -475,6 +653,7 @@ namespace Angels_Vs_Demons.BoardObjects
             attackPhase = false;
             decrementRecharge();
             setTilesUsableByControllingFaction();
+
             //get all the valid moves
             bool thereAreMoves = bitMaskGetMoves();
 
@@ -495,6 +674,26 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Debug.WriteLine("DEBUG: leaving beginTurn()");
 #endif
+        }
+
+        private void beginMovePhase()
+        {
+
+        }
+
+        private void endMovePhase()
+        {
+
+        }
+
+        private void beginAttackPhase()
+        {
+
+        }
+
+        private void endAttackPhase()
+        {
+
         }
 
         /// <summary>
@@ -519,6 +718,8 @@ namespace Angels_Vs_Demons.BoardObjects
                 selectedTile.IsSelected = false;
                 selectedTile = null;
             }
+            lastMove = null;
+            lastCurrRecharge = 0;
             movePhase = false;
             attackPhase = false;
             bitMaskAllTilesAsNotMovable();
@@ -538,8 +739,11 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Debug.WriteLine("\nDEBUG: entering applyTurn()");
 #endif
-            applyMove(turn.Move);
-            applyAttack(turn.Attack);
+            if (turn != null)
+            {
+                applyMove(turn.Move);
+                applyAttack(turn.Attack);
+            }
 #if DEBUG
             Debug.WriteLine("DEBUG: turn applied");
             Debug.WriteLine("DEBUG: leaving applyTurn()");
@@ -556,20 +760,29 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Debug.WriteLine("\nDEBUG: entering applyMove()");
 #endif
-            lastMove = move;
+            lastMove = new Move(move.PreviousTile, move.NewTile);
+
+            if (lastMove.Equals(move))
+            {
+                Console.WriteLine("SHIT!!!!!!");
+            }
             if (move.IsExecutable)
             {
-                if ((move.PreviousTile.Unit == null))
+                if ((GetTile(move.PreviousTile).Unit != null))
+                {
+
+                    //set the recharge on the unit that is going to move
+                    lastCurrRecharge = GetTile(move.PreviousTile).Unit.CurrRecharge;
+                    GetTile(move.PreviousTile).Unit.CurrRecharge = GetTile(move.PreviousTile).Unit.TotalRecharge;
+                    bitMaskSwapTiles(GetTile(move.NewTile), GetTile(move.PreviousTile));
+#if DEBUG
+                    Debug.WriteLine("DEBUG: move applied");
+#endif
+                }
+                else
                 {
                     Debug.WriteLine("Found a Tile with null unit");
                 }
-                bitMaskSwapTiles(move.NewTile, move.PreviousTile);
-                //set the recharge on the unit that just moved
-                lastCurrRecharge = move.NewTile.Unit.CurrRecharge;
-                move.NewTile.Unit.CurrRecharge = move.NewTile.Unit.TotalRecharge;
-#if DEBUG
-                Debug.WriteLine("DEBUG: move applied");
-#endif
             }
             selectedTile = null;
             movePhase = false;
@@ -588,14 +801,22 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Debug.WriteLine("\nDEBUG: entering undoLastMove()");
 #endif
-            if (lastMove.IsExecutable)
+            //if there is a lastMove
+            if (lastMove != null)
             {
-                //undo the recharge reset
-                lastMove.NewTile.Unit.CurrRecharge = lastCurrRecharge;
-                bitMaskSwapTiles(lastMove.PreviousTile, lastMove.NewTile);
+                if (lastMove.IsExecutable)
+                {
+                    //undo the recharge reset
+                    GetTile(lastMove.PreviousTile).Unit.CurrRecharge = lastCurrRecharge;
+                    bitMaskSwapTiles(GetTile(lastMove.NewTile), GetTile(lastMove.PreviousTile));
 #if DEBUG
-                Debug.WriteLine("DEBUG: move UNapplied");
+                    Debug.WriteLine("DEBUG: move UNapplied");
 #endif
+                }
+                else
+                {
+                    Debug.WriteLine("MORE SHIT HAPPENED");
+                }
             }
             selectedTile = null;
             movePhase = true;
@@ -665,31 +886,44 @@ namespace Angels_Vs_Demons.BoardObjects
         #endregion
 
         /// <summary>
-        /// Performs a shallow (memberwise) copy.
+        /// Performs a deep clone of the Board.
         /// </summary>
-        /// <returns></returns>
-        public Object clone()
+        /// <returns>A new Board instance populated with the same data as this Board.</returns>
+        public Object Clone()
         {
-            Board copy = ObjectCopier.Clone(this);
+            Board other = this.MemberwiseClone() as Board;
 
-            copy.Grid = Grid;
-            copy.ControllingFaction = ControllingFaction;
-            copy.MovePhase = MovePhase;
-            copy.AttackPhase = AttackPhase;
-            Console.WriteLine("cloning board");
-            return (Object)copy;
+            other.Grid = new Tile[this.x_size][];
+            for (int i = 0; i < this.x_size; i++)
+            {
+                other.Grid[i] = new Tile[this.y_size];
+            }
+
+            for (int i = 0; i < other.Grid.Length; i++)
+            {
+                for (int j = 0; j < other.Grid[i].Length; j++)
+                {
+                    other.Grid[i][j] = this.Grid[i][j].Clone() as Tile;
+                    if (this.Grid[i][j].IsOccupied)
+                    {
+                        other.Grid[i][j].Unit = this.Grid[i][j].Unit.Clone() as Unit;
+                    }
+                }
+            }
+            return other;
         }
 
         /// <summary>
+        /// Helper method for getValidTurns.
         /// Gets all the valid moves.
         /// </summary>
         /// <returns>a list of valid moves</returns>
-        public List getValidMoves()
+        private List getValidMoves()
         {
             List moves = new List();
 
             //create the move where we don't actually move
-            moves.push_back(new Move(null, null));
+            //moves.push_back(new Move(null, null));
 
             for (int i = 0; i < grid.Length; i++)
             {
@@ -703,7 +937,7 @@ namespace Angels_Vs_Demons.BoardObjects
                             {
                                 if ((iTile.Unit.ID & jTile.MoveID) != 0)
                                 {
-                                    moves.push_back(new Move(jTile, iTile));
+                                    moves.push_back(new Move(jTile.position, iTile.position));
                                 }
                             }
                         }
@@ -714,11 +948,14 @@ namespace Angels_Vs_Demons.BoardObjects
         }
 
         /// <summary>
+        /// Helper method for getValidTurns.
         /// Gets all the attacks based on a move.
         /// </summary>
         /// <param name="move">the move to base the attack on</param>
         /// <returns>a list of valid attacks</returns>
-        public List getValidAttacks(Move move)
+        /// <remarks>The reason for simply not adding a default Attack (<code>new Attack(null, null)</code>)
+        /// is that we don't want to /// getValidAttacks</remarks>
+        private List getValidAttacks(Move move)
         {
             List attacks = new List();
 
@@ -729,15 +966,15 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 //apply the move to the board and get the attacks we can do
                 applyMove(move);
-                if (bitMaskGetAttacksForTile(move.NewTile))
+                if (bitMaskGetAttacksForTile(GetTile(move.NewTile)))
                 {
                     for (int i = 0; i < grid.Length; i++)
                     {
                         foreach (Tile tile in grid[i])
                         {
-                            if ((move.NewTile.Unit.ID & tile.AttackID) != 0)
+                            if ((GetTile(move.NewTile).Unit.ID & tile.AttackID) != 0)
                             {
-                                attacks.push_back(new Attack(tile, move.NewTile));
+                                attacks.push_back(new Attack(tile, GetTile(move.NewTile)));
                             }
                         }
                     }
@@ -764,25 +1001,29 @@ namespace Angels_Vs_Demons.BoardObjects
             while (!moves.isEmpty())
             {
                 Move currentMove = (Move)moves.pop_front();
-                moveCount++;
+                if (currentMove.IsExecutable)
+                {
+                    moveCount++;
+                }
                 attacks = getValidAttacks(currentMove);
                 Attack currentAttack;
 
-                if(attacks.isEmpty())
-                {
-                    currentAttack = new Attack(null, null);
-                    attackCount++;
-                    turns.push_back(new Turn(currentMove, currentAttack));
-                    turnCount++;
-                }
                 while (!attacks.isEmpty())
                 {
                     currentAttack = (Attack)attacks.pop_front();
-                    attackCount++;
-                    turns.push_back(new Turn(currentMove, currentAttack));
-                    turnCount++;
+                    if (currentAttack.IsExecutable)
+                    {
+                        attackCount++;
+                    }
+
+                    if (currentMove.IsExecutable || currentAttack.IsExecutable)
+                    {
+                        turns.push_back(new Turn(currentMove, currentAttack));
+                        turnCount++;
+                    }
                 }
             }
+            Debug.WriteLine("There are " + turns.length() + " valid turns");
             return turns;
         }
 
@@ -876,8 +1117,9 @@ namespace Angels_Vs_Demons.BoardObjects
             //as long as we're not checking the unit against itself
             if (currentTile.position != startPosition)
             {
-                //if we haven't moved to this tile before
-                if ((GetTile(currentTile.position).MoveID & id) == 0)
+                //if we haven't moved to this tile before and it is not occupied
+                if (!(GetTile(currentTile.position).IsOccupied)
+                    && (GetTile(currentTile.position).MoveID & id) == 0)
                 {
                     unitMoves++;
                     GetTile(currentTile.position).MoveID |= id;//OR EQUALS
@@ -1041,7 +1283,7 @@ namespace Angels_Vs_Demons.BoardObjects
                             }
                             if (isChampion(tile.Unit))
                             {
-                                //do all the fancy magic stuff!
+                                //do all the fancy magic stuff!?
                             }
                         }
                     }
@@ -1064,7 +1306,7 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             bool canAttack = false;
             int attackTotal = 0;
-            if (tile.Unit != null)
+            if (tile.IsOccupied)
             {
                 //if we're checking one of the controlling units and it is usable
                 if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
@@ -1083,6 +1325,8 @@ namespace Angels_Vs_Demons.BoardObjects
                     if (isChampion(tile.Unit))
                     {
                         //do the fancy magic stuff
+                        Champion c = tile.Unit as Champion;
+                        attackTotal = bitMaskSpells();
                     }
                 }
             }
@@ -1155,6 +1399,11 @@ namespace Angels_Vs_Demons.BoardObjects
             return unitAttacks;
         }
 
+        private int bitMaskSpells()
+        {
+            return 0;
+        }
+
         /// <summary>
         /// Iterates through the grid and masks all tiles as not attackable.
         /// </summary>
@@ -1192,12 +1441,31 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <param name="srcTile">tile that we are moving from</param>
         public void bitMaskSwapTiles(Tile destTile, Tile srcTile)
         {
-            Unit tempUnit = destTile.Unit;
-            destTile.Unit = srcTile.Unit;
-            destTile.IsUsable = true;
-            srcTile.IsUsable = false;
-            srcTile.Unit = tempUnit;
-            srcTile.IsSelected = false;
+            /* CANNOT USE CLONING HERE!!!!!!!
+             * Otherwise bad shit happens
+             */ 
+            if (destTile.IsOccupied)
+            {
+                //we're swapping two units
+                Unit tempUnit = destTile.Unit;
+
+                destTile.Unit = srcTile.Unit;
+                destTile.IsUsable = true;
+
+                srcTile.Unit = tempUnit;
+                srcTile.IsUsable = false;
+                srcTile.IsSelected = false;
+            }
+            else
+            {
+                //we're moving a unit to an empty space
+                destTile.Unit = srcTile.Unit;
+                destTile.IsUsable = true;
+
+                srcTile.Unit = null;
+                srcTile.IsUsable = false;
+                srcTile.IsSelected = false;
+            }
         }
 
         #endregion
@@ -1221,12 +1489,12 @@ namespace Angels_Vs_Demons.BoardObjects
                 for (int j = 0; j < y_size; j++)
                 {
                     //use the selectedTile version for bitmasking
-                    if (selectedTile != null && selectedTile.Unit != null && (grid[i][j].MoveID & selectedTile.Unit.ID) != 0)
+                    if (selectedTile != null && selectedTile.IsOccupied && (grid[i][j].MoveID & selectedTile.Unit.ID) != 0)
                     //if (grid[i][j].IsMovable)
                     {
                         spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Blue);
                     }
-                    else if (selectedTile != null && selectedTile.Unit != null && (grid[i][j].AttackID & selectedTile.Unit.ID) != 0)
+                    else if (selectedTile != null && selectedTile.IsOccupied && (grid[i][j].AttackID & selectedTile.Unit.ID) != 0)
                     //else if (grid[i][j].IsAttackable)
                     {
                         spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Red);
@@ -1266,7 +1534,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     {
                         spriteBatch.Draw(SelectedTile_Texture, grid[i][j].rect, Color.Yellow);
                     }
-                    if (selectedTile != null && selectedTile.Unit != null && (grid[i][j].AttackID & selectedTile.Unit.ID) != 0)
+                    if (selectedTile != null && selectedTile.IsOccupied && (grid[i][j].AttackID & selectedTile.Unit.ID) != 0)
                     {
                         spriteBatch.Draw(AttackableTile_Texture, grid[i][j].rect, Color.Red);
                     }
