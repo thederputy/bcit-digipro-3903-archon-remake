@@ -177,6 +177,7 @@
     <Compile Include="GameObjects\Tile.cs" />
     <Compile Include="GameObjects\Units\Unit.cs" />
     <Compile Include="Util\ObjectCopier.cs" />
+    <Compile Include="Util\Position.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

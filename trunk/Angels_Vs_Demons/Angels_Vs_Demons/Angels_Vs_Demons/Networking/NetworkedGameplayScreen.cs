@@ -16,8 +16,8 @@ using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.Players;
 using Angels_Vs_Demons.Screens;
 using Angels_Vs_Demons.Screens.GameplayScreens;
+using Angels_Vs_Demons.Util;
 #endregion
-
 
 namespace Angels_Vs_Demons.Networking
 {
@@ -252,8 +252,8 @@ namespace Angels_Vs_Demons.Networking
                 if (hPlayer.Turn.Attack.IsExecutable)
                 {
                     //send the Attack data
-                    packetWriter.Write(hPlayer.Turn.Attack.VictimTile.position);
-                    packetWriter.Write(hPlayer.Turn.Attack.AttackerTile.position);
+                    packetWriter.Write(hPlayer.Turn.Attack.VictimPos);
+                    packetWriter.Write(hPlayer.Turn.Attack.AttackerPos);
                 }
 
                 // Send the data to everyone in the session.
@@ -332,8 +332,8 @@ namespace Angels_Vs_Demons.Networking
                 bool attackIsExecutable = false;
                 Vector2 newTilePosition = Vector2.Zero;
                 Vector2 previousTilePosition = Vector2.Zero;
-                Vector2 victimTilePosition = Vector2.Zero;
-                Vector2 attackerTilePosition = Vector2.Zero;
+                Vector2 victimPos = Vector2.Zero;
+                Vector2 attackerPos = Vector2.Zero;
 
                 Move remoteMove;
                 Attack remoteAttack;
@@ -348,23 +348,20 @@ namespace Angels_Vs_Demons.Networking
                 }
                 else
                 {
-                    
-                    Vector2 v1 = new Vector2(-1, -1);
-                    Vector2 v = Vector2.Zero - Vector2.One;
-                    remoteMove = new Move(v1, v);
+                    remoteMove = new Move(Position.nil, Position.nil);
                 }
 
                 //process remote player's attack
                 attackIsExecutable = packetReader.ReadBoolean(); //Turn.Attack.IsExecutable
                 if (attackIsExecutable)
                 {
-                    victimTilePosition = packetReader.ReadVector2();    //Turn.Attack.VictimTile.position
-                    attackerTilePosition = packetReader.ReadVector2();  //Turn.Attack.AttackerTile.position
-                    remoteAttack = new Attack(board.GetTile(victimTilePosition), board.GetTile(attackerTilePosition));
+                    victimPos = packetReader.ReadVector2();    //Turn.Attack.VictimPos
+                    attackerPos = packetReader.ReadVector2();  //Turn.Attack.AttackerPos
+                    remoteAttack = new Attack(victimPos, attackerPos);
                 }
                 else
                 {
-                    remoteAttack = new Attack(null, null);
+                    remoteAttack = new Attack(Position.nil, Position.nil);
                 }
 
                 remoteTurn = new Turn(remoteMove, remoteAttack);
@@ -445,7 +442,7 @@ namespace Angels_Vs_Demons.Networking
         {
             localMove = new Move(currentTile.position, board.selectedTile.position);
             board.applyMove(localMove);
-            //localTurn = new Turn(localMove, new Attack(null, null));
+            //localTurn = new Turn(localMove, new Attack(Position.nil, Position.nil));
         }
 
         /// <summary>
@@ -455,7 +452,7 @@ namespace Angels_Vs_Demons.Networking
         /// <param name="attackerTile">the tile that is attacking</param>
         protected override void executeAttackPhase(Tile victimTile, Tile attackerTile)
         {
-            localAttack = new Attack(victimTile, attackerTile);
+            localAttack = new Attack(victimTile.position, attackerTile.position);
             board.applyAttack(localAttack);
         }
 

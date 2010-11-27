@@ -1,9 +1,12 @@
-﻿using System;
+﻿#region Using Statements
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 using Angels_Vs_Demons.GameObjects;
-using Angels_Vs_Demons.GameObjects.Units;
+#endregion
 
 namespace Angels_Vs_Demons.BoardObjects
 {
@@ -17,8 +20,8 @@ namespace Angels_Vs_Demons.BoardObjects
 
         private int mpCost;
 
-        public Spell(Tile newVictimTile, Tile newAttackerTile)
-            : base(newVictimTile, newAttackerTile)
+        public Spell(Vector2 newVictimPos, Vector2 newAttackerPos)
+            : base(newVictimPos, newAttackerPos)
         {
         }
 
@@ -27,15 +30,7 @@ namespace Angels_Vs_Demons.BoardObjects
         /// </summary>
         protected override void updateIsExecutable()
         {
-            if (victimTile == null || attackerTile == null)
-            {
-                isExecutable = false;
-            }
-            else if (!(attackerTile.Unit is Champion))
-            {
-                isExecutable = false;
-            }
-            else if (victimTile.Unit == null)
+            if (victimPos == null || attackerPos == null)
             {
                 isExecutable = false;
             }

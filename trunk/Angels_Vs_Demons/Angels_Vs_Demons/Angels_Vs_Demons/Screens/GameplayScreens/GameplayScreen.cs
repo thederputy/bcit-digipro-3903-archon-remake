@@ -195,14 +195,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     Player tempPlayer = CurrentPlayer;
                     CurrentPlayer = NextPlayer;
                     NextPlayer = tempPlayer;
-                    if (CurrentPlayer is ComputerPlayer && NextPlayer is ComputerPlayer)
-                    {
-                        //do something useful
-                        //while (Keyboard.GetState != Keys.Enter)
-                        //{
 
-                        //}
-                    }
                     board.beginTurn();  //begin the next turn
                 }
             }
@@ -265,16 +258,16 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     
                     if (board.MovePhase == true)
                     {
-                        board.MovePhase = false;
-                        board.AttackPhase = true;
                         board.bitMaskAllTilesAsNotMovable();
                         board.bitMaskGetAttacks();
+                        board.MovePhase = false;
+                        board.AttackPhase = true;
                     }
                     else if (board.AttackPhase == true)
                     {
+                        board.bitMaskAllTilesAsNotAttackable();
                         board.MovePhase = false;
                         board.AttackPhase = false;
-                        board.bitMaskAllTilesAsNotAttackable();
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.U) && !previousKeyboardState.IsKeyDown(Keys.U))
@@ -446,7 +439,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// <param name="attackerTile">the tile that is attacking</param>
         protected virtual void executeAttackPhase(Tile victimTile, Tile attackerTile)
         {
-            board.applyAttack(new Attack(victimTile, attackerTile));
+            board.applyAttack(new Attack(victimTile.position, attackerTile.position));
         }
 
         /// <summary>

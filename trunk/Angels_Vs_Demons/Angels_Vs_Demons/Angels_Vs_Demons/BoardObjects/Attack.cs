@@ -1,9 +1,12 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 using Angels_Vs_Demons.GameObjects;
+using Angels_Vs_Demons.Util;
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects
@@ -28,42 +31,42 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <summary>
         /// Sets and gets the previousTile member
         /// </summary>
-        public Tile AttackerTile
+        public Vector2 AttackerPos
         {
-            get { return attackerTile; }
+            get { return attackerPos; }
             set
             {
-                attackerTile = value;
+                attackerPos = value;
                 updateIsExecutable();
             }
         }
-        protected Tile attackerTile;
+        protected Vector2 attackerPos;
 
         /// <summary>
-        /// Sets and gets the victimTile member
+        /// Sets and gets the victimPos member
         /// </summary>
-        public Tile VictimTile
+        public Vector2 VictimPos
         {
-            get { return victimTile; }
+            get { return victimPos; }
             set
             {
-                victimTile = value;
+                victimPos = value;
                 updateIsExecutable();
             }
         }
-        protected Tile victimTile;
+        protected Vector2 victimPos;
 
         #endregion
 
         /// <summary>
         /// Creates an attack based on an attacker and an attacker tile.
         /// </summary>
-        /// <param name="newVictimTile">the tile containing the victim</param>
-        /// <param name="newAttackerTile">the tile containing the attacker</param>
-        public Attack(Tile newVictimTile, Tile newAttackerTile)
+        /// <param name="newVictimPos">the grid position containing the victim</param>
+        /// <param name="newAttackerPos">the grid position containing the attacker</param>
+        public Attack(Vector2 newVictimPos, Vector2 newAttackerPos)
         {
-            VictimTile = newVictimTile;
-            AttackerTile = newAttackerTile;
+            VictimPos = newVictimPos;
+            AttackerPos = newAttackerPos;
         }
 
         /// <summary>
@@ -71,11 +74,11 @@ namespace Angels_Vs_Demons.BoardObjects
         /// </summary>
         protected virtual void updateIsExecutable()
         {
-            if (victimTile == null || attackerTile == null)
+            if (victimPos == null || attackerPos == null)
             {
                 isExecutable = false;
             }
-            else if (victimTile.Unit == null)
+            else if (victimPos.Equals(Position.nil) || attackerPos.Equals(Position.nil))
             {
                 isExecutable = false;
             }
@@ -92,8 +95,6 @@ namespace Angels_Vs_Demons.BoardObjects
         public Object Clone()
         {
             Attack other = this.MemberwiseClone() as Attack;
-            other.VictimTile = this.VictimTile.Clone() as Tile;
-            other.AttackerTile = this.AttackerTile.Clone() as Tile;
             return other;
         }
     }
