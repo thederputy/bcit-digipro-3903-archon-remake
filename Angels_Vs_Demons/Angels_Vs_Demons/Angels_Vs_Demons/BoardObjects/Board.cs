@@ -844,7 +844,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 {
 #if DEBUG
                     Debug.Write("DEBUG: victim's HP before attack: ");
-                    Debug.WriteLine(attack.VictimTile.Unit.CurrHP);
+                    Debug.WriteLine(attackerTile.Unit.CurrHP);
 #endif
                     NonChampion nc = attackerTile.Unit as NonChampion;
                     nc.attack(victimTile.Unit);
@@ -853,7 +853,7 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
                     Debug.WriteLine("DEBUG: attack applied");
                     Debug.Write("DEBUG: victim's HP after attack: ");
-                    Debug.WriteLine(attack.VictimTile.Unit.CurrHP);
+                    Debug.WriteLine(attackerTile.Unit.CurrHP);
 #endif
                 }
                 if (isChampion(attackerTile.Unit))
