@@ -297,8 +297,11 @@ namespace Angels_Vs_Demons.Util
 
             for (int i = 0; i < index; i++)
             {
-                node = node.next;
-            }                
+                if (node.next != null)
+                {
+                    node = node.next;
+                }
+            }
 
             return node.value;
         }

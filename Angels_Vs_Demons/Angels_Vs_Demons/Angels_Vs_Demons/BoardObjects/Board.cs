@@ -784,7 +784,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     Debug.WriteLine("Found a Tile with null unit");
                 }
             }
-            selectedTile = GetTile(move.NewTile);
+            selectedTile = null;
             movePhase = false;
             attackPhase = true;
             bitMaskAllTilesAsNotMovable();
@@ -838,30 +838,32 @@ namespace Angels_Vs_Demons.BoardObjects
 #endif
             if (attack.IsExecutable)
             {
-                if (isNonChampion(attack.AttackerTile.Unit))
+                Tile victimTile = GetTile(attack.VictimPos);
+                Tile attackerTile = GetTile(attack.AttackerPos);
+                if (isNonChampion(attackerTile.Unit))
                 {
 #if DEBUG
                     Debug.Write("DEBUG: victim's HP before attack: ");
                     Debug.WriteLine(attack.VictimTile.Unit.CurrHP);
 #endif
-                    NonChampion nc = attack.AttackerTile.Unit as NonChampion;
-                    nc.attack(attack.VictimTile.Unit);
+                    NonChampion nc = attackerTile.Unit as NonChampion;
+                    nc.attack(victimTile.Unit);
                     //set the recharge on the unit that just attacked
-                    attack.AttackerTile.Unit.CurrRecharge = attack.AttackerTile.Unit.TotalRecharge;
+                    attackerTile.Unit.CurrRecharge = attackerTile.Unit.TotalRecharge;
 #if DEBUG
                     Debug.WriteLine("DEBUG: attack applied");
                     Debug.Write("DEBUG: victim's HP after attack: ");
                     Debug.WriteLine(attack.VictimTile.Unit.CurrHP);
 #endif
                 }
-                if (isChampion(attack.AttackerTile.Unit))
+                if (isChampion(attackerTile.Unit))
                 {
 
                 }
                 //check to see if we killed the unit
-                if (attack.VictimTile.Unit.CurrHP == 0)
+                if (victimTile.Unit.CurrHP == 0)
                 {
-                    attack.VictimTile.Unit = null;
+                    victimTile.Unit = null;
 #if DEBUG
                     Debug.WriteLine("DEBUG: victim is dead");
 #endif
@@ -975,29 +977,29 @@ namespace Angels_Vs_Demons.BoardObjects
         /// </summary>
         /// <param name="move">the move to base the attack on</param>
         /// <returns>a list of valid attacks</returns>
-        /// <remarks>The reason for simply not adding a default Attack (<code>new Attack(null, null)</code>)
+        /// <remarks>The reason for simply not adding a default Attack (<code>new Attack(Position.nil, Position.nil)</code>)
         /// is that we don't want to /// getValidAttacks</remarks>
         private List getValidAttacks(Move move)
         {
             List attacks = new List();
 
             //create the attack where we don't actually attack
-            attacks.push_back(new Attack(null, null));
+            attacks.push_back(new Attack(Position.nil, Position.nil));
 
             if (move.IsExecutable)
             {
                 //apply the move to the board and get the attacks we can do
                 applyMove(move);
-                Tile attacker = GetTile(move.NewTile);
-                if (bitMaskGetAttacksForTile(attacker))
+                Tile attackerTile = GetTile(move.NewTile);
+                if (bitMaskGetAttacksForTile(attackerTile))
                 {
                     for (int i = 0; i < grid.Length; i++)
                     {
-                        foreach (Tile tile in grid[i])
+                        foreach (Tile victimTile in grid[i])
                         {
-                            if ((tile.AttackID & attacker.Unit.ID) != 0)
+                            if ((victimTile.AttackID & attackerTile.Unit.ID) != 0)
                             {
-                                attacks.push_back(new Attack(tile, attacker));
+                                attacks.push_back(new Attack(victimTile.position, attackerTile.position));
                             }
                         }
                     }

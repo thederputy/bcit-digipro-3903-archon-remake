@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Angels_Vs_Demons.GameObjects;
+using Angels_Vs_Demons.Util;
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects
@@ -82,10 +83,10 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 isExecutable = false;
             }
-            //else if (previousTile.Unit == null)
-            //{
-            //    isExecutable = false;
-            //}
+            else if (newTile.Equals(Position.nil) || previousTile.Equals(Position.nil))
+            {
+                isExecutable = false;
+            }
             else
             {
                 isExecutable = true;
