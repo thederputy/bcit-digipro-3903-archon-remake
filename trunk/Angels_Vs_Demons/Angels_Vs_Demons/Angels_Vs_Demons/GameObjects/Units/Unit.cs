@@ -201,7 +201,6 @@ namespace Angels_Vs_Demons.GameObjects.Units
 
         private int currRecharge;
 
-
         #endregion
 
         /// <summary>
@@ -210,7 +209,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
         /// <param name="loadedTexture"></param>
         /// <param name="factionType"></param>
         /// <param name="name"></param>
-        /// <param name="id"></param>
+        /// <param name="attackID"></param>
         public Unit(Texture2D loadedTexture, Faction factionType, string name, int id)
             : base(loadedTexture)
         {
@@ -236,6 +235,12 @@ namespace Angels_Vs_Demons.GameObjects.Units
             return other;
         }
 
+        /// <summary>
+        /// Changes the effective attack power based on a bunch of different values.
+        /// </summary>
+        /// <param name="attackerAP">beginning attack power.</param>
+        /// <param name="attackerType">attack type to apply mitigation for.</param>
+        /// <returns>the altered attack power.</returns>
         public int applyMitigation(int attackerAP, attackType attackerType)
         {
             int effectiveAP = attackerAP;

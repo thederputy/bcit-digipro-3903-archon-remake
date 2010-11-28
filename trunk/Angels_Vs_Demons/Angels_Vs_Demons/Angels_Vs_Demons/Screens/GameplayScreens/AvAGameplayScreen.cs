@@ -23,8 +23,8 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         public AvAGameplayScreen()
             :base()
         {
-            Player1 = new ComputerPlayer(Faction.ANGEL);
-            Player2 = new ComputerPlayer(Faction.DEMON);
+            Player1 = new ComputerPlayer(Faction.ANGEL, 1);
+            Player2 = new ComputerPlayer(Faction.DEMON, 1);
         }
 
         #endregion

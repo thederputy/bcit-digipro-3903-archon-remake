@@ -35,9 +35,10 @@ namespace Angels_Vs_Demons.Players
         // Max depth used in the Min-Max algorithm
         private int maxDepth = 1;
 
-        public ComputerPlayer(Faction faction)
+        public ComputerPlayer(Faction faction, int boardDepth)
             : base(faction)
         {
+            maxDepth = boardDepth;
             unitValues.Add("Champion", 100);
             unitValues.Add("Archer", 25);
             unitValues.Add("Guard", 20);

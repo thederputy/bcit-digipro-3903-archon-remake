@@ -15,8 +15,11 @@ namespace Angels_Vs_Demons.Screens
         #region Fields
 
         MenuEntry numMenuEntry;
+        MenuEntry AIMenuEntry;
 
         static int num = 23;
+
+        static int AIdifficulty = 0;
 
         #endregion
 
@@ -31,6 +34,7 @@ namespace Angels_Vs_Demons.Screens
         {
             // Create our menu entries.
             numMenuEntry = new MenuEntry(string.Empty);
+            AIMenuEntry = new MenuEntry(string.Empty);
 
             SetMenuEntryText();
 
@@ -38,10 +42,12 @@ namespace Angels_Vs_Demons.Screens
 
             // Hook up menu event handlers.
             numMenuEntry.Selected += numMenuEntrySelected;
+            AIMenuEntry.Selected += AIMenuEntrySelected;
             backMenuEntry.Selected += OnCancel;
 
             // Add entries to the menu.
             MenuEntries.Add(numMenuEntry);
+            MenuEntries.Add(AIMenuEntry);
             MenuEntries.Add(backMenuEntry);
         }
 
@@ -52,6 +58,18 @@ namespace Angels_Vs_Demons.Screens
         void SetMenuEntryText()
         {
             numMenuEntry.Text = "number: " + num;
+            switch (AIdifficulty)
+            {
+                case 0:
+                    AIMenuEntry.Text = "AI difficulty: EASY";
+                    break;
+                case 1:
+                    AIMenuEntry.Text = "AI difficulty: MEDIUM";
+                    break;
+                case 2:
+                    AIMenuEntry.Text = "AI difficulty: HARD";
+                    break;
+            }
         }
 
 
@@ -68,6 +86,24 @@ namespace Angels_Vs_Demons.Screens
 
             SetMenuEntryText();
         }
+
+        /// <summary>
+        /// Event handler for when the AI menu entry is selected.
+        /// </summary>
+        void AIMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            if (AIdifficulty < 2)
+            {
+                AIdifficulty++;
+            }
+            else
+            {
+                AIdifficulty = 0;
+            }
+
+            SetMenuEntryText();
+        }
+
 
 
         #endregion

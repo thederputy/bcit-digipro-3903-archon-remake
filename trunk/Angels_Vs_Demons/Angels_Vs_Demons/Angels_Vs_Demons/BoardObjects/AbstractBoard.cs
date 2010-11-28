@@ -35,12 +35,5 @@ namespace Angels_Vs_Demons.BoardObjects
         /// </summary>
         /// <param name="attack">Attack object that contains details of an attack.</param>
         void applyAttack(Attack attack);
-
-
-        /// <summary>
-        /// IRA! DO NOT USE THIS! USE applyTurn instead!
-        /// </summary>
-        /// <param name="move"></param>
-        void move(Move move);
     }
 }

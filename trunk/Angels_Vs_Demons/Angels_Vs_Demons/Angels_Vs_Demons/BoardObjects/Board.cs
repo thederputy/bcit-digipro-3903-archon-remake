@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Collections;
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects
@@ -44,11 +45,26 @@ namespace Angels_Vs_Demons.BoardObjects
         public Dictionary<int, Unit> Demons = new Dictionary<int, Unit>();
 
         private int x_size;
+
+        public int X_size
+        {
+            get { return x_size; }
+            set { x_size = value; }
+        }
         private int y_size;
+
+        public int Y_size
+        {
+            get { return y_size; }
+            set { y_size = value; }
+        }
         private int tile_size;
 
         private Move lastMove;
         private int lastCurrRecharge;
+
+        private MoveFinder moveFinder;
+        private AttackFinder attackFinder;
 
         /// <summary>
         /// Gets/sets the controlling faction.
@@ -128,6 +144,9 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             content = CONTENT;
             selectedTile = null;
+
+            moveFinder = new MoveFinder(this);
+            attackFinder = new AttackFinder(this);
 
             // Loads the textures
             gameFont = content.Load<SpriteFont>("MenuFont");
@@ -399,25 +418,7 @@ namespace Angels_Vs_Demons.BoardObjects
         //}
         //#endregion
 
-        #region Getters
-
-        /// <summary>
-        /// Gets the x size of the grid.
-        /// </summary>
-        /// <returns>the x size of the grid</returns>
-        public int Get_xSize()
-        {
-            return x_size;
-        }
-
-        /// <summary>
-        /// Gets the y size of the grid.
-        /// </summary>
-        /// <returns>the y size of the grid</returns>
-        public int Get_ySize()
-        {
-            return y_size;
-        }
+        #region Tile getter methods
 
         /// <summary>
         ///  Gets a tile specified by two integer values: x and y.
@@ -574,7 +575,6 @@ namespace Angels_Vs_Demons.BoardObjects
             }
         }
 
-
         /// <summary>
         /// Returns the last movement
         /// </summary>
@@ -584,21 +584,13 @@ namespace Angels_Vs_Demons.BoardObjects
             return lastMove;
         }
 
-        /// <summary>
-        /// DEPRECATED
-        /// </summary>
-        /// <param name="move"></param>
-        public void move(Move move)
-        {
-        }
-
         #region Turn methods
 
         /// <summary>
         /// Gets called once each turn.
         /// - decrements the recharge.
         /// - Sets the tiles to movable based on the controlling faction.
-        /// - Performs bitmask pathing for the turn.
+        /// - Begins the move phase.
         /// </summary>
         public void beginTurn()
         {
@@ -606,55 +598,105 @@ namespace Angels_Vs_Demons.BoardObjects
             Debug.WriteLine("\nDEBUG: entering beginTurn()");
             Debug.WriteLine("Controlling Faction: " + ControllingFaction);
 #endif
-            movePhase = true;
-            attackPhase = false;
             decrementRecharge();
             setTilesUsableByControllingFaction();
-
-            //get all the valid moves
-            bool thereAreMoves = bitMaskGetMoves();
-
-            //if there are no moves, check for attacks
-            if (!thereAreMoves)
-            {
-                movePhase = false;
-                attackPhase = true;
-                //get all the valid attacks
-                bool thereAreAttacks = bitMaskGetAttacks();
-                if (!thereAreAttacks)
-                {
-                    //there are no attacks to make
-                    attackPhase = false;
-                }
-            }
+            beginMovePhase();
 
 #if DEBUG
             Debug.WriteLine("DEBUG: leaving beginTurn()");
 #endif
         }
 
+        /// <summary>
+        /// Begins the move phase.
+        /// </summary>
         private void beginMovePhase()
         {
+            movePhase = true;
+            attackPhase = false;
+            //get all the valid moves
+            bool thereAreMoves = moveFinder.findMoves();
 
-        }
-
-        private void endMovePhase()
-        {
-
-        }
-
-        private void beginAttackPhase()
-        {
-
-        }
-
-        private void endAttackPhase()
-        {
-
+            //if there are no moves, end the move phase
+            if (!thereAreMoves)
+            {
+                endMovePhaseNoMove();
+            }
         }
 
         /// <summary>
-        /// Ends the turn by switching the controlling faction and marking all tiles as not movable.
+        /// Ends the move phase after no move was performed.
+        /// </summary>
+        public void endMovePhaseNoMove()
+        {
+            moveFinder.bitMaskAllTilesAsNotMovable();
+            movePhase = false;
+            beginAttackPhaseNoMove();
+        }
+
+        /// <summary>
+        /// Ends the move phase after a move was performed.
+        /// </summary>
+        /// <param name="movedTile">the tile that was moved.</param>
+        public void endMovePhaseAfterMove(Tile movedTile)
+        {
+            moveFinder.bitMaskAllTilesAsNotMovable();
+            movePhase = false;
+            beginAttackPhaseAfterMove(movedTile);
+        }
+
+        /// <summary>
+        /// Begin the attack phase after no moves have been made.
+        /// </summary>
+        private void beginAttackPhaseNoMove()
+        {
+            //get all the valid attacks
+            attackFinder.findAttacks();
+            attackPhase = true;
+            //bool thereAreAttacks = attackFinder.findAttacks();
+            //if (thereAreAttacks)
+            //{
+            //    attackPhase = true;
+            //}
+            //else
+            //{
+            //    endAttackPhase();
+            //}
+        }
+
+        /// <summary>
+        /// Begins the attack phase after a move has been performed.
+        /// </summary>
+        /// <param name="movedTile"></param>
+        private void beginAttackPhaseAfterMove(Tile movedTile)
+        {
+            //get all the valid attacks
+            attackFinder.findAttacksForTile(movedTile);
+            attackPhase = true;
+            //bool thereAreAttacks = attackFinder.findAttacksForTile(movedTile);
+            //if (thereAreAttacks)
+            //{
+            //    attackPhase = true;
+            //}
+            //else
+            //{
+            //    endAttackPhase();
+            //}
+        }
+
+        /// <summary>
+        /// Ends the attack phase of the game.
+        /// </summary>
+        public void endAttackPhase()
+        {
+            moveFinder.bitMaskAllTilesAsNotMovable();
+            attackFinder.bitMaskAllTilesAsNotAttackable();
+            movePhase = false;
+            attackPhase = false;
+        }
+
+        /// <summary>
+        /// Ends the turn by switching the controlling faction.
         /// </summary>
         public void endTurn()
         {
@@ -677,15 +719,11 @@ namespace Angels_Vs_Demons.BoardObjects
             }
             lastMove = null;
             lastCurrRecharge = 0;
-            movePhase = false;
-            attackPhase = false;
-            bitMaskAllTilesAsNotMovable();
-            bitMaskAllTilesAsNotAttackable();
+            //endAttackPhase();
 #if DEBUG
             Debug.WriteLine("DEBUG: leaving endTurn()");
 #endif
         }
-
 
         /// <summary>
         /// Applies a turn to the board, which consists of a move and an attack.
@@ -742,9 +780,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 }
             }
             selectedTile = null;
-            movePhase = false;
-            attackPhase = true;
-            bitMaskAllTilesAsNotMovable();
+            endMovePhaseAfterMove(GetTile(move.NewTile));
 #if DEBUG
             Debug.WriteLine("DEBUG: leaving applyMove()");
 #endif
@@ -775,10 +811,11 @@ namespace Angels_Vs_Demons.BoardObjects
                     Debug.WriteLine("MORE SHIT HAPPENED");
                 }
             }
+            lastMove = null;
+            lastCurrRecharge = 0;
             selectedTile = null;
-            movePhase = true;
-            attackPhase = false;
-            bitMaskGetMoves();
+            attackFinder.bitMaskAllTilesAsNotAttackable();
+            beginMovePhase();
 #if DEBUG
             Debug.WriteLine("DEBUG: leaving undoLastMove()");
 #endif
@@ -797,52 +834,72 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 Tile victimTile = GetTile(attack.VictimPos);
                 Tile attackerTile = GetTile(attack.AttackerPos);
+                #region NonChampion
                 if (attackerTile.Unit is NonChampion)
                 {
+                    bool isSplash = false;
+                    for (int j = 0; j < attackerTile.Unit.Special.Length; j++)
+                    {
+                        if (attackerTile.Unit.Special[j] == specialType.SPLASH)
+                        {
+                            isSplash = true;
+                        }
+                    }
+                    NonChampion attacker = attackerTile.Unit as NonChampion;
 #if DEBUG
                     Debug.Write("DEBUG: victim's HP before attack: ");
-                    Debug.WriteLine(attackerTile.Unit.CurrHP);
+                    Debug.WriteLine(victimTile.Unit.CurrHP);
 #endif
-                    NonChampion nc = attackerTile.Unit as NonChampion;
-                    nc.attack(victimTile.Unit);
+                    attacker.attack(victimTile.Unit);
+                    //check to see if we killed the unit
+                    if (victimTile.Unit.CurrHP == 0)
+                    {
+                        victimTile.Unit = null;
+#if DEBUG
+                        Debug.WriteLine("DEBUG: victim is dead");
+#endif
+                    }
                     //set the recharge on the unit that just attacked
                     attackerTile.Unit.CurrRecharge = attackerTile.Unit.TotalRecharge;
+
+                    if (isSplash)
+                    {
+                        attackFinder.bitMaskAllTilesAsNotAttackable();
+                        List splashAttacks = attackFinder.findSplashAttacks(2, attack.AttackerPos, attack.VictimPos, GetTile(attack.VictimPos), attackerTile.Unit.ID);
+
+                        while (!splashAttacks.isEmpty())
+                        {
+                            Attack splash = (Attack)splashAttacks.pop_front();
+                            victimTile = GetTile(splash.VictimPos);
+                            attacker.attack(victimTile.Unit);
+                            //check to see if we killed the unit
+                            if (victimTile.Unit.CurrHP == 0)
+                            {
+                                victimTile.Unit = null;
 #if DEBUG
-                    Debug.WriteLine("DEBUG: attack applied");
-                    Debug.Write("DEBUG: victim's HP after attack: ");
-                    Debug.WriteLine(attackerTile.Unit.CurrHP);
+                                Debug.WriteLine("DEBUG: victim is dead");
 #endif
+                            }
+                        }
+                    }
                 }
+                #endregion
+                #region Champion
                 if (attackerTile.Unit is Champion)
                 {
 
                 }
-                //check to see if we killed the unit
-                if (victimTile.Unit.CurrHP == 0)
-                {
-                    victimTile.Unit = null;
-#if DEBUG
-                    Debug.WriteLine("DEBUG: victim is dead");
-#endif
-                }
+                #endregion
             }
-            attackPhase = false;
-            bitMaskAllTilesAsNotAttackable();
+            endAttackPhase();
 #if DEBUG
             Debug.WriteLine("DEBUG: leaving applyAttack()");
 #endif
         }
 
-
-        /// <summary>
-        /// NOT SURE WHO WROTE THIS, PLEASE COMMENT!!!
-        /// </summary>
-        /// <param name="attack"></param>
-        private void makeAttack(Attack attack)
-        {
-        }
-
         #endregion
+
+        #region AI interface methods
 
         /// <summary>
         /// Performs a deep clone of the Board.
@@ -913,16 +970,6 @@ namespace Angels_Vs_Demons.BoardObjects
                             }
                         }
                     }
-                        //for (int j = 0; j < grid.Length; j++)
-                        //{
-                        //    foreach (Tile jTile in grid[i])
-                        //    {
-                        //        if ((iTile.Unit.ID & jTile.MoveID) != 0)
-                        //        {
-                        //            moves.push_back(new Move(jTile.position, iTile.position));
-                        //        }
-                        //    }
-                        //}
                 }
             }
             return moves;
@@ -948,7 +995,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 //apply the move to the board and get the attacks we can do
                 applyMove(move);
                 Tile attackerTile = GetTile(move.NewTile);
-                if (bitMaskGetAttacksForTile(attackerTile))
+                if (attackFinder.findAttacksForTile(attackerTile))
                 {
                     for (int i = 0; i < grid.Length; i++)
                     {
@@ -1005,551 +1052,8 @@ namespace Angels_Vs_Demons.BoardObjects
                     }
                 }
             }
-            Debug.WriteLine("There are " + turns.length() + " valid turns");
+            Debug.WriteLine("There are " + turnCount + " valid turns");
             return turns;
-        }
-
-        #region Move methods
-
-#if DEBUG
-        /// <summary>
-        /// Debugging method that writes the move bitmask data of all tiles to the debug console.
-        /// </summary>
-        public void showMoveBitMasks()
-        {
-            Debug.WriteLine("\nDEBUG: entering showMoveBitMasks()");
-            for (int i = 0; i < grid.Length; i++)
-            {
-                foreach (Tile tile in grid[i])
-                {
-                    showTileMoveBitMasks(tile);
-                }
-            }
-            Debug.WriteLine("DEBUG: leaving showMoveBitMasks()");
-        }
-
-        /// <summary>
-        /// Debugging method that writes the move bitmask data of a tile to the debug console.
-        /// </summary>
-        /// <param name="currentTile"> the current tile to get the bitmask of.</param>
-        private void showTileMoveBitMasks(Tile currentTile)
-        {
-            Debug.Write("DEBUG: x = ");
-            Debug.Write(currentTile.position.X);
-            Debug.Write(", y = ");
-            Debug.Write(currentTile.position.Y);
-            Debug.Write(": id = ");
-            Debug.WriteLine(GetTile(currentTile.position).MoveID);
-        }
-#endif
-
-        /// <summary>
-        /// Uses bit masking to mark the tiles as movable.
-        /// </summary>
-        public bool bitMaskGetMoves()
-        {
-            bool canMove = false;
-            int moveTotal = 0;
-            for (int i = 0; i < grid.Length; i++)
-            {
-                foreach (Tile tile in grid[i])
-                {
-                    if (tile.IsOccupied)
-                    {
-                        //if we're checking one of the controlling units
-                        if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
-                        {
-                            bool isFlying = false;
-                            for (int j = 0; j < tile.Unit.Special.Length; j++)
-                            {
-                                if (tile.Unit.Special[j] == specialType.FLYING)
-                                {
-                                    isFlying = true;
-                                }
-                            }
-                            int unitMoves = 0;
-                            unitMoves = bitMaskMoves(unitMoves, tile.Unit.Movement, isFlying, tile.position, tile, tile.Unit.ID);
-                            moveTotal += unitMoves;
-                        }
-                    }
-                }
-            }
-            Debug.WriteLine("moveTotal: " + moveTotal);
-            if (moveTotal > 0)
-            {
-                canMove = true;
-            }
-            return canMove;
-        }
-
-
-        /// <summary>
-        /// Uses bit masking to all tiles within a Units move range that are not occupied as movable.
-        /// </summary>
-        /// <param name="unitMoves">the number of moves this unit can make</param>
-        /// <param name="distance">The move range of a unit</param>
-        /// <param name="isFlying">true if the unit can fly</param>
-        /// <param name="startPosition">The starting position of this recursive call</param>
-        /// <param name="currentTile">The current tile we are checking</param>
-        /// <param name="id">the ID of the unit we're checking</param>
-        /// <returns>how many moves the unit can make</returns>
-        private int bitMaskMoves(int unitMoves, int distance, bool isFlying, Vector2 startPosition, Tile currentTile, int id)
-        {
-            distance--;
-            //as long as we're not checking the unit against itself
-            if (currentTile.position != startPosition)
-            {
-                //if we haven't moved to this tile before and it is not occupied
-                if (!(GetTile(currentTile.position).IsOccupied)
-                    && (GetTile(currentTile.position).MoveID & id) == 0)
-                {
-                    unitMoves++;
-                    GetTile(currentTile.position).MoveID |= id;//OR EQUALS
-                }
-            }
-            if (distance >= 0)
-            {
-                // are there tiles left and the tile is not occupied, go left
-                if (currentTile.position.X - 1 >= 0)
-                {
-                    if (!isFlying)
-                    {
-                        if (grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].IsOccupied == false)
-                        {
-                            currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
-                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathLeft, id);
-                        }
-                    }
-                    else
-                    {
-                        currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
-                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathLeft, id);
-                    }
-                }
-                // are there tiles right and the tile is not occupied, go right
-                if (currentTile.position.X + 1 < x_size)
-                {
-                    if (!isFlying)
-                    {
-                        if (grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].IsOccupied == false)
-                        {
-                            currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
-                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathRight, id);
-                        }
-                    }
-                    else
-                    {
-                        currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
-                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathRight, id);
-                    }
-                }
-                // are there tiles above and the tile is not occupied, go up
-                if (currentTile.position.Y - 1 >= 0)
-                {
-                    if (!isFlying)
-                    {
-                        if (grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].IsOccupied == false)
-                        {
-                            currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
-                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathTop, id);
-                        }
-                    }
-                    else
-                    {
-                        currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
-                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathTop, id);
-                    }
-                }
-                // are there tiles below and the tile is not occupied, go down
-                if (currentTile.position.Y + 1 < y_size)
-                {
-                    if (!isFlying)
-                    {
-                        if (grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].IsOccupied == false)
-                        {
-                            currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
-                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathBottom, id);
-                        }
-                    }
-                    else
-                    {
-                        currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
-                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathBottom, id);
-                    }
-                }
-            }
-            return unitMoves;
-        }
-
-        /// <summary>
-        /// Iterates through the grid and masks all tiles as not moveable.
-        /// </summary>
-        public void bitMaskAllTilesAsNotMovable()
-        {
-            for (int i = 0; i < grid.Length; i++)
-            {
-                foreach (Tile tile in grid[i])
-                {
-                    tile.MoveID = 0;
-                }
-            }
-        }
-
-        #endregion
-
-        #region Attack methods
-#if DEBUG
-        /// <summary>
-        /// Debugging method that writes the attack bitmask data of all tiles to the debug console.
-        /// </summary>
-        public void showAttackBitMasks()
-        {
-            Debug.WriteLine("\nDEBUG: entering showAttackBitMasks()");
-            for (int i = 0; i < grid.Length; i++)
-            {
-                foreach (Tile tile in grid[i])
-                {
-                    showTileAttackBitMasks(tile);
-                }
-            }
-            Debug.WriteLine("DEBUG: leaving showAttackBitMasks()");
-        }
-
-        /// <summary>
-        /// Debugging method that writes the attack bitmask data of a tile to the debug console.
-        /// </summary>
-        /// <param name="currentTile"> the current tile to get the bitmask of.</param>
-        private void showTileAttackBitMasks(Tile currentTile)
-        {
-            Debug.Write("DEBUG: x = ");
-            Debug.Write(currentTile.position.X);
-            Debug.Write(", y = ");
-            Debug.Write(currentTile.position.Y);
-            Debug.Write(": id = ");
-            Debug.WriteLine(GetTile(currentTile.position).AttackID);
-        }
-#endif
-
-        /// <summary>
-        /// Uses bit masking to mark the tiles as attackable.
-        /// </summary>
-        /// <returns>Whether an attack can be made this turn</returns>
-        public bool bitMaskGetAttacks()
-        {
-#if DEBUG
-            Debug.WriteLine("DEBUG: bit masking attacks");
-#endif
-            bool canAttack = false;
-            int attackTotal = 0;
-            for (int i = 0; i < grid.Length; i++)
-            {
-                foreach (Tile tile in grid[i])
-                {
-                    if (tile.IsOccupied)
-                    {
-                        //if we're checking one of the controlling units and it is usable
-                        if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
-                        {
-                            if (tile.Unit is NonChampion)
-                            {
-                                bool isProjectile = false;
-                                bool isSplash = false;
-                                for (int j = 0; j < tile.Unit.Special.Length; j++)
-                                {
-                                    if (tile.Unit.Special[j] == specialType.PROJECTILE)
-                                    {
-                                        isProjectile = true;
-                                    }
-                                    if (tile.Unit.Special[j] == specialType.SPLASH)
-                                    {
-                                        isSplash = true;
-                                    }
-                                }
-#if DEBUG
-                                Debug.WriteLine("DEBUG: checking NonChampion");
-#endif
-                                NonChampion nc = tile.Unit as NonChampion;
-                                int unitAttacks = 0;
-                                unitAttacks = bitMaskAttacks(unitAttacks, nc.Range, isProjectile, isSplash, tile.position, tile, tile.Unit.ID);
-                                attackTotal += unitAttacks;
-                            }
-                            if (tile.Unit is Champion)
-                            {
-                                //do all the fancy magic stuff!?
-                            }
-                        }
-                    }
-                }
-            }
-            Debug.WriteLine("DEBUG: attackTotal: " + attackTotal);
-            if (attackTotal > 0)
-            {
-                canAttack = true;
-            }
-            return canAttack;
-        }
-
-        /// <summary>
-        /// Gets the attacks for a given tile.
-        /// </summary>
-        /// <param name="tile">the tile to get the attacks of</param>
-        /// <returns>true if the unit can attack</returns>
-        public bool bitMaskGetAttacksForTile(Tile tile)
-        {
-            bool canAttack = false;
-            int attackTotal = 0;
-            if (tile.IsOccupied)
-            {
-                //if we're checking one of the controlling units and it is usable
-                if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
-                {
-                    if (tile.Unit is NonChampion)
-                    {
-                        bool isProjectile = false;
-                        bool isSplash = false;
-                        for (int j = 0; j < tile.Unit.Special.Length; j++)
-                        {
-                            if (tile.Unit.Special[j] == specialType.PROJECTILE)
-                            {
-                                isProjectile = true;
-                            }
-                            if (tile.Unit.Special[j] == specialType.SPLASH)
-                            {
-                                isSplash = true;
-                            }
-                        }
-#if DEBUG
-                    Debug.WriteLine("DEBUG: checking NonChampion");
-#endif
-                        NonChampion nc = tile.Unit as NonChampion;
-                        attackTotal = bitMaskAttacks(attackTotal, nc.Range, isProjectile, isSplash, tile.position, tile, tile.Unit.ID);
-                    }
-                    if (tile.Unit is Champion)
-                    {
-                        //do the fancy magic stuff
-                        Champion c = tile.Unit as Champion;
-                        attackTotal = bitMaskSpells();
-                    }
-                }
-            }
-#if DEBUG
-            Debug.WriteLine("DEBUG: attackTotal: " + attackTotal);
-#endif
-            if (attackTotal > 0)
-            {
-                canAttack = true;
-            }
-            return canAttack;
-        }
-
-        /// <summary>
-        /// Uses bit masking to all tiles within a NonChampion's attack range that are not occupied as attackble.
-        /// </summary>
-        /// <param name="unitAttacks">the number of attacks this unit can make</param>
-        /// <param name="range">The attack range of a NonChampion</param>
-        /// <param name="startPosition">The position of the unit that started the recursive call</param>
-        /// <param name="currentTile">The current tile we are checking</param>
-        /// <param name="id">the bitmask ID of the unit</param>
-        /// <returns>how many attacks the unit can make</returns>
-        private int bitMaskAttacks(int unitAttacks, int range, bool isProjectile, bool isSplash, Vector2 startPosition, Tile currentTile, int id)
-        {
-            range--;
-            //as long as we're not checking the unit against itself
-            if (currentTile.position != startPosition)
-            {
-                //if there's a unit on the new tile
-                if (GetTile(currentTile.position).IsOccupied)
-                {
-                    //if it is an opponent unit
-                    if (GetTile(currentTile.position).Unit.FactionType != controllingFaction)
-                    {
-                        //mark that we can attack it
-                        GetTile(currentTile.position).AttackID |= id;//OR EQUALS
-                        unitAttacks++;
-                        //don't continue looking past this unit, unless
-                        return unitAttacks;
-                    }
-                    else
-                    {
-                        //if(GetTile(currentTile.position).Unit.Special.
-                    }
-                }
-            }
-            if (range >= 0)
-            {
-                // are there tiles left, go left
-                if (currentTile.position.X - 1 >= 0)
-                {
-                    currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
-                    unitAttacks = bitMaskAttacksLeft(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathLeft, id);
-                }
-                // are there tiles right, go right
-                if (currentTile.position.X + 1 < x_size)
-                {
-                    currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
-                    unitAttacks = bitMaskAttacksRight(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathRight, id);
-                }
-                // are there tiles above, go up
-                if (currentTile.position.Y - 1 >= 0)
-                {
-                    currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
-                    unitAttacks = bitMaskAttacksUp(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathTop, id);
-                }
-                // are there tiles below, go down
-                if (currentTile.position.Y + 1 < y_size)
-                {
-                    currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
-                    unitAttacks = bitMaskAttacksDown(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathBottom, id);
-                }
-            }
-            return unitAttacks;
-        }
-
-        private int bitMaskAttacksLeft(int unitAttacks, int range, bool isProjectile, bool isSplash, Vector2 startPosition, Tile currentTile, int id)
-        {
-            range--;
-            //as long as we're not checking the unit against itself
-            if (currentTile.position != startPosition)
-            {
-                //if there's a unit on the new tile
-                if (GetTile(currentTile.position).IsOccupied)
-                {
-                    //if it is an opponent unit
-                    if (GetTile(currentTile.position).Unit.FactionType != controllingFaction)
-                    {
-                        //mark that we can attack it
-                        GetTile(currentTile.position).AttackID |= id;//OR EQUALS
-                        unitAttacks++;
-                    }
-                    //don't continue looking past this unit
-                    return unitAttacks;
-                }
-            }
-            if (range >= 0)
-            {
-                // are there tiles left, go left
-                if (currentTile.position.X - 1 >= 0)
-                {
-                    currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
-                    unitAttacks = bitMaskAttacksLeft(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathLeft, id);
-                }
-            }
-            return unitAttacks;
-        }
-
-        private int bitMaskAttacksRight(int unitAttacks, int range, bool isProjectile, bool isSplash, Vector2 startPosition, Tile currentTile, int id)
-        {
-            range--;
-            //as long as we're not checking the unit against itself
-            if (currentTile.position != startPosition)
-            {
-                //if there's a unit on the new tile
-                if (GetTile(currentTile.position).IsOccupied)
-                {
-                    //if it is an opponent unit
-                    if (GetTile(currentTile.position).Unit.FactionType != controllingFaction)
-                    {
-                        //mark that we can attack it
-                        GetTile(currentTile.position).AttackID |= id;//OR EQUALS
-                        unitAttacks++;
-                    }
-                    //don't continue looking past this unit
-                    return unitAttacks;
-                }
-            }
-            if (range >= 0)
-            {
-                // are there tiles right, go right
-                if (currentTile.position.X + 1 < x_size)
-                {
-                    currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
-                    unitAttacks = bitMaskAttacksRight(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathRight, id);
-                }
-            }
-            return unitAttacks;
-        }
-
-        private int bitMaskAttacksUp(int unitAttacks, int range, bool isProjectile, bool isSplash, Vector2 startPosition, Tile currentTile, int id)
-        {
-            range--;
-            //as long as we're not checking the unit against itself
-            if (currentTile.position != startPosition)
-            {
-                //if there's a unit on the new tile
-                if (GetTile(currentTile.position).IsOccupied)
-                {
-                    //if it is an opponent unit
-                    if (GetTile(currentTile.position).Unit.FactionType != controllingFaction)
-                    {
-                        //mark that we can attack it
-                        GetTile(currentTile.position).AttackID |= id;//OR EQUALS
-                        unitAttacks++;
-                    }
-                    //don't continue looking past this unit
-                    return unitAttacks;
-                }
-            }
-            if (range >= 0)
-            {
-                // are there tiles above, go up
-                if (currentTile.position.Y - 1 >= 0)
-                {
-                    currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
-                    unitAttacks = bitMaskAttacksUp(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathTop, id);
-                }
-            }
-            return unitAttacks;
-        }
-
-        private int bitMaskAttacksDown(int unitAttacks, int range, bool isProjectile, bool isSplash, Vector2 startPosition, Tile currentTile, int id)
-        {
-            range--;
-            //as long as we're not checking the unit against itself
-            if (currentTile.position != startPosition)
-            {
-                //if there's a unit on the new tile
-                if (GetTile(currentTile.position).IsOccupied)
-                {
-                    //if it is an opponent unit
-                    if (GetTile(currentTile.position).Unit.FactionType != controllingFaction)
-                    {
-                        //mark that we can attack it
-                        GetTile(currentTile.position).AttackID |= id;//OR EQUALS
-                        unitAttacks++;
-                    }
-                    //don't continue looking past this unit
-                    return unitAttacks;
-                }
-            }
-            if (range >= 0)
-            {
-                // are there tiles below, go down
-                if (currentTile.position.Y + 1 < y_size)
-                {
-                    currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
-                    unitAttacks = bitMaskAttacksDown(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathBottom, id);
-                }
-            }
-            return unitAttacks;
-        }
-
-        private int bitMaskSpells()
-        {
-            return 0;
-        }
-
-        /// <summary>
-        /// Iterates through the grid and masks all tiles as not attackable.
-        /// </summary>
-        public void bitMaskAllTilesAsNotAttackable()
-        {
-            for (int i = 0; i < grid.Length; i++)
-            {
-                foreach (Tile tile in grid[i])
-                {
-                    tile.AttackID = 0;
-                }
-            }
         }
 
         #endregion
