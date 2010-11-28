@@ -40,7 +40,12 @@ namespace Angels_Vs_Demons.GameObjects.Units
         /// <param name="victim">the unit we are attacking</param>
         public override void attack(Unit victim)
         {
-            victim.CurrHP -= victim.applyMitigation(AttackPower, AttackTypeVal);
+            victim.CurrHP -= victim.applyMitigation(AttackPower / 2, AttackTypeVal);
+            victim.CurrHP -= victim.applyMitigation(AttackPower / 2, attackType.PROJECTILE);
+            if (victim.CurrHP < 0)
+            {
+                victim.CurrHP = 0;
+            }
         }
 
         /// <summary>

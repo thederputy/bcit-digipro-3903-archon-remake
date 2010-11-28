@@ -73,9 +73,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             set { winnerPlayer = value; }
         }
 
-        private MoveFinder moveFinder;
-        private AttackFinder attackFinder;
-
         public ContentManager content;
 
         protected KeyboardState previousKeyboardState;
@@ -100,9 +97,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         {
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
-
-            moveFinder = new MoveFinder();
-            attackFinder = new AttackFinder();
         }
 
         /// <summary>
@@ -238,8 +232,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             }
             else
             {
-                
-                
                 if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
                 {
                     board.moveCursor(-1, 0);
@@ -265,21 +257,19 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     
                     if (board.MovePhase == true)
                     {
-                        board.bitMaskAllTilesAsNotMovable();
-                        board.bitMaskGetAttacks();
-                        board.MovePhase = false;
-                        board.AttackPhase = true;
+                        board.endMovePhaseNoMove();
                     }
                     else if (board.AttackPhase == true)
                     {
-                        board.bitMaskAllTilesAsNotAttackable();
-                        board.MovePhase = false;
-                        board.AttackPhase = false;
+                        board.endAttackPhase();
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.U) && !previousKeyboardState.IsKeyDown(Keys.U))
                 {
-                    board.undoLastMove();
+                    if (board.AttackPhase == true)
+                    {
+                        board.undoLastMove();
+                    }
                 }
             }
             previousKeyboardState = keyboardState;
@@ -320,18 +310,13 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 //check that there is a tile selected
                 if (board.selectedTile != null)
                 {
-                    //if we've selected the same tile again, this indicates the move phase is over
-                    //(not sure if this is the best implementation)
+                    //if we've selected the same tile again, deselect it
                     if (currentTile.position == board.selectedTile.position)
                     {
                         board.selectedTile = null;
 #if DEBUG
                         Debug.WriteLine("selected tile = null");
 #endif
-                        //board.movePhase = false;
-                        //board.AttackPhase = true;
-                        ////now get all the tiles that are attackable
-                        //board.bitMaskGetAttacks();
                     }
                     else
                     {
@@ -357,9 +342,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 {
                     //execute the move phase
                     executeMovePhase(currentTile, board.selectedTile);
-
-                    //after executing the move phase, check for valid attacks for the tile that we moved
-                    board.bitMaskGetAttacksForTile(currentTile);
                 }
             }
         }
@@ -530,36 +512,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             }
 
             spriteBatch.End();
-
-
-            //debugging information
-#if DEBUG
-            //Vector2 debugLocation = new Vector2(10,10);
-            //Vector2 debugLocation2 = new Vector2(10, 50);
-
-            //if (board.ControllingFaction == Faction.ANGEL)
-            //    spriteBatch.DrawString(board.gameFont, "Angel Turn", debugLocation, Color.Black);
-            //else
-            //    spriteBatch.DrawString(board.gameFont, "Demon Turn", debugLocation, Color.Black);
-
-            //String debugString = "";
-
-            //if(board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsOccupied)
-            //    debugString += "Faction: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].Unit.FactionType.ToString() + '\n';
-            
-            //debugString += "Faction: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].ToString() + '\n';
-            //debugString += "Attackable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsAttackable.ToString() + '\n';
-            //debugString += "CurrentTile: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsCurrentTile.ToString() + '\n';
-            //debugString += "Movable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsMovable.ToString() + '\n';
-            //debugString += "Occupied: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsOccupied.ToString() + '\n';
-            //debugString += "Selected: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsSelected.ToString() + '\n';
-            //debugString += "Usable: " + board.grid[(int)board.Cursor.position.Y][(int)board.Cursor.position.X].IsUsable.ToString() + '\n';
-            //debugString += "Move Phase: " + board.movePhase.ToString() + '\n';
-            //debugString += "Attack Phase: " + board.attackPhase.ToString() + '\n';
-
-
-            //spriteBatch.DrawString(board.debugFont, debugString, debugLocation2, Color.Black);
-#endif
             
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0)
