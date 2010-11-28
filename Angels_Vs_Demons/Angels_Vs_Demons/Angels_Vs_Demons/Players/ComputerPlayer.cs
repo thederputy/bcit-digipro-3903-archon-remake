@@ -327,7 +327,7 @@ namespace Angels_Vs_Demons.Players
         private int calculateValue(Unit unit)
         {
             int value = unitValues[unit.GetType().Name];
-            Debug.WriteLine("Calculating value for unit: " +unit.Name);
+            Debug.WriteLine("Calculating value for unit: " + unit.Name);
 
             value = value + unit.CurrHP;
 

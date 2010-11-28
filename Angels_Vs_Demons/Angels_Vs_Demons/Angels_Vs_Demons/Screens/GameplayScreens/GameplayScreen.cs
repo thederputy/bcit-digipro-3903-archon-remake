@@ -13,6 +13,7 @@ using Angels_Vs_Demons.GameObjects.Units;
 using Angels_Vs_Demons.Players;
 using Angels_Vs_Demons.Screens.ScreenManagers;
 using Angels_Vs_Demons.Screens;
+using Angels_Vs_Demons.Util;
 #endregion
 
 namespace Angels_Vs_Demons.Screens.GameplayScreens
@@ -72,6 +73,9 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             set { winnerPlayer = value; }
         }
 
+        private MoveFinder moveFinder;
+        private AttackFinder attackFinder;
+
         public ContentManager content;
 
         protected KeyboardState previousKeyboardState;
@@ -96,6 +100,9 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         {
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
+
+            moveFinder = new MoveFinder();
+            attackFinder = new AttackFinder();
         }
 
         /// <summary>

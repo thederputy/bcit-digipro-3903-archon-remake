@@ -138,6 +138,7 @@
     <Compile Include="BoardObjects\Turn.cs" />
     <Compile Include="Players\Faction.cs" />
     <Compile Include="Players\NetworkedHumanPlayer.cs" />
+    <Compile Include="Util\AttackFinder.cs" />
     <Compile Include="Util\BitMask.cs" />
     <Compile Include="Util\List.cs" />
     <Compile Include="Networking\NetworkedGameplayScreen.cs" />
@@ -176,6 +177,7 @@
     <Compile Include="GameObjects\Units\Peon.cs" />
     <Compile Include="GameObjects\Tile.cs" />
     <Compile Include="GameObjects\Units\Unit.cs" />
+    <Compile Include="Util\MoveFinder.cs" />
     <Compile Include="Util\ObjectCopier.cs" />
     <Compile Include="Util\Position.cs" />
   </ItemGroup>

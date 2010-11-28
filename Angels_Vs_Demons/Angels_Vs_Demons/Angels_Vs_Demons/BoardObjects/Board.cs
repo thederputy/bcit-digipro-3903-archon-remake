@@ -12,7 +12,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects
@@ -558,23 +557,9 @@ namespace Angels_Vs_Demons.BoardObjects
                 {
                     if (tile.IsOccupied)
                     {
-                        if (tile.Unit.FactionType == controllingFaction)
+                        if (tile.Unit.FactionType == controllingFaction && tile.Unit.CurrRecharge == 0)
                         {
-                            if (tile.Unit.CurrRecharge == 0)
-                            {
-#if DEBUG
-                                Debug.WriteLine("" + tile.Unit.Name + " is usable this turn");
-#endif
-                                tile.IsUsable = true;
-                            }
-                            else
-                            {
-#if DEBUG
-                                Debug.Write("" + tile.Unit.Name + " is NOT usable this turn.");
-                                Debug.WriteLine(" Current recharge is: " + tile.Unit.CurrRecharge);
-#endif
-                                tile.IsUsable = false;
-                            }
+                            tile.IsUsable = true;
                         }
                         else
                         {
@@ -589,35 +574,7 @@ namespace Angels_Vs_Demons.BoardObjects
             }
         }
 
-        /// <summary>
-        /// Checks to see if a Unit is a Champion.
-        /// </summary>
-        /// <param name="unit">the unit to check the type of</param>
-        /// <returns>true if this Unit is a Champion, false if not</returns>
-        private bool isChampion(Unit unit)
-        {
-            bool isChampion = false;
-            if (unit is Champion)
-            {
-                isChampion = true;
-            }
-            return isChampion;
-        }
 
-        /// <summary>
-        /// Checks to see if a Unit is a NonChampion.
-        /// </summary>
-        /// <param name="unit">the unit to check the type of</param>
-        /// <returns>true if this Unit is a NonChampion, false if not</returns>
-        private bool isNonChampion(Unit unit)
-        {
-            bool isNonChampion = false;
-            if (unit is NonChampion)
-            {
-                isNonChampion = true;
-            }
-            return isNonChampion;
-        }
         /// <summary>
         /// Returns the last movement
         /// </summary>
@@ -840,7 +797,7 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 Tile victimTile = GetTile(attack.VictimPos);
                 Tile attackerTile = GetTile(attack.AttackerPos);
-                if (isNonChampion(attackerTile.Unit))
+                if (attackerTile.Unit is NonChampion)
                 {
 #if DEBUG
                     Debug.Write("DEBUG: victim's HP before attack: ");
@@ -856,7 +813,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     Debug.WriteLine(attackerTile.Unit.CurrHP);
 #endif
                 }
-                if (isChampion(attackerTile.Unit))
+                if (attackerTile.Unit is Champion)
                 {
 
                 }
@@ -1293,20 +1250,30 @@ namespace Angels_Vs_Demons.BoardObjects
                         //if we're checking one of the controlling units and it is usable
                         if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
                         {
-#if DEBUG
-                            Debug.WriteLine("DEBUG: ckecking currently controllable unit: " + tile.Unit.Name);
-#endif
-                            if (isNonChampion(tile.Unit))
+                            if (tile.Unit is NonChampion)
                             {
+                                bool isProjectile = false;
+                                bool isSplash = false;
+                                for (int j = 0; j < tile.Unit.Special.Length; j++)
+                                {
+                                    if (tile.Unit.Special[j] == specialType.PROJECTILE)
+                                    {
+                                        isProjectile = true;
+                                    }
+                                    if (tile.Unit.Special[j] == specialType.SPLASH)
+                                    {
+                                        isSplash = true;
+                                    }
+                                }
 #if DEBUG
                                 Debug.WriteLine("DEBUG: checking NonChampion");
 #endif
                                 NonChampion nc = tile.Unit as NonChampion;
                                 int unitAttacks = 0;
-                                unitAttacks = bitMaskAttacks(unitAttacks, nc.Range, tile.position, tile, tile.Unit.ID);
+                                unitAttacks = bitMaskAttacks(unitAttacks, nc.Range, isProjectile, isSplash, tile.position, tile, tile.Unit.ID);
                                 attackTotal += unitAttacks;
                             }
-                            if (isChampion(tile.Unit))
+                            if (tile.Unit is Champion)
                             {
                                 //do all the fancy magic stuff!?
                             }
@@ -1336,18 +1303,28 @@ namespace Angels_Vs_Demons.BoardObjects
                 //if we're checking one of the controlling units and it is usable
                 if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
                 {
-#if DEBUG
-                Debug.WriteLine("DEBUG: ckecking currently controllable unit: " + tile.Unit.Name);
-#endif
-                    if (isNonChampion(tile.Unit))
+                    if (tile.Unit is NonChampion)
                     {
+                        bool isProjectile = false;
+                        bool isSplash = false;
+                        for (int j = 0; j < tile.Unit.Special.Length; j++)
+                        {
+                            if (tile.Unit.Special[j] == specialType.PROJECTILE)
+                            {
+                                isProjectile = true;
+                            }
+                            if (tile.Unit.Special[j] == specialType.SPLASH)
+                            {
+                                isSplash = true;
+                            }
+                        }
 #if DEBUG
                     Debug.WriteLine("DEBUG: checking NonChampion");
 #endif
                         NonChampion nc = tile.Unit as NonChampion;
-                        attackTotal = bitMaskAttacks(attackTotal, nc.Range, tile.position, tile, tile.Unit.ID);
+                        attackTotal = bitMaskAttacks(attackTotal, nc.Range, isProjectile, isSplash, tile.position, tile, tile.Unit.ID);
                     }
-                    if (isChampion(tile.Unit))
+                    if (tile.Unit is Champion)
                     {
                         //do the fancy magic stuff
                         Champion c = tile.Unit as Champion;
@@ -1374,7 +1351,61 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <param name="currentTile">The current tile we are checking</param>
         /// <param name="id">the bitmask ID of the unit</param>
         /// <returns>how many attacks the unit can make</returns>
-        private int bitMaskAttacks(int unitAttacks, int range, Vector2 startPosition, Tile currentTile, int id)
+        private int bitMaskAttacks(int unitAttacks, int range, bool isProjectile, bool isSplash, Vector2 startPosition, Tile currentTile, int id)
+        {
+            range--;
+            //as long as we're not checking the unit against itself
+            if (currentTile.position != startPosition)
+            {
+                //if there's a unit on the new tile
+                if (GetTile(currentTile.position).IsOccupied)
+                {
+                    //if it is an opponent unit
+                    if (GetTile(currentTile.position).Unit.FactionType != controllingFaction)
+                    {
+                        //mark that we can attack it
+                        GetTile(currentTile.position).AttackID |= id;//OR EQUALS
+                        unitAttacks++;
+                        //don't continue looking past this unit, unless
+                        return unitAttacks;
+                    }
+                    else
+                    {
+                        //if(GetTile(currentTile.position).Unit.Special.
+                    }
+                }
+            }
+            if (range >= 0)
+            {
+                // are there tiles left, go left
+                if (currentTile.position.X - 1 >= 0)
+                {
+                    currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                    unitAttacks = bitMaskAttacksLeft(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathLeft, id);
+                }
+                // are there tiles right, go right
+                if (currentTile.position.X + 1 < x_size)
+                {
+                    currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                    unitAttacks = bitMaskAttacksRight(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathRight, id);
+                }
+                // are there tiles above, go up
+                if (currentTile.position.Y - 1 >= 0)
+                {
+                    currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                    unitAttacks = bitMaskAttacksUp(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathTop, id);
+                }
+                // are there tiles below, go down
+                if (currentTile.position.Y + 1 < y_size)
+                {
+                    currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                    unitAttacks = bitMaskAttacksDown(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathBottom, id);
+                }
+            }
+            return unitAttacks;
+        }
+
+        private int bitMaskAttacksLeft(int unitAttacks, int range, bool isProjectile, bool isSplash, Vector2 startPosition, Tile currentTile, int id)
         {
             range--;
             //as long as we're not checking the unit against itself
@@ -1400,25 +1431,103 @@ namespace Angels_Vs_Demons.BoardObjects
                 if (currentTile.position.X - 1 >= 0)
                 {
                     currentTile.PathLeft = grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
-                    unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathLeft, id);
+                    unitAttacks = bitMaskAttacksLeft(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathLeft, id);
                 }
+            }
+            return unitAttacks;
+        }
+
+        private int bitMaskAttacksRight(int unitAttacks, int range, bool isProjectile, bool isSplash, Vector2 startPosition, Tile currentTile, int id)
+        {
+            range--;
+            //as long as we're not checking the unit against itself
+            if (currentTile.position != startPosition)
+            {
+                //if there's a unit on the new tile
+                if (GetTile(currentTile.position).IsOccupied)
+                {
+                    //if it is an opponent unit
+                    if (GetTile(currentTile.position).Unit.FactionType != controllingFaction)
+                    {
+                        //mark that we can attack it
+                        GetTile(currentTile.position).AttackID |= id;//OR EQUALS
+                        unitAttacks++;
+                    }
+                    //don't continue looking past this unit
+                    return unitAttacks;
+                }
+            }
+            if (range >= 0)
+            {
                 // are there tiles right, go right
                 if (currentTile.position.X + 1 < x_size)
                 {
                     currentTile.PathRight = grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
-                    unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathRight, id);
+                    unitAttacks = bitMaskAttacksRight(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathRight, id);
                 }
+            }
+            return unitAttacks;
+        }
+
+        private int bitMaskAttacksUp(int unitAttacks, int range, bool isProjectile, bool isSplash, Vector2 startPosition, Tile currentTile, int id)
+        {
+            range--;
+            //as long as we're not checking the unit against itself
+            if (currentTile.position != startPosition)
+            {
+                //if there's a unit on the new tile
+                if (GetTile(currentTile.position).IsOccupied)
+                {
+                    //if it is an opponent unit
+                    if (GetTile(currentTile.position).Unit.FactionType != controllingFaction)
+                    {
+                        //mark that we can attack it
+                        GetTile(currentTile.position).AttackID |= id;//OR EQUALS
+                        unitAttacks++;
+                    }
+                    //don't continue looking past this unit
+                    return unitAttacks;
+                }
+            }
+            if (range >= 0)
+            {
                 // are there tiles above, go up
                 if (currentTile.position.Y - 1 >= 0)
                 {
                     currentTile.PathTop = grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
-                    unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathTop, id);
+                    unitAttacks = bitMaskAttacksUp(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathTop, id);
                 }
+            }
+            return unitAttacks;
+        }
+
+        private int bitMaskAttacksDown(int unitAttacks, int range, bool isProjectile, bool isSplash, Vector2 startPosition, Tile currentTile, int id)
+        {
+            range--;
+            //as long as we're not checking the unit against itself
+            if (currentTile.position != startPosition)
+            {
+                //if there's a unit on the new tile
+                if (GetTile(currentTile.position).IsOccupied)
+                {
+                    //if it is an opponent unit
+                    if (GetTile(currentTile.position).Unit.FactionType != controllingFaction)
+                    {
+                        //mark that we can attack it
+                        GetTile(currentTile.position).AttackID |= id;//OR EQUALS
+                        unitAttacks++;
+                    }
+                    //don't continue looking past this unit
+                    return unitAttacks;
+                }
+            }
+            if (range >= 0)
+            {
                 // are there tiles below, go down
                 if (currentTile.position.Y + 1 < y_size)
                 {
                     currentTile.PathBottom = grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
-                    unitAttacks = bitMaskAttacks(unitAttacks, range, startPosition, currentTile.PathBottom, id);
+                    unitAttacks = bitMaskAttacksDown(unitAttacks, range, isProjectile, isSplash, startPosition, currentTile.PathBottom, id);
                 }
             }
             return unitAttacks;
