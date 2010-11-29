@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Angels_Vs_Demons.GameObjects;
+using Angels_Vs_Demons.GameObjects.Units;
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects.Spells
@@ -16,9 +17,10 @@ namespace Angels_Vs_Demons.BoardObjects.Spells
             : base(newVictimPos, newAttackerPos)
         {
         }
-        public void Cast()
+        public override void Cast(Unit VictimUnit, Champion CastingUnit)
         {
-            
+            CastingUnit.CurrMP = CastingUnit.TotalMP;
+            CastingUnit.CurrRecharge = 5;
         }
     }
 }

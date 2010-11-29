@@ -955,7 +955,9 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             if (spell is Teleport)
             {
-                //do fancy teleporting junk
+                bitMaskSwapTiles(GetTile(spell.VictimPos), GetTile(spell.AttackerPos));
+                Champion attackerUnit = GetTile(spell.AttackerPos).Unit as Champion;
+                attackerUnit.CurrMP -= (int)SpellValues.spellCost.TELE;
             }
             else
             {

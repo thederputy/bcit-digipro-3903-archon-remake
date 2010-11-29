@@ -277,6 +277,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     if (game.IsChampionAttack)
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                        game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.BOLT);
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D2) && !previousKeyboardState.IsKeyDown(Keys.D2))
@@ -284,6 +285,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     if (game.IsChampionAttack)
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                        game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.BUFF);
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D3) && !previousKeyboardState.IsKeyDown(Keys.D3))
@@ -291,6 +293,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     if (game.IsChampionAttack)
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                        game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.HEAL);
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D4) && !previousKeyboardState.IsKeyDown(Keys.D4))
@@ -298,6 +301,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     if (game.IsChampionAttack)
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                        game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.STUN);
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D5) && !previousKeyboardState.IsKeyDown(Keys.D5))
@@ -305,6 +309,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     if (game.IsChampionAttack)
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                        game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.TELE);
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D6) && !previousKeyboardState.IsKeyDown(Keys.D6))
