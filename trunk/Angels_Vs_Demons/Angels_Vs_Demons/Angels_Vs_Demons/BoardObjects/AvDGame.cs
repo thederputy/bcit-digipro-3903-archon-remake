@@ -96,6 +96,13 @@ namespace Angels_Vs_Demons.BoardObjects
         }
         private bool isChampionAttack;
 
+        public SpellValues.spellTypes SpellType
+        {
+            get { return spellType; }
+            set { spellType = value; }
+        }
+        private SpellValues.spellTypes spellType;
+
         /// <summary>
         /// Gets/sets the attack phase.
         /// </summary>
