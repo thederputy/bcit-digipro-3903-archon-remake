@@ -6,16 +6,10 @@ they cannot perform any spells during their attack phase
 
 ~bug 2
 
-when player enters their attack phase with a champion (provided they did not cause bug 1),
-all units in range 7 light up as if they are attackable, several errors extend from this but are solved if bug 2 is fixed
-
-
-~bug 3
-
 player cannot heal freindly units, rather then healing them they are selected
 
 
-~bug 4
+~bug 3
 
 bolts are not killing enemy units when their hp is 0
 
