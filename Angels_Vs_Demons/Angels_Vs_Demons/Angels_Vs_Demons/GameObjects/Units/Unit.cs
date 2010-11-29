@@ -209,7 +209,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
         /// <param name="loadedTexture"></param>
         /// <param name="factionType"></param>
         /// <param name="name"></param>
-        /// <param name="attackID"></param>
+        /// <param name="id"></param>
         public Unit(Texture2D loadedTexture, Faction factionType, string name, int id)
             : base(loadedTexture)
         {

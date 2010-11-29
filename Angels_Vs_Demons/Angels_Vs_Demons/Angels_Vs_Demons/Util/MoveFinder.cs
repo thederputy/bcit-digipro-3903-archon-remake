@@ -21,11 +21,19 @@ namespace Angels_Vs_Demons.Util
     {
         private Board board;
 
+        public Faction ControllingFaction
+        {
+            get { return controllingFaction; }
+            set { controllingFaction = value; }
+        }
+        private Faction controllingFaction;
+
         /// <summary>
         /// Creates a move finder.
         /// </summary>
         /// <param name="newBoard">the board.</param>
-        public MoveFinder(Board newBoard)
+        /// <param name="newControllingFaction">the controlling faction</param>
+        public MoveFinder(Board newBoard, Faction newControllingFaction)
         {
             board = newBoard;
         }
@@ -58,7 +66,7 @@ namespace Angels_Vs_Demons.Util
             Debug.Write(", y = ");
             Debug.Write(currentTile.position.Y);
             Debug.Write(": attackID = ");
-            Debug.WriteLine(board.GetTile(currentTile.position).MoveID);
+            Debug.WriteLine(currentTile.MoveID);
         }
 #endif
 
@@ -76,7 +84,7 @@ namespace Angels_Vs_Demons.Util
                     if (tile.IsOccupied)
                     {
                         //if we're checking one of the controlling units
-                        if (tile.Unit.FactionType == board.ControllingFaction && tile.IsUsable)
+                        if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
                         {
                             bool isFlying = false;
                             for (int j = 0; j < tile.Unit.Special.Length; j++)
@@ -101,7 +109,6 @@ namespace Angels_Vs_Demons.Util
             return canMove;
         }
 
-
         /// <summary>
         /// Uses bit masking to all tiles within a Units move range that are not occupied as movable.
         /// </summary>
@@ -112,17 +119,17 @@ namespace Angels_Vs_Demons.Util
         /// <param name="currentTile">The current tile we are checking</param>
         /// <param name="attackID">the ID of the unit we're checking</param>
         /// <returns>how many moves the unit can make</returns>
-        private int bitMaskMoves(int unitMoves, int distance, bool isFlying, Vector2 startPosition, Tile currentTile, int id)
+        private int bitMaskMoves(int unitMoves, int distance, bool isFlying, Vector2 startPosition, Tile currentTile, int attackID)
         {
             distance--;
             //as long as we're not checking the unit against itself
             if (currentTile.position != startPosition)
             {
                 //if we haven't moved to this tile before and it is not occupied
-                if (!currentTile.IsOccupied && (currentTile.MoveID & id) == 0)
+                if (!currentTile.IsOccupied && (currentTile.MoveID & attackID) == 0)
                 {
                     unitMoves++;
-                    board.GetTile(currentTile.position).MoveID |= id;//OR EQUALS
+                    currentTile.MoveID |= attackID;//OR EQUALS
                 }
             }
             if (distance >= 0)
@@ -135,13 +142,13 @@ namespace Angels_Vs_Demons.Util
                         if (board.Grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y].IsOccupied == false)
                         {
                             currentTile.PathLeft = board.Grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
-                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathLeft, id);
+                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathLeft, attackID);
                         }
                     }
                     else
                     {
                         currentTile.PathLeft = board.Grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
-                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathLeft, id);
+                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathLeft, attackID);
                     }
                 }
                 // are there tiles right and the tile is not occupied, go right
@@ -152,13 +159,13 @@ namespace Angels_Vs_Demons.Util
                         if (board.Grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y].IsOccupied == false)
                         {
                             currentTile.PathRight = board.Grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
-                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathRight, id);
+                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathRight, attackID);
                         }
                     }
                     else
                     {
                         currentTile.PathRight = board.Grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
-                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathRight, id);
+                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathRight, attackID);
                     }
                 }
                 // are there tiles above and the tile is not occupied, go up
@@ -169,13 +176,13 @@ namespace Angels_Vs_Demons.Util
                         if (board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1].IsOccupied == false)
                         {
                             currentTile.PathTop = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
-                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathTop, id);
+                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathTop, attackID);
                         }
                     }
                     else
                     {
                         currentTile.PathTop = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
-                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathTop, id);
+                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathTop, attackID);
                     }
                 }
                 // are there tiles below and the tile is not occupied, go down
@@ -186,13 +193,13 @@ namespace Angels_Vs_Demons.Util
                         if (board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1].IsOccupied == false)
                         {
                             currentTile.PathBottom = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
-                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathBottom, id);
+                            unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathBottom, attackID);
                         }
                     }
                     else
                     {
                         currentTile.PathBottom = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
-                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathBottom, id);
+                        unitMoves = bitMaskMoves(unitMoves, distance, isFlying, startPosition, currentTile.PathBottom, attackID);
                     }
                 }
             }
