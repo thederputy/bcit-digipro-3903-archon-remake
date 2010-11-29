@@ -368,7 +368,7 @@ namespace Angels_Vs_Demons.Networking
 
                 if (remoteTurn != null)
                 {
-                    board.applyTurn(remoteTurn);
+                    game.applyTurn(remoteTurn);
                 }
 
                 remoteTurn = null;
@@ -406,9 +406,9 @@ namespace Angels_Vs_Demons.Networking
         /// <param name="playerIndex">The index, if local player</param>
         void ReadPlayerInput(HumanPlayer hPlayer, PlayerIndex playerIndex)
         {
-            hPlayer.Position = board.GetCurrentTile().position;
+            hPlayer.Position = game.GetCurrentTile().position;
             //check to see if it is our turn
-            if (hPlayer.Faction == board.ControllingFaction)
+            if (hPlayer.Faction == game.ControllingFaction)
             {
                 hPlayer.Turn = localTurn;
             }
@@ -421,7 +421,7 @@ namespace Angels_Vs_Demons.Networking
         protected override void makeAction()
         {
             HumanPlayer hPlayer = localGamer.Tag as HumanPlayer;
-            if (hPlayer.Faction == board.ControllingFaction)
+            if (hPlayer.Faction == game.ControllingFaction)
             {
                 base.makeAction();
             }
@@ -440,8 +440,8 @@ namespace Angels_Vs_Demons.Networking
         /// <param name="boardSelectedTile">the tile that was selected</param>
         protected override void executeMovePhase(Tile currentTile, Tile boardSelectedTile)
         {
-            localMove = new Move(currentTile.position, board.selectedTile.position);
-            board.applyMove(localMove);
+            localMove = new Move(currentTile.position, game.selectedTile.position);
+            game.applyMove(localMove);
             //localTurn = new Turn(localMove, new Attack(Position.nil, Position.nil));
         }
 
@@ -453,7 +453,7 @@ namespace Angels_Vs_Demons.Networking
         protected override void executeAttackPhase(Tile victimTile, Tile attackerTile)
         {
             localAttack = new Attack(victimTile.position, attackerTile.position);
-            board.applyAttack(localAttack);
+            game.applyAttack(localAttack);
         }
 
         #endregion
