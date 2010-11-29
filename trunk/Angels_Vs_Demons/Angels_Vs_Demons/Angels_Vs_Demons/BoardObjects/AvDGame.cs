@@ -990,7 +990,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 spell.Cast(victimUnit, attackerUnit);
                 if (victimUnit.CurrHP == 0)
                 {
-                    victimUnit = null;
+                    GetTile(spell.VictimPos).Unit = null;
                 }
             }
         }

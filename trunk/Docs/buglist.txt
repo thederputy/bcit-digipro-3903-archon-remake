@@ -9,8 +9,3 @@ they cannot perform any spells during their attack phase
 player cannot heal freindly units, rather then healing them they are selected
 
 
-~bug 3
-
-bolts are not killing enemy units when their hp is 0
-
-
