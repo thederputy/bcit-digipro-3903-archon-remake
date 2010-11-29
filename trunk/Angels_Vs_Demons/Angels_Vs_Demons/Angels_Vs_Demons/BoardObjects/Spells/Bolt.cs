@@ -22,6 +22,10 @@ namespace Angels_Vs_Demons.BoardObjects.Spells
         {
             CastingUnit.CurrMP -= (int)SpellValues.spellCost.BOLT;
             VictimUnit.CurrHP -= 20;
+            if (VictimUnit.CurrHP < 0)
+            {
+                VictimUnit.CurrHP = 0;
+            }
         }
     }
 }
