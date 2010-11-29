@@ -13,18 +13,7 @@ namespace Angels_Vs_Demons.Util
 
         public static int[] demonBits = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
 
-        /// <summary>
-        /// Enumerates the bitmask values for the spells.
-        /// </summary>
-        public enum spells : int
-        {
-            BOLT = 1,
-            BUFF = 2,
-            HEAL = 4,
-            REST = 8,
-            STUN = 16,
-            TELE = 32
-        }
+        public static int[] spellBits = { 1, 2, 4, 8, 16, 32 };
         
         public static int bitsTotal = initializeBitsTotal();
 

@@ -187,19 +187,19 @@ namespace Angels_Vs_Demons.Util
             switch (spellType)
             {
                 case SpellValues.spellTypes.BOLT:
-                    spellMask = (int)BitMask.spells.BOLT;
+                    spellMask = BitMask.spellBits[(int)SpellValues.spellTypes.BOLT];
                     break;
                 case SpellValues.spellTypes.BUFF:
-                    spellMask = (int)BitMask.spells.BUFF;
+                    spellMask = BitMask.spellBits[(int)SpellValues.spellTypes.BUFF];
                     break;
                 case SpellValues.spellTypes.HEAL:
-                    spellMask = (int)BitMask.spells.HEAL;
+                    spellMask = BitMask.spellBits[(int)SpellValues.spellTypes.HEAL];
                     break;
                 case SpellValues.spellTypes.STUN:
-                    spellMask = (int)BitMask.spells.STUN;
+                    spellMask = BitMask.spellBits[(int)SpellValues.spellTypes.STUN];
                     break;
                 case SpellValues.spellTypes.TELE:
-                    spellMask = (int)BitMask.spells.TELE;
+                    spellMask = BitMask.spellBits[(int)SpellValues.spellTypes.TELE];
                     break;
             }
 
@@ -606,7 +606,7 @@ namespace Angels_Vs_Demons.Util
                     if (currentTile.Unit.FactionType != controllingFaction)
                     {
                         //add a spell for that tile
-                        currentTile.SpellID |= (int)BitMask.spells.BOLT;
+                        currentTile.SpellID |= BitMask.spellBits[(int)SpellValues.spellTypes.BOLT];
                         currentTile.AttackID |= attackID;
                         unitSpells++;
                     }
@@ -664,7 +664,7 @@ namespace Angels_Vs_Demons.Util
                     if (currentTile.Unit.FactionType == controllingFaction)
                     {
                         //add a spell for that tile
-                        currentTile.SpellID |= (int)BitMask.spells.BUFF;
+                        currentTile.SpellID |= BitMask.spellBits[(int)SpellValues.spellTypes.BUFF];
                         currentTile.AttackID |= attackID;
                         unitSpells++;
                     }
@@ -722,7 +722,7 @@ namespace Angels_Vs_Demons.Util
                     if (currentTile.Unit.FactionType == controllingFaction)
                     {
                         //add a spell for that tile
-                        currentTile.SpellID |= (int)BitMask.spells.HEAL;
+                        currentTile.SpellID |= BitMask.spellBits[(int)SpellValues.spellTypes.HEAL];
                         currentTile.AttackID |= attackID;
                         unitSpells++;
                     }
@@ -780,7 +780,7 @@ namespace Angels_Vs_Demons.Util
                     if (currentTile.Unit.FactionType == controllingFaction)
                     {
                         //add a spell for this tile
-                        currentTile.SpellID |= (int)BitMask.spells.REST;
+                        currentTile.SpellID |= BitMask.spellBits[(int)SpellValues.spellTypes.REST];
                         currentTile.AttackID |= attackID;
                         unitSpells++;
                     }
@@ -814,7 +814,7 @@ namespace Angels_Vs_Demons.Util
                         if (currentTile.Unit is NonChampion)
                         {
                             //add a spell for that tile
-                            currentTile.SpellID |= (int)BitMask.spells.STUN;
+                            currentTile.SpellID |= BitMask.spellBits[(int)SpellValues.spellTypes.STUN];
                             currentTile.AttackID |= attackID;
                             unitSpells++;
                         }
@@ -873,7 +873,7 @@ namespace Angels_Vs_Demons.Util
                     if (currentTile.Unit.FactionType == controllingFaction)
                     {
                         //add a spell for that tile
-                        currentTile.SpellID |= (int)BitMask.spells.TELE;
+                        currentTile.SpellID |= BitMask.spellBits[(int)SpellValues.spellTypes.TELE];
                         currentTile.AttackID |= attackID;
                         unitSpells++;
                     }
