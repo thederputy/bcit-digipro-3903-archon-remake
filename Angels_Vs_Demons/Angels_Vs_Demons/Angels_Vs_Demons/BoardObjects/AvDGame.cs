@@ -882,12 +882,9 @@ namespace Angels_Vs_Demons.BoardObjects
                 {
                     if (attack is Spell)
                     {
-                        #region Champion
-                        if (attackerTile.Unit is Champion)
-                        {
-
-                        }
-                        #endregion
+                        Spell spell = attack as Spell;
+                        Debug.WriteLine("spell is using .Cast()");
+                        spell.Cast();
                     }
                     else
                     {

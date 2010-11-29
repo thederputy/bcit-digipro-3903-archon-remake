@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Angels_Vs_Demons.BoardObjects;
+using Angels_Vs_Demons.BoardObjects.Spells;
 using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.GameObjects.Units;
 using Angels_Vs_Demons.Players;
@@ -254,7 +255,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 }
                 else if (keyboardState.IsKeyDown(Keys.E) && !previousKeyboardState.IsKeyDown(Keys.E))
                 {
-                    
+
                     if (game.MovePhase == true)
                     {
                         game.endMovePhaseNoMove();
@@ -275,7 +276,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 {
                     if (game.IsChampionAttack)
                     {
-
+                        Debug.WriteLine("spell1");
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D2) && !previousKeyboardState.IsKeyDown(Keys.D2))
@@ -310,7 +311,10 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 {
                     if (game.IsChampionAttack)
                     {
-
+                        Attack rest = new Rest(game.selectedTile.position, game.selectedTile.position);
+                        Debug.WriteLine("applying rest");
+                        game.applyAttack(rest);
+                        
                     }
                 }
             }

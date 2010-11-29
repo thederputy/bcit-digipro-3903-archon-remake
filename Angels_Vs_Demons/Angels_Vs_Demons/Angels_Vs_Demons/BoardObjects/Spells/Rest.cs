@@ -16,5 +16,9 @@ namespace Angels_Vs_Demons.BoardObjects.Spells
             : base(newVictimPos, newAttackerPos)
         {
         }
+        public void Cast()
+        {
+            
+        }
     }
 }
