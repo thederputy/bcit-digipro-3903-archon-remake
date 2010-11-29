@@ -78,7 +78,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         protected KeyboardState previousKeyboardState;
         protected GamePadState previousGamePadState;
 
-        protected Board board;
+        protected AvDGame board;
 
         private SpriteFont mapFont, gameFont;
         private Vector2 fontPosition;
@@ -126,7 +126,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             if (content == null)
                 content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-            board = new Board(content);
+            board = new AvDGame(content);
             //create new unit display window
             unitDisplayWindow = new UnitDisplayWindow(content);
 

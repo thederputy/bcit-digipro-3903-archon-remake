@@ -21,13 +21,22 @@ namespace Angels_Vs_Demons.Util
     {
         private Board board;
 
+        public Faction ControllingFaction
+        {
+            get { return controllingFaction; }
+            set { controllingFaction = value; }
+        }
+        private Faction controllingFaction;
+
         /// <summary>
         /// Creates an attackfinder.
         /// </summary>
         /// <param name="newBoard">the board.</param>
-        public AttackFinder(Board newBoard)
+        /// <param name="newControllingFaction">the controlling faction</param>
+        public AttackFinder(Board newBoard, Faction newControllingFaction)
         {
             board = newBoard;
+            controllingFaction = newControllingFaction;
         }
 
 #if DEBUG
@@ -58,7 +67,7 @@ namespace Angels_Vs_Demons.Util
             Debug.Write(", y = ");
             Debug.Write(currentTile.position.Y);
             Debug.Write(": attackID = ");
-            Debug.WriteLine(board.GetTile(currentTile.position).AttackID);
+            Debug.WriteLine(currentTile.AttackID);
         }
 #endif
 
@@ -80,7 +89,7 @@ namespace Angels_Vs_Demons.Util
                     if (tile.IsOccupied)
                     {
                         //if we're checking one of the controlling units and it is usable
-                        if (tile.Unit.FactionType == board.ControllingFaction && tile.IsUsable)
+                        if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
                         {
                             if (tile.Unit is NonChampion)
                             {
@@ -128,7 +137,7 @@ namespace Angels_Vs_Demons.Util
             if (tile.IsOccupied)
             {
                 //if we're checking one of the controlling units and it is usable
-                if (tile.Unit.FactionType == board.ControllingFaction && tile.IsUsable)
+                if (tile.Unit.FactionType == controllingFaction && tile.IsUsable)
                 {
                     if (tile.Unit is NonChampion)
                     {
@@ -184,7 +193,7 @@ namespace Angels_Vs_Demons.Util
                 if (currentTile.IsOccupied)
                 {
                     //if it is an opponent unit
-                    if (currentTile.Unit.FactionType != board.ControllingFaction)
+                    if (currentTile.Unit.FactionType != controllingFaction)
                     {
                         //mark that we can attack it
                         currentTile.AttackID |= attackID;//OR EQUALS
@@ -247,7 +256,7 @@ namespace Angels_Vs_Demons.Util
                 if (currentTile.IsOccupied)
                 {
                     //if it is an opponent unit
-                    if (currentTile.Unit.FactionType != board.ControllingFaction)
+                    if (currentTile.Unit.FactionType != controllingFaction)
                     {
                         //mark that we can attack it
                         currentTile.AttackID |= attackID;//OR EQUALS
@@ -292,7 +301,7 @@ namespace Angels_Vs_Demons.Util
                 if (currentTile.IsOccupied)
                 {
                     //if it is an opponent unit
-                    if (currentTile.Unit.FactionType != board.ControllingFaction)
+                    if (currentTile.Unit.FactionType != controllingFaction)
                     {
                         //mark that we can attack it
                         currentTile.AttackID |= attackID;//OR EQUALS
@@ -337,7 +346,7 @@ namespace Angels_Vs_Demons.Util
                 if (currentTile.IsOccupied)
                 {
                     //if it is an opponent unit
-                    if (currentTile.Unit.FactionType != board.ControllingFaction)
+                    if (currentTile.Unit.FactionType != controllingFaction)
                     {
                         //mark that we can attack it
                         currentTile.AttackID |= attackID;//OR EQUALS
@@ -382,7 +391,7 @@ namespace Angels_Vs_Demons.Util
                 if (currentTile.IsOccupied)
                 {
                     //if it is an opponent unit
-                    if (currentTile.Unit.FactionType != board.ControllingFaction)
+                    if (currentTile.Unit.FactionType != controllingFaction)
                     {
                         //mark that we can attack it
                         currentTile.AttackID |= attackID;//OR EQUALS
@@ -426,7 +435,7 @@ namespace Angels_Vs_Demons.Util
                 if (newVictimTile.IsOccupied)
                 {
                     //if it is an enemy unit
-                    if (newVictimTile.Unit.FactionType != board.ControllingFaction)
+                    if (newVictimTile.Unit.FactionType != controllingFaction)
                     {
                         //add an attack for that unit
                         newVictimTile.AttackID |= attackID;
@@ -467,7 +476,7 @@ namespace Angels_Vs_Demons.Util
         /// Generates a <code>List</code> of <code>Attack</code>s that are generated on a splash attack.
         /// </summary>
         /// <param name="attackerPos">the attacker tile position</param>
-        /// <param name="attackID">the <code>BitMask</code> id of the unit</param>
+        /// <param name="attackID">the <code>BitMask</code> attackID of the unit</param>
         /// <returns></returns>
         private List makeSplashAttacks(Vector2 attackerPos, int attackID)
         {

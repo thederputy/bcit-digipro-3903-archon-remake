@@ -16,7 +16,7 @@ namespace Angels_Vs_Demons.Players
     class ComputerPlayer : Player
     {
         // Board used for the computer moves
-        private Board currentBoard;
+        private AvDGame currentBoard;
 
         // Used for generation of random numbers
         private Random random = new Random();
@@ -26,7 +26,7 @@ namespace Angels_Vs_Demons.Players
         /// </summary>
         private Dictionary<string, int> unitValues = new Dictionary<string, int>();
 
-        internal Board CurrentBoard
+        internal AvDGame CurrentBoard
         {
           get { return currentBoard; }
           set { currentBoard = value; }
@@ -63,9 +63,9 @@ namespace Angels_Vs_Demons.Players
             }
         }
 
-        public Turn getTurn(Board board)
+        public Turn getTurn(AvDGame board)
         {
-            CurrentBoard = (Board)board.Clone();
+            CurrentBoard = (AvDGame)board.Clone();
 
             Debug.WriteLine("******************************************************************");
             Debug.WriteLine("Computing AI move...");
@@ -100,11 +100,11 @@ namespace Angels_Vs_Demons.Players
         /// <value>
         ///  A list with the computer game movements.
         /// </value>
-        private Turn minimax(Board board)
+        private Turn minimax(AvDGame board)
         {
             List sucessors, bestMove = new List();
             Turn candidateTurn, bestTurn = null;
-            Board nextBoard;
+            AvDGame nextBoard;
             int totalMoves;
             int value, maxValue = Int32.MinValue;
 
@@ -112,7 +112,7 @@ namespace Angels_Vs_Demons.Players
             while (mayPlay(sucessors))
             {
                 candidateTurn = (Turn)sucessors.pop_front();
-                nextBoard = (Board)board.Clone();
+                nextBoard = (AvDGame)board.Clone();
 
                 Debug.WriteLine("******************************************************************");
                 nextBoard.applyTurn(candidateTurn);
@@ -166,7 +166,7 @@ namespace Angels_Vs_Demons.Players
         /// <value>
         ///  Move evaluation value
         /// </value>
-        private int maxMove(Board board, int depth, int alpha, int beta)
+        private int maxMove(AvDGame board, int depth, int alpha, int beta)
         {
             if (cutOffTest(board, depth))
             {
@@ -175,7 +175,7 @@ namespace Angels_Vs_Demons.Players
 
             List sucessors;
             Turn move;
-            Board nextBoard;
+            AvDGame nextBoard;
             int value;
 
             Debug.WriteLine("Max node at depth : " + depth + " with alpha : " + alpha +
@@ -185,7 +185,7 @@ namespace Angels_Vs_Demons.Players
             while (mayPlay(sucessors))
             {
                 move = (Turn)sucessors.pop_front();
-                nextBoard = (Board)board.Clone();
+                nextBoard = (AvDGame)board.Clone();
                 nextBoard.applyTurn(move);
                 nextBoard.endTurn();
                 nextBoard.beginTurn();
@@ -231,7 +231,7 @@ namespace Angels_Vs_Demons.Players
         /// <value>
         ///  Move evaluation value
         /// </value>
-        private int minMove(Board board, int depth, int alpha, int beta)
+        private int minMove(AvDGame board, int depth, int alpha, int beta)
         {
             if (cutOffTest(board, depth))
             {
@@ -240,7 +240,7 @@ namespace Angels_Vs_Demons.Players
 
             List sucessors;
             Turn move;
-            Board nextBoard;
+            AvDGame nextBoard;
             int value;
 
             Debug.WriteLine("Min node at depth : " + depth + " with alpha : " + alpha +
@@ -250,7 +250,7 @@ namespace Angels_Vs_Demons.Players
             while (mayPlay(sucessors))
             {
                 move = (Turn)sucessors.pop_front();
-                nextBoard = (Board)board.Clone();
+                nextBoard = (AvDGame)board.Clone();
                 nextBoard.applyTurn(move);
                 nextBoard.endTurn();
                 nextBoard.beginTurn();
@@ -284,15 +284,15 @@ namespace Angels_Vs_Demons.Players
         /// <value>
         ///  Player strength
         /// </value>
-        private int eval(Board board)
+        private int eval(AvDGame board)
         {
             int colorForce = 0;
             int enemyForce = 0;
             Unit unit;
 
-            for (int i = 0; i < board.Grid.Length; i++)
+            for (int i = 0; i < board.Board.Grid.Length; i++)
             {
-                foreach (Tile tile in board.Grid[i])
+                foreach (Tile tile in board.Board.Grid[i])
                 {
                     if (tile.IsOccupied)
                     {
@@ -348,7 +348,7 @@ namespace Angels_Vs_Demons.Players
         /// <value>
         ///  true if the tree can be prunned.
         /// </value>
-        private bool cutOffTest(Board board, int depth)
+        private bool cutOffTest(AvDGame board, int depth)
         {
             return depth > maxDepth;
                 //TODO: check for win
