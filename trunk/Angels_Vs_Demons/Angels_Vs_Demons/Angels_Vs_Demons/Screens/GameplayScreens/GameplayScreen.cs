@@ -541,6 +541,40 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         }
 
         /// <summary>
+        /// Executes the champion's attack phase.
+        /// This should be overridden in each individual gameplayscreen, though they will be similar implementations
+        /// </summary>
+        /// <param name="victimTile">the tile that is getting attacked</param>
+        /// <param name="attackerTile">the tile that is attacking</param>
+        /// <param name="spellType">the type of spell to execute</param>
+        protected virtual void executeChampionAttackPhase(Tile victimTile, Tile attackerTile, SpellValues.spellTypes spellType)
+        {
+            Attack spell = null;
+            switch (spellType)
+            {
+                case SpellValues.spellTypes.BOLT:
+                    spell = new Bolt(victimTile.position, attackerTile.position);
+                    break;
+                case SpellValues.spellTypes.BUFF:
+                    spell = new Buff(victimTile.position, attackerTile.position);
+                    break;
+                case SpellValues.spellTypes.HEAL:
+                    spell = new Heal(victimTile.position, attackerTile.position);
+                    break;
+                case SpellValues.spellTypes.REST:
+                    spell = new Rest(victimTile.position, attackerTile.position);
+                    break;
+                case SpellValues.spellTypes.STUN:
+                    spell = new Stun(victimTile.position, attackerTile.position);
+                    break;
+                case SpellValues.spellTypes.TELE:
+                    spell = new Teleport(victimTile.position, attackerTile.position);
+                    break;
+            }
+            game.applyAttack(spell);
+        }
+
+        /// <summary>
         /// Draws the gameplay screen.
         /// </summary>
         public override void Draw(GameTime gameTime)
