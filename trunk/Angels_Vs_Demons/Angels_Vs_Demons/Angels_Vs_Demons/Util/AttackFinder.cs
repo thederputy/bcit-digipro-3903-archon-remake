@@ -179,28 +179,39 @@ namespace Angels_Vs_Demons.Util
         /// <summary>
         /// Finds and marks the attacks based on the spell type.
         /// </summary>
-        /// <param name="tile">the current tile</param>
+        /// <param name="championTile">the tile containing the casting champion</param>
         /// <param name="spellType">the spell type</param>
-        public void findAttacksForSpellType(Tile tile, SpellValues.spellTypes spellType)
+        public void findAttacksForSpellType(Tile championTile, SpellValues.spellTypes spellType)
         {
             int spellMask = 0;
             switch (spellType)
             {
                 case SpellValues.spellTypes.BOLT:
-
+                    spellMask = (int)BitMask.spells.BOLT;
                     break;
                 case SpellValues.spellTypes.BUFF:
+                    spellMask = (int)BitMask.spells.BUFF;
                     break;
                 case SpellValues.spellTypes.HEAL:
+                    spellMask = (int)BitMask.spells.HEAL;
                     break;
                 case SpellValues.spellTypes.STUN:
+                    spellMask = (int)BitMask.spells.STUN;
                     break;
                 case SpellValues.spellTypes.TELE:
+                    spellMask = (int)BitMask.spells.TELE;
                     break;
             }
+
             for (int i = 0; i < board.Grid.Length; i++)
             {
-
+                foreach (Tile tile in board.Grid[i])
+                {
+                    if ((tile.SpellID & spellMask) != 0)
+                    {
+                        tile.AttackID |= championTile.Unit.ID;
+                    }
+                }
             }
         }
 
@@ -799,10 +810,14 @@ namespace Angels_Vs_Demons.Util
                     //if it is an enemy unit
                     if (currentTile.Unit.FactionType != controllingFaction)
                     {
-                        //add a spell for that tile
-                        currentTile.SpellID |= (int)BitMask.spells.STUN;
-                        currentTile.AttackID |= attackID;
-                        unitSpells++;
+                        //as long as it is not a champion
+                        if (currentTile.Unit is NonChampion)
+                        {
+                            //add a spell for that tile
+                            currentTile.SpellID |= (int)BitMask.spells.STUN;
+                            currentTile.AttackID |= attackID;
+                            unitSpells++;
+                        }
                     }
                 }
             }
@@ -904,6 +919,19 @@ namespace Angels_Vs_Demons.Util
                 foreach (Tile tile in board.Grid[i])
                 {
                     tile.AttackID = 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Iterates through the grid and masks all tiles as not castable by any spell.
+        /// </summary>
+        public void bitMaskAllTilesAsNonCastable()
+        {
+            for (int i = 0; i < board.Grid.Length; i++)
+            {
+                foreach (Tile tile in board.Grid[i])
+                {
                     tile.SpellID = 0;
                 }
             }
