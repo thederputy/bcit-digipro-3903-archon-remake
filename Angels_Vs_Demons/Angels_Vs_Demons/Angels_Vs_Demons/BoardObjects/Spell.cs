@@ -6,19 +6,13 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Angels_Vs_Demons.GameObjects;
+using Angels_Vs_Demons.GameObjects.Units;
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects
 {
     abstract class Spell : Attack
     {
-        public int MpCost
-        {
-            get { return mpCost; }
-            set { mpCost = value; }
-        }
-
-        private int mpCost;
 
         public Spell(Vector2 newVictimPos, Vector2 newAttackerPos)
             : base(newVictimPos, newAttackerPos)
@@ -40,8 +34,9 @@ namespace Angels_Vs_Demons.BoardObjects
             }
         }
 
-        public virtual void Cast()
+        public virtual void Cast(Unit VictimUnit, Champion CastingUnit)
         {
+
         }
     }
 }
