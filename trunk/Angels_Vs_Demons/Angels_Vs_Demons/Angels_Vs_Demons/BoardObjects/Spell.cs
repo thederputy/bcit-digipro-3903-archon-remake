@@ -12,32 +12,6 @@ namespace Angels_Vs_Demons.BoardObjects
 {
     abstract class Spell : Attack
     {
-        /// <summary>
-        /// Enumerates the range for the spells
-        /// </summary>
-        public static enum spellRange
-        {
-            BOLT = 3,
-            BUFF = 3,
-            HEAL = 6,
-            REST = 0,
-            STUN = 4,
-            TELE = 5
-        }
-
-        /// <summary>
-        /// Enumerates the mana cost for spells
-        /// </summary>
-        public static enum spellCost
-        {
-            BOLT = 20,
-            BUFF = 30,
-            HEAL = 50,
-            REST = 0,
-            STUN = 20,
-            TELE = 30
-        }
-
         public int MpCost
         {
             get { return mpCost; }
