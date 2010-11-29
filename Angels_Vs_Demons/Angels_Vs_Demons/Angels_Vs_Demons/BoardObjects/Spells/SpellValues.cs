@@ -28,7 +28,7 @@ namespace Angels_Vs_Demons.BoardObjects.Spells
             BOLT = 3,
             BUFF = 3,
             HEAL = 6,
-            REST = 0,
+            REST = 1,
             STUN = 4,
             TELE = 5
         }
