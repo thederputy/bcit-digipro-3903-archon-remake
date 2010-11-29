@@ -713,8 +713,11 @@ namespace Angels_Vs_Demons.BoardObjects
         /// <param name="movedTile"></param>
         private void beginAttackPhaseAfterMove(Tile movedTile)
         {
-            //get all the valid attacks
-            attackFinder.findAttacksForTile(movedTile);
+            //get all the valid attacks, if it is not a champion
+            if (movedTile.Unit is NonChampion)
+            {
+                attackFinder.findAttacksForTile(movedTile);
+            }
             attackPhase = true;
             //bool thereAreAttacks = attackFinder.findAttacksForTile(movedTile);
             //if (thereAreAttacks)
@@ -963,7 +966,7 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 Unit victimUnit = GetTile(spell.VictimPos).Unit;
                 Champion attackerUnit = GetTile(spell.AttackerPos).Unit as Champion;
-                spell.Cast(victimUnit, attackerUnit);
+                //spell.Cast(victimUnit, attackerUnit);
             }
         }
 
