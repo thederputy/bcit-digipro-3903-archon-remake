@@ -66,8 +66,8 @@ namespace Angels_Vs_Demons.BoardObjects
         private Move lastMove;
         private int lastCurrRecharge;
 
-        private MoveFinder moveFinder;
-        private AttackFinder attackFinder;
+        public MoveFinder moveFinder;
+        public AttackFinder attackFinder;
 
         /// <summary>
         /// Gets/sets the controlling faction.
@@ -960,7 +960,7 @@ namespace Angels_Vs_Demons.BoardObjects
             else
             {
                 Unit victimUnit = GetTile(spell.VictimPos).Unit;
-                Unit attackerUnit = GetTile(spell.AttackerPos).Unit;
+                Champion attackerUnit = GetTile(spell.AttackerPos).Unit as Champion;
                 spell.Cast(victimUnit, attackerUnit);
             }
         }

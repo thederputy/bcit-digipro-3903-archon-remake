@@ -276,35 +276,35 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 {
                     if (game.IsChampionAttack)
                     {
-                        Debug.WriteLine("spell1");
+                        game.attackFinder.bitMaskAllTilesAsNotAttackable();
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D2) && !previousKeyboardState.IsKeyDown(Keys.D2))
                 {
                     if (game.IsChampionAttack)
                     {
-
+                        game.attackFinder.bitMaskAllTilesAsNotAttackable();
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D3) && !previousKeyboardState.IsKeyDown(Keys.D3))
                 {
                     if (game.IsChampionAttack)
                     {
-
+                        game.attackFinder.bitMaskAllTilesAsNotAttackable();
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D4) && !previousKeyboardState.IsKeyDown(Keys.D4))
                 {
                     if (game.IsChampionAttack)
                     {
-
+                        game.attackFinder.bitMaskAllTilesAsNotAttackable();
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D5) && !previousKeyboardState.IsKeyDown(Keys.D5))
                 {
                     if (game.IsChampionAttack)
                     {
-
+                        game.attackFinder.bitMaskAllTilesAsNotAttackable();
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D6) && !previousKeyboardState.IsKeyDown(Keys.D6))

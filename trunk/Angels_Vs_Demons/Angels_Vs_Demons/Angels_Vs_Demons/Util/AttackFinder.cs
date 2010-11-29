@@ -177,6 +177,34 @@ namespace Angels_Vs_Demons.Util
         }
 
         /// <summary>
+        /// Finds and marks the attacks based on the spell type.
+        /// </summary>
+        /// <param name="tile">the current tile</param>
+        /// <param name="spellType">the spell type</param>
+        public void findAttacksForSpellType(Tile tile, SpellValues.spellTypes spellType)
+        {
+            int spellMask = 0;
+            switch (spellType)
+            {
+                case SpellValues.spellTypes.BOLT:
+
+                    break;
+                case SpellValues.spellTypes.BUFF:
+                    break;
+                case SpellValues.spellTypes.HEAL:
+                    break;
+                case SpellValues.spellTypes.STUN:
+                    break;
+                case SpellValues.spellTypes.TELE:
+                    break;
+            }
+            for (int i = 0; i < board.Grid.Length; i++)
+            {
+
+            }
+        }
+
+        /// <summary>
         /// Uses bit masking to mark all tiles within a NonChampion's attack range containing enemy units as attackble.
         /// </summary>
         /// <param name="unitAttacks">the number of attacks this unit can make</param>
