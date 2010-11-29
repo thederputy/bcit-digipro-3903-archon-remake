@@ -30,15 +30,8 @@ namespace Angels_Vs_Demons.BoardObjects
         public GameObject Cursor;
 
         /// <summary>
-        /// Gets/sets the grid.
+        /// 
         /// </summary>
-        public Tile[][] Grid
-        {
-            get { return grid; }
-            set { grid = value; }
-        }
-        private Tile[][] grid;
-
         public Board Board
         {
             get { return board; }
@@ -1177,21 +1170,16 @@ namespace Angels_Vs_Demons.BoardObjects
                 for (int j = 0; j < y_size; j++)
                 {
                     //use the selectedTile version for bitmasking
-                    //if (selectedTile != null && selectedTile.IsOccupied && (grid[i][j].MoveID & selectedTile.Unit.ID) != 0)
                     if (selectedTile != null && selectedTile.IsOccupied && (board.Grid[i][j].MoveID & selectedTile.Unit.ID) != 0)
                     {
-                        //spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Blue);
                         spriteBatch.Draw(board.Grid[i][j].sprite, board.Grid[i][j].rect, Color.Blue);
                     }
-                    //else if (selectedTile != null && selectedTile.IsOccupied && (grid[i][j].AttackID & selectedTile.Unit.ID) != 0)
                     else if (selectedTile != null && selectedTile.IsOccupied && (board.Grid[i][j].AttackID & selectedTile.Unit.ID) != 0)
                     {
-                        //spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.Red);
                         spriteBatch.Draw(board.Grid[i][j].sprite, board.Grid[i][j].rect, Color.Red);
                     }
                     else
                     {
-                        //spriteBatch.Draw(grid[i][j].sprite, grid[i][j].rect, Color.White);
                         spriteBatch.Draw(board.Grid[i][j].sprite, board.Grid[i][j].rect, Color.White);
                     }
                 }
@@ -1215,7 +1203,6 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 for (int j = 0; j < y_size; j++)
                 {
-                    //if (grid[i][j].IsOccupied)
                     if(board.Grid[i][j].IsOccupied)
                     {
                         //Unit Tempunit = grid[i][j].Unit;
@@ -1225,22 +1212,16 @@ namespace Angels_Vs_Demons.BoardObjects
                         Texture2D TempTexture = Tempunit.sprite;
                         spriteBatch.Draw(TempTexture, board.Grid[i][j].rect, Color.White);
                     }
-                    //if (selectedTile != null && grid[i][j].position == selectedTile.position)
                     if (selectedTile != null && board.Grid[i][j].position == selectedTile.position)
                     {
-                        //spriteBatch.Draw(SelectedTile_Texture, grid[i][j].rect, Color.Yellow);
                         spriteBatch.Draw(SelectedTile_Texture, board.Grid[i][j].rect, Color.Yellow);
                     }
-                    //if (selectedTile != null && selectedTile.IsOccupied && (grid[i][j].AttackID & selectedTile.Unit.ID) != 0)
                     if (selectedTile != null && selectedTile.IsOccupied && (board.Grid[i][j].AttackID & selectedTile.Unit.ID) != 0)
                     {
-                        //spriteBatch.Draw(AttackableTile_Texture, grid[i][j].rect, Color.Red);
                         spriteBatch.Draw(AttackableTile_Texture, board.Grid[i][j].rect, Color.Red);
                     }
-                    //if (grid[i][j].IsCurrentTile)
                     if (board.Grid[i][j].IsCurrentTile)
                     {
-                        //spriteBatch.Draw(Cursor_Texture, grid[i][j].rect, Color.Silver);
                         spriteBatch.Draw(Cursor_Texture, board.Grid[i][j].rect, Color.Silver);
                     }
                 }

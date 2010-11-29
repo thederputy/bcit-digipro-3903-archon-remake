@@ -24,7 +24,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             :base()
         {
             Player1 = new HumanPlayer(Faction.ANGEL);
-            Player2 = new ComputerPlayer(Faction.DEMON, 15);
+            Player2 = new ComputerPlayer(Faction.DEMON, 1);
         }
 
         #endregion
