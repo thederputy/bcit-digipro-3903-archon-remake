@@ -278,6 +278,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
                         game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.BOLT);
+                        Debug.WriteLine("Finding BOLT attacks");
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D2) && !previousKeyboardState.IsKeyDown(Keys.D2))
@@ -286,6 +287,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
                         game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.STUN);
+                        Debug.WriteLine("Finding STUN attacks");
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D3) && !previousKeyboardState.IsKeyDown(Keys.D3))
@@ -294,6 +296,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
                         game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.TELE);
+                        Debug.WriteLine("Finding TELE attacks");
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D4) && !previousKeyboardState.IsKeyDown(Keys.D4))
@@ -302,6 +305,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
                         game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.BUFF);
+                        Debug.WriteLine("Finding BUFF attacks");
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D5) && !previousKeyboardState.IsKeyDown(Keys.D5))
@@ -310,6 +314,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
                         game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.HEAL);
+                        Debug.WriteLine("Finding HEAL attacks");
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.D6) && !previousKeyboardState.IsKeyDown(Keys.D6))
@@ -317,7 +322,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     if (game.IsChampionAttack)
                     {
                         Attack rest = new Rest(game.selectedTile.position, game.selectedTile.position);
-                        Debug.WriteLine("applying rest");
+                        Debug.WriteLine("I'm just resting");
                         game.applyAttack(rest);
                         
                     }
@@ -462,11 +467,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             }
             else
             {
-                if (game.selectedTile.Unit is Champion)
-                {
-                    Debug.WriteLine("Champion attack is selected");
-                    //if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
-                }
                 //we've selected a tile that is not one of ours.
                 //if there is a selected tile, check to see if the current tile is within our attack range
                 if (game.selectedTile != null && (currentTile.AttackID & game.selectedTile.Unit.ID) != 0)
@@ -518,6 +518,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                         Debug.WriteLine("updating selected tile");
 #endif
                         game.selectedTile = currentTile;
+                        game.attackFinder.findAttacksForTile(game.selectedTile);
                         game.IsChampionAttack = true;
                     }
                 }
@@ -528,6 +529,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     Debug.WriteLine("updating selected tile");
 #endif
                     game.selectedTile = currentTile;
+                    game.attackFinder.findAttacksForTile(game.selectedTile);
                     game.IsChampionAttack = true;
                 }
             }

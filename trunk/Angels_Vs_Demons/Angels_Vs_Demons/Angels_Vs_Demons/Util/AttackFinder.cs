@@ -110,12 +110,12 @@ namespace Angels_Vs_Demons.Util
                                 unitAttacks = bitMaskAttacks(unitAttacks, nc.Range, isProjectile, tile.position, tile, tile.Unit.ID);
                                 attackTotal += unitAttacks;
                             }
-                            if (tile.Unit is Champion)
-                            {
-                                //do all the fancy magic stuff!?
-                                Champion c = tile.Unit as Champion;
-                                attackTotal += bitMaskSpells(tile, c.CurrMP, c.ID);
-                            }
+                            //if (tile.Unit is Champion)
+                            //{
+                            //    //do all the fancy magic stuff!?
+                            //    Champion c = tile.Unit as Champion;
+                            //    attackTotal += bitMaskSpells(tile, c.CurrMP, c.ID);
+                            //}
                         }
                     }
                 }

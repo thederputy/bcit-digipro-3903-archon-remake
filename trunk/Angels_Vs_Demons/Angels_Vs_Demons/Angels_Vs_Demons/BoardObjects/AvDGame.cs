@@ -967,7 +967,7 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 Unit victimUnit = GetTile(spell.VictimPos).Unit;
                 Champion attackerUnit = GetTile(spell.AttackerPos).Unit as Champion;
-                //spell.Cast(victimUnit, attackerUnit);
+                spell.Cast(victimUnit, attackerUnit);
             }
         }
 
