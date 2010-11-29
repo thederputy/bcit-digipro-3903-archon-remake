@@ -536,18 +536,33 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     }
                     else
                     {
+                        //we've selected a tile that is not one of ours.
+                        //if there is a selected tile, check to see if the current tile is within our attack range
+                        if (game.selectedTile != null && (currentTile.AttackID & game.selectedTile.Unit.ID) != 0)
+                        {
+                            //if the current tile has a unit on it
+                            if (currentTile.IsOccupied)
+                            {
 #if DEBUG
-                        Debug.WriteLine("selected a new tile");
-                        Debug.WriteLine("updating selected tile");
+                                Debug.WriteLine("executing attack phase");
 #endif
-                        game.selectedTile = currentTile;
-                        game.attackFinder.findAttacksForTile(game.selectedTile);
-                        game.attackFinder.bitMaskAllTilesForChampionAsNotAttackable(game.selectedTile.Unit.ID);
-                        game.IsChampionAttack = true;
+                                //execute the attack phase
+                                executeChampionAttackPhase(currentTile, game.selectedTile);
+                            }
+                        }
+//#if DEBUG
+//                        Debug.WriteLine("selected a new tile");
+//                        Debug.WriteLine("updating selected tile");
+//#endif
+//                        game.selectedTile = currentTile;
+//                        game.attackFinder.findAttacksForTile(game.selectedTile);
+//                        game.attackFinder.bitMaskAllTilesForChampionAsNotAttackable(game.selectedTile.Unit.ID);
+//                        game.IsChampionAttack = true;
                     }
                 }
                 else
                 {
+                    //We're selecting another one of our usable units
 #if DEBUG
                     Debug.WriteLine("no tile selected, selecting current tile");
                     Debug.WriteLine("updating selected tile");

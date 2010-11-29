@@ -709,6 +709,7 @@ namespace Angels_Vs_Demons.BoardObjects
                 if (currentUnit is Champion)
                 {
                     attackFinder.bitMaskAllTilesForChampionAsNotAttackable(currentUnit.ID);
+                    IsChampionAttack = true;
                 }
             }
             //bool thereAreAttacks = attackFinder.findAttacks();
@@ -913,56 +914,51 @@ namespace Angels_Vs_Demons.BoardObjects
                     }
                     else
                     {
-                        #region NonChampion
-                        if (attackerTile.Unit is NonChampion)
+                        bool isSplash = false;
+                        for (int j = 0; j < attackerTile.Unit.Special.Length; j++)
                         {
-                            bool isSplash = false;
-                            for (int j = 0; j < attackerTile.Unit.Special.Length; j++)
+                            if (attackerTile.Unit.Special[j] == specialType.SPLASH)
                             {
-                                if (attackerTile.Unit.Special[j] == specialType.SPLASH)
-                                {
-                                    isSplash = true;
-                                }
+                                isSplash = true;
                             }
-                            NonChampion attacker = attackerTile.Unit as NonChampion;
+                        }
+                        NonChampion attacker = attackerTile.Unit as NonChampion;
 #if DEBUG
                         Debug.Write("DEBUG: victim's HP before attack: ");
                         Debug.WriteLine(victimTile.Unit.CurrHP);
 #endif
-                            attacker.attack(victimTile.Unit);
-                            //check to see if we killed the unit
-                            if (victimTile.Unit.CurrHP == 0)
-                            {
-                                victimTile.Unit = null;
+                        attacker.attack(victimTile.Unit);
+                        //check to see if we killed the unit
+                        if (victimTile.Unit.CurrHP == 0)
+                        {
+                            victimTile.Unit = null;
 #if DEBUG
-                            Debug.WriteLine("DEBUG: victim is dead");
+                        Debug.WriteLine("DEBUG: victim is dead");
 #endif
-                            }
-                            //set the recharge on the unit that just attacked
-                            attackerTile.Unit.CurrRecharge = attackerTile.Unit.TotalRecharge;
+                        }
+                        //set the recharge on the unit that just attacked
+                        attackerTile.Unit.CurrRecharge = attackerTile.Unit.TotalRecharge;
 
-                            if (isSplash)
+                        if (isSplash)
+                        {
+                            attackFinder.bitMaskAllTilesAsNotAttackable();
+                            List splashAttacks = attackFinder.findSplashAttacks(2, attack.AttackerPos, attack.VictimPos, GetTile(attack.VictimPos), attackerTile.Unit.ID);
+
+                            while (!splashAttacks.isEmpty())
                             {
-                                attackFinder.bitMaskAllTilesAsNotAttackable();
-                                List splashAttacks = attackFinder.findSplashAttacks(2, attack.AttackerPos, attack.VictimPos, GetTile(attack.VictimPos), attackerTile.Unit.ID);
-
-                                while (!splashAttacks.isEmpty())
+                                Attack splash = (Attack)splashAttacks.pop_front();
+                                victimTile = GetTile(splash.VictimPos);
+                                attacker.attack(victimTile.Unit);
+                                //check to see if we killed the unit
+                                if (victimTile.Unit.CurrHP == 0)
                                 {
-                                    Attack splash = (Attack)splashAttacks.pop_front();
-                                    victimTile = GetTile(splash.VictimPos);
-                                    attacker.attack(victimTile.Unit);
-                                    //check to see if we killed the unit
-                                    if (victimTile.Unit.CurrHP == 0)
-                                    {
-                                        victimTile.Unit = null;
+                                    victimTile.Unit = null;
 #if DEBUG
                                     Debug.WriteLine("DEBUG: victim is dead");
 #endif
-                                    }
                                 }
                             }
                         }
-                        #endregion
                     }
                 }
             }
@@ -980,7 +976,9 @@ namespace Angels_Vs_Demons.BoardObjects
             if (spell is Teleport)
             {
                 bitMaskSwapTiles(GetTile(spell.VictimPos), GetTile(spell.AttackerPos));
-                Champion attackerUnit = GetTile(spell.AttackerPos).Unit as Champion;
+                
+                //we need to get the victim pos, because this position is where the champion now is.
+                Champion attackerUnit = GetTile(spell.VictimPos).Unit as Champion;
                 attackerUnit.CurrMP -= (int)SpellValues.spellCost.TELE;
             }
             else
