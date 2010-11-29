@@ -281,13 +281,13 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// This is the main loop that processes the gamestate.
         /// </summary>
         protected virtual void makeAction()
-        {          
+        {       
             if (board.MovePhase)
             {
                 processMovePhase();
             }
             if (board.AttackPhase)
-            {
+            {  
                 processAttackPhase();
             }
         }
@@ -403,6 +403,11 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             }
             else
             {
+                if (board.selectedTile.Unit is Champion)
+                {
+                    Debug.WriteLine("Champion attack is selected");
+                    //if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
+                }
                 //we've selected a tile that is not one of ours.
                 //if there is a selected tile, check to see if the current tile is within our attack range
                 if (board.selectedTile != null && (currentTile.AttackID & board.selectedTile.Unit.ID) != 0)
