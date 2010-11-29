@@ -39,5 +39,9 @@ namespace Angels_Vs_Demons.BoardObjects
                 isExecutable = true;
             }
         }
+
+        public virtual void Cast()
+        {
+        }
     }
 }
