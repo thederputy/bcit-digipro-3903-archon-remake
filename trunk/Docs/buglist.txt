@@ -1,11 +1,5 @@
 ~bug 1
 
-when player ends turn during their move phase when using a champion with the 'E' key,
-they cannot perform any spells during their attack phase
-
-
-~bug 2
-
 player cannot heal freindly units, rather then healing them they are selected
 
 
