@@ -737,6 +737,7 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             moveFinder.bitMaskAllTilesAsNotMovable();
             attackFinder.bitMaskAllTilesAsNotAttackable();
+            attackFinder.bitMaskAllTilesAsNonCastable();
             isChampionAttack = false;
             movePhase = false;
             attackPhase = false;
