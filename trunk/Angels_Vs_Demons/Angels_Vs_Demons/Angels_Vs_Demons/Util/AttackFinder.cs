@@ -110,12 +110,12 @@ namespace Angels_Vs_Demons.Util
                                 unitAttacks = bitMaskAttacks(unitAttacks, nc.Range, isProjectile, tile.position, tile, tile.Unit.ID);
                                 attackTotal += unitAttacks;
                             }
-                            //if (tile.Unit is Champion)
-                            //{
-                            //    //do all the fancy magic stuff!?
-                            //    Champion c = tile.Unit as Champion;
-                            //    attackTotal += bitMaskSpells(tile, c.CurrMP, c.ID);
-                            //}
+                            if (tile.Unit is Champion)
+                            {
+                                //do all the fancy magic stuff!?
+                                Champion c = tile.Unit as Champion;
+                                attackTotal += bitMaskSpells(tile, c.CurrMP, c.ID);
+                            }
                         }
                     }
                 }
@@ -919,6 +919,23 @@ namespace Angels_Vs_Demons.Util
                 foreach (Tile tile in board.Grid[i])
                 {
                     tile.AttackID = 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void bitMaskAllTilesForChampionAsNotAttackable(int championID)
+        {
+            for (int i = 0; i < board.Grid.Length; i++)
+            {
+                foreach (Tile tile in board.Grid[i])
+                {
+                    if ((tile.AttackID & championID) != 0)
+                    {
+                        tile.AttackID -= championID;
+                    }
                 }
             }
         }

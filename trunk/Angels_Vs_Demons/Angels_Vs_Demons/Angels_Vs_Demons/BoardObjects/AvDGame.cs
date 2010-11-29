@@ -703,6 +703,14 @@ namespace Angels_Vs_Demons.BoardObjects
             //get all the valid attacks
             attackFinder.findAttacks();
             attackPhase = true;
+            Unit currentUnit = GetCurrentTile().Unit;
+            if (currentUnit != null)
+            {
+                if (currentUnit is Champion)
+                {
+                    attackFinder.bitMaskAllTilesForChampionAsNotAttackable(currentUnit.ID);
+                }
+            }
             //bool thereAreAttacks = attackFinder.findAttacks();
             //if (thereAreAttacks)
             //{
@@ -721,11 +729,16 @@ namespace Angels_Vs_Demons.BoardObjects
         private void beginAttackPhaseAfterMove(Tile movedTile)
         {
             //get all the valid attacks, if it is not a champion
-            if (movedTile.Unit is NonChampion)
-            {
-                attackFinder.findAttacksForTile(movedTile);
-            }
+            attackFinder.findAttacksForTile(movedTile);
             attackPhase = true;
+            Unit currentUnit = GetCurrentTile().Unit;
+            if (currentUnit != null)
+            {
+                if (currentUnit is Champion)
+                {
+                    attackFinder.bitMaskAllTilesForChampionAsNotAttackable(currentUnit.ID);
+                }
+            }
             //bool thereAreAttacks = attackFinder.findAttacksForTile(movedTile);
             //if (thereAreAttacks)
             //{
