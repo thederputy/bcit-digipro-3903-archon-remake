@@ -112,6 +112,8 @@ namespace Angels_Vs_Demons.Util
                             if (tile.Unit is Champion)
                             {
                                 //do all the fancy magic stuff!?
+                                Champion c = tile.Unit as Champion;
+                                attackTotal = bitMaskSpells(c);
                             }
                         }
                     }
@@ -159,7 +161,7 @@ namespace Angels_Vs_Demons.Util
                     {
                         //do the fancy magic stuff
                         Champion c = tile.Unit as Champion;
-                        attackTotal = bitMaskSpells();
+                        attackTotal = bitMaskSpells(c);
                     }
                 }
             }
@@ -500,8 +502,38 @@ namespace Angels_Vs_Demons.Util
         /// <summary>
         /// NOT IMPLEMENTED YET!!!!!!!!!!!!!!
         /// </summary>
-        /// <returns>the number of spells that can be performed by a unit.</returns>
-        public int bitMaskSpells()
+        /// <returns>the number of spells that can be performed by a champion.</returns>
+        private int bitMaskSpells(Vector2 championPos, int MP)
+        {
+            return 0;
+        }
+
+        private int bitMaskSpellBolt()
+        {
+            return 0;
+        }
+
+        private int bitMaskSpellBuff()
+        {
+            return 0;
+        }
+
+        private int bitMaskSpellHeal()
+        {
+            return 0;
+        }
+
+        private int bitMaskSpellRest()
+        {
+            return 0;
+        }
+
+        private int bitMaskSpellStun()
+        {
+            return 0;
+        }
+
+        private int bitMaskSpellTele()
         {
             return 0;
         }
@@ -516,6 +548,7 @@ namespace Angels_Vs_Demons.Util
                 foreach (Tile tile in board.Grid[i])
                 {
                     tile.AttackID = 0;
+                    tile.SpellID = 0;
                 }
             }
         }
