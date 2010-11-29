@@ -113,7 +113,7 @@ namespace Angels_Vs_Demons.Util
                             {
                                 //do all the fancy magic stuff!?
                                 Champion c = tile.Unit as Champion;
-                                attackTotal = bitMaskSpells(c);
+                                attackTotal = bitMaskSpells(c.position, c.CurrMP);
                             }
                         }
                     }
@@ -161,7 +161,7 @@ namespace Angels_Vs_Demons.Util
                     {
                         //do the fancy magic stuff
                         Champion c = tile.Unit as Champion;
-                        attackTotal = bitMaskSpells(c);
+                        attackTotal = bitMaskSpells(c.position, c.CurrMP);
                     }
                 }
             }
