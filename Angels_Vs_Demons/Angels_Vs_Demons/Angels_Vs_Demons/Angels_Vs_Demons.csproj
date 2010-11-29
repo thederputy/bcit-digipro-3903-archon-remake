@@ -134,6 +134,7 @@
     <Compile Include="BoardObjects\Spells\Buff.cs" />
     <Compile Include="BoardObjects\Spells\Heal.cs" />
     <Compile Include="BoardObjects\Spells\Rest.cs" />
+    <Compile Include="BoardObjects\Spells\SpellValues.cs" />
     <Compile Include="BoardObjects\Spells\Stun.cs" />
     <Compile Include="BoardObjects\Spells\Teleport.cs" />
     <Compile Include="BoardObjects\Turn.cs" />

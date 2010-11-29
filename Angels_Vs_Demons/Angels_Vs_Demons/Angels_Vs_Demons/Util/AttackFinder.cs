@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Angels_Vs_Demons.BoardObjects;
+using Angels_Vs_Demons.BoardObjects.Spells;
 using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.GameObjects.Units;
 using Angels_Vs_Demons.Players;
@@ -113,7 +114,7 @@ namespace Angels_Vs_Demons.Util
                             {
                                 //do all the fancy magic stuff!?
                                 Champion c = tile.Unit as Champion;
-                                attackTotal = bitMaskSpells(c.position, c.CurrMP);
+                                attackTotal += bitMaskSpells(tile, c.CurrMP);
                             }
                         }
                     }
@@ -161,7 +162,7 @@ namespace Angels_Vs_Demons.Util
                     {
                         //do the fancy magic stuff
                         Champion c = tile.Unit as Champion;
-                        attackTotal = bitMaskSpells(c.position, c.CurrMP);
+                        attackTotal += bitMaskSpells(tile, c.CurrMP);
                     }
                 }
             }
@@ -503,37 +504,111 @@ namespace Angels_Vs_Demons.Util
         /// NOT IMPLEMENTED YET!!!!!!!!!!!!!!
         /// </summary>
         /// <returns>the number of spells that can be performed by a champion.</returns>
-        private int bitMaskSpells(Vector2 championPos, int MP)
+        private int bitMaskSpells(Tile champion, int MP)
+        {
+            int attackTotal = 0;
+
+            if (MP >= (int)SpellValues.spellCost.BOLT)
+            {
+                attackTotal += bitMaskSpellBolt((int)SpellValues.spellRange.BOLT, champion.position, champion);
+            }
+            if (MP >= (int)SpellValues.spellCost.BUFF)
+            {
+                attackTotal += bitMaskSpellBuff(champion.position);
+            }
+            if (MP >= (int)SpellValues.spellCost.HEAL)
+            {
+                attackTotal += bitMaskSpellHeal(champion.position);
+            }
+            if (MP >= (int)SpellValues.spellCost.REST)
+            {
+                attackTotal += bitMaskSpellRest(champion.position);
+            }
+            if (MP >= (int)SpellValues.spellCost.STUN)
+            {
+                attackTotal += bitMaskSpellStun(champion.position);
+            }
+            if (MP >= (int)SpellValues.spellCost.TELE)
+            {
+                attackTotal += bitMaskSpellTele(champion.position);
+            }
+            return attackTotal;
+        }
+
+        private int bitMaskSpellType(Vector2 championPos, SpellValues.spellTypes spellType)
+        {
+            int attackTotal = 0;
+            return attackTotal;
+        }
+
+        private int bitMaskSpellBolt(int range, Vector2 championPos, Tile currentTile)
+        {
+            range--;
+            //as long as we're not checking the starting attack
+            if (!currentTile.position.Equals(championPos))
+            {
+                //if there's a unit there
+                if (currentTile.IsOccupied)
+                {
+                    //if it is an enemy unit
+                    if (currentTile.Unit.FactionType != controllingFaction)
+                    {
+                        //add an attack for that unit
+                        currentTile.SpellID |= 0;
+                    }
+                }
+            }
+            if (range >= 0)
+            {
+                //// are there tiles left, go left
+                //if (newVictimTile.position.X - 1 >= 0)
+                //{
+                //    newVictimTile.PathLeft = board.Grid[(int)newVictimTile.position.X - 1][(int)newVictimTile.position.Y];
+                //    findSplashAttacks(coverage, attackerPos, startVictimPos, newVictimTile.PathLeft, attackID);
+                //}
+                //// are there tiles right, go right
+                //if (newVictimTile.position.X + 1 < board.X_size)
+                //{
+                //    newVictimTile.PathRight = board.Grid[(int)newVictimTile.position.X + 1][(int)newVictimTile.position.Y];
+                //    findSplashAttacks(coverage, attackerPos, startVictimPos, newVictimTile.PathRight, attackID);
+                //}
+                //// are there tiles above, go up
+                //if (newVictimTile.position.Y - 1 >= 0)
+                //{
+                //    newVictimTile.PathTop = board.Grid[(int)newVictimTile.position.X][(int)newVictimTile.position.Y - 1];
+                //    findSplashAttacks(coverage, attackerPos, startVictimPos, newVictimTile.PathTop, attackID);
+                //}
+                //// are there tiles below, go down
+                //if (newVictimTile.position.Y + 1 < board.Y_size)
+                //{
+                //    newVictimTile.PathBottom = board.Grid[(int)newVictimTile.position.X][(int)newVictimTile.position.Y + 1];
+                //    findSplashAttacks(coverage, attackerPos, startVictimPos, newVictimTile.PathBottom, attackID);
+                //}
+            }
+            return 0;
+        }
+
+        private int bitMaskSpellBuff(Vector2 championPos)
         {
             return 0;
         }
 
-        private int bitMaskSpellBolt()
+        private int bitMaskSpellHeal(Vector2 championPos)
         {
             return 0;
         }
 
-        private int bitMaskSpellBuff()
+        private int bitMaskSpellRest(Vector2 championPos)
         {
             return 0;
         }
 
-        private int bitMaskSpellHeal()
+        private int bitMaskSpellStun(Vector2 championPos)
         {
             return 0;
         }
 
-        private int bitMaskSpellRest()
-        {
-            return 0;
-        }
-
-        private int bitMaskSpellStun()
-        {
-            return 0;
-        }
-
-        private int bitMaskSpellTele()
+        private int bitMaskSpellTele(Vector2 championPos)
         {
             return 0;
         }
