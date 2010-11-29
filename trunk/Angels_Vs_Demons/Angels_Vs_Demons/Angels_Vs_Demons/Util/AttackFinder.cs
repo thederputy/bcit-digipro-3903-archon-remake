@@ -114,7 +114,7 @@ namespace Angels_Vs_Demons.Util
                             {
                                 //do all the fancy magic stuff!?
                                 Champion c = tile.Unit as Champion;
-                                attackTotal += bitMaskSpells(tile, c.CurrMP);
+                                attackTotal += bitMaskSpells(tile, c.CurrMP, c.ID);
                             }
                         }
                     }
@@ -162,7 +162,7 @@ namespace Angels_Vs_Demons.Util
                     {
                         //do the fancy magic stuff
                         Champion c = tile.Unit as Champion;
-                        attackTotal += bitMaskSpells(tile, c.CurrMP);
+                        attackTotal += bitMaskSpells(tile, c.CurrMP, c.ID);
                     }
                 }
             }
@@ -501,47 +501,60 @@ namespace Angels_Vs_Demons.Util
         }
 
         /// <summary>
-        /// NOT IMPLEMENTED YET!!!!!!!!!!!!!!
+        /// Similar to bitMaskAttacksForTile, this method uses bitmasking to 
+        /// mark all the spells that a champion can perform.
         /// </summary>
+        /// <param name="champion">the tile that the champion is on</param>
+        /// <param name="MP">the current Mana Points of the champion</param>
+        /// <param name="attackID">the attack ID of the champion</param>
         /// <returns>the number of spells that can be performed by a champion.</returns>
-        private int bitMaskSpells(Tile champion, int MP)
+        private int bitMaskSpells(Tile champion, int MP, int attackID)
         {
-            int attackTotal = 0;
+            int spellTotal = 0;
 
             if (MP >= (int)SpellValues.spellCost.BOLT)
             {
-                attackTotal += bitMaskSpellBolt((int)SpellValues.spellRange.BOLT, champion.position, champion);
+                int unitSpells = 0;
+                spellTotal += bitMaskSpellBolt(unitSpells, (int)SpellValues.spellRange.BOLT, champion.position, champion, attackID);
             }
             if (MP >= (int)SpellValues.spellCost.BUFF)
             {
-                attackTotal += bitMaskSpellBuff(champion.position);
+                int unitSpells = 0;
+                spellTotal += bitMaskSpellBuff(unitSpells, (int)SpellValues.spellRange.BUFF, champion.position, champion, attackID);
             }
             if (MP >= (int)SpellValues.spellCost.HEAL)
             {
-                attackTotal += bitMaskSpellHeal(champion.position);
+                int unitSpells = 0;
+                spellTotal += bitMaskSpellHeal(unitSpells, (int)SpellValues.spellRange.HEAL, champion.position, champion, attackID);
             }
             if (MP >= (int)SpellValues.spellCost.REST)
             {
-                attackTotal += bitMaskSpellRest(champion.position);
+                int unitSpells = 0;
+                spellTotal += bitMaskSpellRest(unitSpells, (int)SpellValues.spellRange.REST, champion.position, champion, attackID);
             }
             if (MP >= (int)SpellValues.spellCost.STUN)
             {
-                attackTotal += bitMaskSpellStun(champion.position);
+                int unitSpells = 0;
+                spellTotal += bitMaskSpellStun(unitSpells, (int)SpellValues.spellRange.STUN, champion.position, champion, attackID);
             }
             if (MP >= (int)SpellValues.spellCost.TELE)
             {
-                attackTotal += bitMaskSpellTele(champion.position);
+                int unitSpells = 0;
+                spellTotal += bitMaskSpellTele(unitSpells, (int)SpellValues.spellRange.TELE, champion.position, champion, attackID);
             }
-            return attackTotal;
+            return spellTotal;
         }
 
-        private int bitMaskSpellType(Vector2 championPos, SpellValues.spellTypes spellType)
-        {
-            int attackTotal = 0;
-            return attackTotal;
-        }
-
-        private int bitMaskSpellBolt(int range, Vector2 championPos, Tile currentTile)
+        /// <summary>
+        /// Marks all the tiles that can be attacked with the BOLT spell.
+        /// </summary>
+        /// <param name="unitSpells">the number of attacks this unit can make</param>
+        /// <param name="range">the spell range of this Bolt</param>
+        /// <param name="championPos">the position of the unit that started the recursive call</param>
+        /// <param name="currentTile">the current tile we are checking</param>
+        /// <param name="attackID">the bitmask ID of the attacking unit</param>
+        /// <returns>how many attacks the unit can make</returns>
+        private int bitMaskSpellBolt(int unitSpells, int range, Vector2 championPos, Tile currentTile, int attackID)
         {
             range--;
             //as long as we're not checking the starting attack
@@ -553,64 +566,304 @@ namespace Angels_Vs_Demons.Util
                     //if it is an enemy unit
                     if (currentTile.Unit.FactionType != controllingFaction)
                     {
-                        //add an attack for that unit
-                        currentTile.SpellID |= 0;
+                        //add a spell for that tile
+                        currentTile.SpellID |= (int)BitMask.spells.BOLT;
+                        currentTile.AttackID |= attackID;
+                        unitSpells++;
                     }
                 }
             }
             if (range >= 0)
             {
-                //// are there tiles left, go left
-                //if (newVictimTile.position.X - 1 >= 0)
-                //{
-                //    newVictimTile.PathLeft = board.Grid[(int)newVictimTile.position.X - 1][(int)newVictimTile.position.Y];
-                //    findSplashAttacks(coverage, attackerPos, startVictimPos, newVictimTile.PathLeft, attackID);
-                //}
-                //// are there tiles right, go right
-                //if (newVictimTile.position.X + 1 < board.X_size)
-                //{
-                //    newVictimTile.PathRight = board.Grid[(int)newVictimTile.position.X + 1][(int)newVictimTile.position.Y];
-                //    findSplashAttacks(coverage, attackerPos, startVictimPos, newVictimTile.PathRight, attackID);
-                //}
-                //// are there tiles above, go up
-                //if (newVictimTile.position.Y - 1 >= 0)
-                //{
-                //    newVictimTile.PathTop = board.Grid[(int)newVictimTile.position.X][(int)newVictimTile.position.Y - 1];
-                //    findSplashAttacks(coverage, attackerPos, startVictimPos, newVictimTile.PathTop, attackID);
-                //}
-                //// are there tiles below, go down
-                //if (newVictimTile.position.Y + 1 < board.Y_size)
-                //{
-                //    newVictimTile.PathBottom = board.Grid[(int)newVictimTile.position.X][(int)newVictimTile.position.Y + 1];
-                //    findSplashAttacks(coverage, attackerPos, startVictimPos, newVictimTile.PathBottom, attackID);
-                //}
+                // are there tiles left, go left
+                if (currentTile.position.X - 1 >= 0)
+                {
+                    currentTile.PathLeft = board.Grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                    bitMaskSpellBolt(unitSpells, range, championPos, currentTile.PathLeft, attackID);
+                }
+                // are there tiles right, go right
+                if (currentTile.position.X + 1 < board.X_size)
+                {
+                    currentTile.PathRight = board.Grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                    bitMaskSpellBolt(unitSpells, range, championPos, currentTile.PathRight, attackID);
+                }
+                // are there tiles above, go up
+                if (currentTile.position.Y - 1 >= 0)
+                {
+                    currentTile.PathTop = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                    bitMaskSpellBolt(unitSpells, range, championPos, currentTile.PathTop, attackID);
+                }
+                // are there tiles below, go down
+                if (currentTile.position.Y + 1 < board.Y_size)
+                {
+                    currentTile.PathBottom = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                    bitMaskSpellBolt(unitSpells, range, championPos, currentTile.PathBottom, attackID);
+                }
             }
-            return 0;
+            return unitSpells;
         }
 
-        private int bitMaskSpellBuff(Vector2 championPos)
+        /// <summary>
+        /// Marks all the tiles that can be attacked with the BUFF spell.
+        /// </summary>
+        /// <param name="unitSpells">the number of attacks this unit can make</param>
+        /// <param name="range">the spell range of this Bolt</param>
+        /// <param name="championPos">the position of the unit that started the recursive call</param>
+        /// <param name="currentTile">the current tile we are checking</param>
+        /// <param name="attackID">the bitmask ID of the attacking unit</param>
+        /// <returns>how many attacks the unit can make</returns>
+        private int bitMaskSpellBuff(int unitSpells, int range, Vector2 championPos, Tile currentTile, int attackID)
         {
-            return 0;
+            range--;
+            //as long as we're not checking the starting attack
+            if (!currentTile.position.Equals(championPos))
+            {
+                //if there's a unit there
+                if (currentTile.IsOccupied)
+                {
+                    //if it is one of our units
+                    if (currentTile.Unit.FactionType == controllingFaction)
+                    {
+                        //add a spell for that tile
+                        currentTile.SpellID |= (int)BitMask.spells.BUFF;
+                        currentTile.AttackID |= attackID;
+                        unitSpells++;
+                    }
+                }
+            }
+            if (range >= 0)
+            {
+                // are there tiles left, go left
+                if (currentTile.position.X - 1 >= 0)
+                {
+                    currentTile.PathLeft = board.Grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                    bitMaskSpellBuff(unitSpells, range, championPos, currentTile.PathLeft, attackID);
+                }
+                // are there tiles right, go right
+                if (currentTile.position.X + 1 < board.X_size)
+                {
+                    currentTile.PathRight = board.Grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                    bitMaskSpellBuff(unitSpells, range, championPos, currentTile.PathRight, attackID);
+                }
+                // are there tiles above, go up
+                if (currentTile.position.Y - 1 >= 0)
+                {
+                    currentTile.PathTop = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                    bitMaskSpellBuff(unitSpells, range, championPos, currentTile.PathTop, attackID);
+                }
+                // are there tiles below, go down
+                if (currentTile.position.Y + 1 < board.Y_size)
+                {
+                    currentTile.PathBottom = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                    bitMaskSpellBuff(unitSpells, range, championPos, currentTile.PathBottom, attackID);
+                }
+            }
+            return unitSpells;
         }
 
-        private int bitMaskSpellHeal(Vector2 championPos)
+        /// <summary>
+        /// Marks all the tiles that can be healed with the HEAL spell.
+        /// </summary>
+        /// <param name="unitSpells">the number of attacks this unit can make</param>
+        /// <param name="range">the spell range of this Heal</param>
+        /// <param name="championPos">the position of the unit that started the recursive call</param>
+        /// <param name="currentTile">the current tile we are checking</param>
+        /// <param name="attackID">the bitmask ID of the attacking unit</param>
+        /// <returns>how many attacks the unit can make</returns>
+        private int bitMaskSpellHeal(int unitSpells, int range, Vector2 championPos, Tile currentTile, int attackID)
         {
-            return 0;
+            range--;
+            //as long as we're not checking the starting attack
+            if (!currentTile.position.Equals(championPos))
+            {
+                //if there's a unit there
+                if (currentTile.IsOccupied)
+                {
+                    //if it is one of our units
+                    if (currentTile.Unit.FactionType == controllingFaction)
+                    {
+                        //add a spell for that tile
+                        currentTile.SpellID |= (int)BitMask.spells.HEAL;
+                        currentTile.AttackID |= attackID;
+                        unitSpells++;
+                    }
+                }
+            }
+            if (range >= 0)
+            {
+                // are there tiles left, go left
+                if (currentTile.position.X - 1 >= 0)
+                {
+                    currentTile.PathLeft = board.Grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                    bitMaskSpellHeal(unitSpells, range, championPos, currentTile.PathLeft, attackID);
+                }
+                // are there tiles right, go right
+                if (currentTile.position.X + 1 < board.X_size)
+                {
+                    currentTile.PathRight = board.Grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                    bitMaskSpellHeal(unitSpells, range, championPos, currentTile.PathRight, attackID);
+                }
+                // are there tiles above, go up
+                if (currentTile.position.Y - 1 >= 0)
+                {
+                    currentTile.PathTop = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                    bitMaskSpellHeal(unitSpells, range, championPos, currentTile.PathTop, attackID);
+                }
+                // are there tiles below, go down
+                if (currentTile.position.Y + 1 < board.Y_size)
+                {
+                    currentTile.PathBottom = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                    bitMaskSpellHeal(unitSpells, range, championPos, currentTile.PathBottom, attackID);
+                }
+            }
+            return unitSpells;
         }
 
-        private int bitMaskSpellRest(Vector2 championPos)
+        /// <summary>
+        /// Marks all the tiles that can REST with the REST spell (this will be just the champion).
+        /// </summary>
+        /// <param name="unitSpells">the number of attacks this unit can make</param>
+        /// <param name="range">the spell range of this REST</param>
+        /// <param name="championPos">the position of the unit that started the recursive call</param>
+        /// <param name="currentTile">the current tile we are checking</param>
+        /// <param name="attackID">the bitmask ID of the attacking unit</param>
+        /// <returns>how many attacks the unit can make</returns>
+        private int bitMaskSpellRest(int unitSpells, int range, Vector2 championPos, Tile currentTile, int attackID)
         {
-            return 0;
+            range--;
+            //rest only works on our own position
+            if (currentTile.position.Equals(championPos))
+            {
+                //make sure we didn't select something dumb
+                if (currentTile.IsOccupied)
+                {
+                    //if it is one of our units
+                    if (currentTile.Unit.FactionType == controllingFaction)
+                    {
+                        //add a spell for this tile
+                        currentTile.SpellID |= (int)BitMask.spells.REST;
+                        currentTile.AttackID |= attackID;
+                        unitSpells++;
+                    }
+                }
+            }
+            return unitSpells;
         }
 
-        private int bitMaskSpellStun(Vector2 championPos)
+        /// <summary>
+        /// Marks all the tiles that can be attacked with the STUN spell.
+        /// </summary>
+        /// <param name="unitSpells">the number of attacks this unit can make</param>
+        /// <param name="range">the spell range of this STUN</param>
+        /// <param name="championPos">the position of the unit that started the recursive call</param>
+        /// <param name="currentTile">the current tile we are checking</param>
+        /// <param name="attackID">the bitmask ID of the attacking unit</param>
+        /// <returns>how many attacks the unit can make</returns>
+        private int bitMaskSpellStun(int unitSpells, int range, Vector2 championPos, Tile currentTile, int attackID)
         {
-            return 0;
+            range--;
+            //as long as we're not checking the starting unit
+            if (!currentTile.position.Equals(championPos))
+            {
+                //if there's a unit there
+                if (currentTile.IsOccupied)
+                {
+                    //if it is an enemy unit
+                    if (currentTile.Unit.FactionType != controllingFaction)
+                    {
+                        //add a spell for that tile
+                        currentTile.SpellID |= (int)BitMask.spells.STUN;
+                        currentTile.AttackID |= attackID;
+                        unitSpells++;
+                    }
+                }
+            }
+            if (range >= 0)
+            {
+                // are there tiles left, go left
+                if (currentTile.position.X - 1 >= 0)
+                {
+                    currentTile.PathLeft = board.Grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                    bitMaskSpellStun(unitSpells, range, championPos, currentTile.PathLeft, attackID);
+                }
+                // are there tiles right, go right
+                if (currentTile.position.X + 1 < board.X_size)
+                {
+                    currentTile.PathRight = board.Grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                    bitMaskSpellStun(unitSpells, range, championPos, currentTile.PathRight, attackID);
+                }
+                // are there tiles above, go up
+                if (currentTile.position.Y - 1 >= 0)
+                {
+                    currentTile.PathTop = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                    bitMaskSpellStun(unitSpells, range, championPos, currentTile.PathTop, attackID);
+                }
+                // are there tiles below, go down
+                if (currentTile.position.Y + 1 < board.Y_size)
+                {
+                    currentTile.PathBottom = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                    bitMaskSpellStun(unitSpells, range, championPos, currentTile.PathBottom, attackID);
+                }
+            }
+            return unitSpells;
         }
 
-        private int bitMaskSpellTele(Vector2 championPos)
+        /// <summary>
+        /// Marks all the tiles that can be teleported to with the Teleport spell.
+        /// </summary>
+        /// <param name="unitSpells">the number of attacks this unit can make</param>
+        /// <param name="range">the spell range of this Teleport</param>
+        /// <param name="championPos">the position of the unit that started the recursive call</param>
+        /// <param name="currentTile">the current tile we are checking</param>
+        /// <param name="attackID">the bitmask ID of the attacking unit</param>
+        /// <returns>how many attacks the unit can make</returns>
+        private int bitMaskSpellTele(int unitSpells, int range, Vector2 championPos, Tile currentTile, int attackID)
         {
-            return 0;
+            range--;
+            //as long as we're not checking the starting attack
+            if (!currentTile.position.Equals(championPos))
+            {
+                //if there's a unit there
+                if (currentTile.IsOccupied)
+                {
+                    //if it is one of our units
+                    if (currentTile.Unit.FactionType == controllingFaction)
+                    {
+                        //add a spell for that tile
+                        currentTile.SpellID |= (int)BitMask.spells.TELE;
+                        currentTile.AttackID |= attackID;
+                        unitSpells++;
+                    }
+                }
+            }
+            if (range >= 0)
+            {
+                // are there tiles left, go left
+                if (currentTile.position.X - 1 >= 0)
+                {
+                    currentTile.PathLeft = board.Grid[(int)currentTile.position.X - 1][(int)currentTile.position.Y];
+                    bitMaskSpellTele(unitSpells, range, championPos, currentTile.PathLeft, attackID);
+                }
+                // are there tiles right, go right
+                if (currentTile.position.X + 1 < board.X_size)
+                {
+                    currentTile.PathRight = board.Grid[(int)currentTile.position.X + 1][(int)currentTile.position.Y];
+                    bitMaskSpellTele(unitSpells, range, championPos, currentTile.PathRight, attackID);
+                }
+                // are there tiles above, go up
+                if (currentTile.position.Y - 1 >= 0)
+                {
+                    currentTile.PathTop = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y - 1];
+                    bitMaskSpellTele(unitSpells, range, championPos, currentTile.PathTop, attackID);
+                }
+                // are there tiles below, go down
+                if (currentTile.position.Y + 1 < board.Y_size)
+                {
+                    currentTile.PathBottom = board.Grid[(int)currentTile.position.X][(int)currentTile.position.Y + 1];
+                    bitMaskSpellTele(unitSpells, range, championPos, currentTile.PathBottom, attackID);
+                }
+            }
+            return unitSpells;
         }
 
         /// <summary>
