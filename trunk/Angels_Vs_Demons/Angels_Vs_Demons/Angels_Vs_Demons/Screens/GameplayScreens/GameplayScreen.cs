@@ -477,72 +477,52 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
         private void processChampionAttackPhase()
         {
-            game.IsChampionAttack = true;
             //NEED TO IMPLEMENT THE CHAMPION ATTACKS HERE
             //Commented out is the processAttackPhase code.
             //we'll have to implement this differently though
-//#if DEBUG
-//            //board.showAttackBitMasks();
-//#endif
-//            Tile currentTile = board.GetCurrentTile();
-//#if DEBUG
-//            Debug.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
-//#endif
-//            if (currentTile.IsUsable)
-//            {
-//                //check that there is a tile selected
-//                if (board.selectedTile != null)
-//                {
-//                    //if we've selected the same tile again, attack phase is over 
-//                    //(not sure if this is the best implementation)
-//                    if (currentTile.position == board.selectedTile.position)
-//                    {
-//                        board.selectedTile = null;
-//#if DEBUG
-//                        Debug.WriteLine("selected the same tile again");
-//                        Debug.WriteLine("selected tile = null");
-//#endif
-//                    }
-//                    else
-//                    {
-//#if DEBUG
-//                        Debug.WriteLine("selected a new tile");
-//                        Debug.WriteLine("updating selected tile");
-//#endif
-//                        board.selectedTile = currentTile;
-//                    }
-//                }
-//                else
-//                {
-//#if DEBUG
-//                    Debug.WriteLine("no tile selected, selecting current tile");
-//                    Debug.WriteLine("updating selected tile");
-//#endif
-//                    board.selectedTile = currentTile;
-//                }
-//            }
-//            else
-//            {
-//                if (board.selectedTile.Unit is Champion)
-//                {
-//                    Debug.WriteLine("Champion attack is selected");
-//                    //if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
-//                }
-//                //we've selected a tile that is not one of ours.
-//                //if there is a selected tile, check to see if the current tile is within our attack range
-//                if (board.selectedTile != null && (currentTile.AttackID & board.selectedTile.Unit.ID) != 0)
-//                {
-//                    //if the current tile has a unit on it
-//                    if (currentTile.IsOccupied)
-//                    {
-//#if DEBUG
-//                        Debug.WriteLine("executing attack phase");
-//#endif
-//                        //execute the attack phase
-//                        executeAttackPhase(currentTile, board.selectedTile);
-//                    }
-//                }
-//            }
+#if DEBUG
+            //board.showAttackBitMasks();
+#endif
+            Tile currentTile = game.GetCurrentTile();
+#if DEBUG
+            Debug.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
+#endif
+            if (currentTile.IsUsable)
+            {
+                //check that there is a tile selected
+                if (game.selectedTile != null)
+                {
+                    //if we've selected the same tile again
+                    if (currentTile.position == game.selectedTile.position)
+                    {
+                        game.selectedTile = null;
+                        game.IsChampionAttack = false;
+#if DEBUG
+                        Debug.WriteLine("selected the same tile again");
+                        Debug.WriteLine("selected tile = null");
+#endif
+                    }
+                    else
+                    {
+#if DEBUG
+                        Debug.WriteLine("selected a new tile");
+                        Debug.WriteLine("updating selected tile");
+#endif
+                        game.selectedTile = currentTile;
+                        game.IsChampionAttack = true;
+                    }
+                }
+                else
+                {
+#if DEBUG
+                    Debug.WriteLine("no tile selected, selecting current tile");
+                    Debug.WriteLine("updating selected tile");
+#endif
+                    game.selectedTile = currentTile;
+                    game.IsChampionAttack = true;
+                }
+            }
+            Console.WriteLine("isChampionAttack: " + game.IsChampionAttack);
         }
 
         /// <summary>
