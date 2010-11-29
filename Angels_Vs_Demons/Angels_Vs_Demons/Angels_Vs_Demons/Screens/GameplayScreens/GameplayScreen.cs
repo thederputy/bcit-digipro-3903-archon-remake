@@ -355,6 +355,10 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         processChampionAttackPhase();
                     }
+                    else
+                    {
+                        processAttackPhase();
+                    }
                 }
                 else
                 {
@@ -468,7 +472,14 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                         Debug.WriteLine("selected a new tile");
                         Debug.WriteLine("updating selected tile");
 #endif
-                        game.selectedTile = currentTile;
+                        if (currentTile.Unit is Champion)
+                        {
+                            processChampionAttackPhase();
+                        }
+                        else
+                        {
+                            game.selectedTile = currentTile;
+                        }
                     }
                 }
                 else
@@ -501,9 +512,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
         private void processChampionAttackPhase()
         {
-            //NEED TO IMPLEMENT THE CHAMPION ATTACKS HERE
-            //Commented out is the processAttackPhase code.
-            //we'll have to implement this differently though
 #if DEBUG
             //board.showAttackBitMasks();
 #endif
@@ -534,6 +542,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 #endif
                         game.selectedTile = currentTile;
                         game.attackFinder.findAttacksForTile(game.selectedTile);
+                        game.attackFinder.bitMaskAllTilesForChampionAsNotAttackable(game.selectedTile.Unit.ID);
                         game.IsChampionAttack = true;
                     }
                 }
@@ -545,7 +554,25 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 #endif
                     game.selectedTile = currentTile;
                     game.attackFinder.findAttacksForTile(game.selectedTile);
+                    game.attackFinder.bitMaskAllTilesForChampionAsNotAttackable(game.selectedTile.Unit.ID);
                     game.IsChampionAttack = true;
+                }
+            }
+            else
+            {
+                //we've selected a tile that is not one of ours.
+                //if there is a selected tile, check to see if the current tile is within our attack range
+                if (game.selectedTile != null && (currentTile.AttackID & game.selectedTile.Unit.ID) != 0)
+                {
+                    //if the current tile has a unit on it
+                    if (currentTile.IsOccupied)
+                    {
+#if DEBUG
+                        Debug.WriteLine("executing attack phase");
+#endif
+                        //execute the attack phase
+                        executeChampionAttackPhase(currentTile, game.selectedTile);
+                    }
                 }
             }
             Console.WriteLine("isChampionAttack: " + game.IsChampionAttack);
@@ -568,11 +595,10 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// </summary>
         /// <param name="victimTile">the tile that is getting attacked</param>
         /// <param name="attackerTile">the tile that is attacking</param>
-        /// <param name="spellType">the type of spell to execute</param>
-        protected virtual void executeChampionAttackPhase(Tile victimTile, Tile attackerTile, SpellValues.spellTypes spellType)
+        protected virtual void executeChampionAttackPhase(Tile victimTile, Tile attackerTile)
         {
             Attack spell = null;
-            switch (spellType)
+            switch (game.SpellType)
             {
                 case SpellValues.spellTypes.BOLT:
                     spell = new Bolt(victimTile.position, attackerTile.position);
