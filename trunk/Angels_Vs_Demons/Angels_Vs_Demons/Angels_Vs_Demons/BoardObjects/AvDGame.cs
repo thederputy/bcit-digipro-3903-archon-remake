@@ -87,6 +87,13 @@ namespace Angels_Vs_Demons.BoardObjects
         }
         private bool movePhase;
 
+        public bool IsChampionAttack
+        {
+            get { return isChampionAttack; }
+            set { isChampionAttack = value; }
+        }
+        private bool isChampionAttack;
+
         /// <summary>
         /// Gets/sets the attack phase.
         /// </summary>
@@ -631,6 +638,7 @@ namespace Angels_Vs_Demons.BoardObjects
             Debug.WriteLine("\nDEBUG: entering beginTurn()");
             Debug.WriteLine("Controlling Faction: " + ControllingFaction);
 #endif
+            isChampionAttack = false;
             decrementRecharge();
             setTilesUsableByControllingFaction();
             beginMovePhase();
@@ -724,6 +732,7 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             moveFinder.bitMaskAllTilesAsNotMovable();
             attackFinder.bitMaskAllTilesAsNotAttackable();
+            isChampionAttack = false;
             movePhase = false;
             attackPhase = false;
         }

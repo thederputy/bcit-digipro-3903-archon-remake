@@ -78,7 +78,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         protected KeyboardState previousKeyboardState;
         protected GamePadState previousGamePadState;
 
-        protected AvDGame board;
+        protected AvDGame game;
 
         private SpriteFont mapFont, gameFont;
         private Vector2 fontPosition;
@@ -126,7 +126,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             if (content == null)
                 content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-            board = new AvDGame(content);
+            game = new AvDGame(content);
             //create new unit display window
             unitDisplayWindow = new UnitDisplayWindow(content);
 
@@ -182,22 +182,22 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 {
                     //do the computer player stuff
                     ComputerPlayer cp = CurrentPlayer as ComputerPlayer;
-                    Turn turn = cp.getTurn(board);
-                    board.applyTurn(turn);
+                    Turn turn = cp.getTurn(game);
+                    game.applyTurn(turn);
                     Console.WriteLine("DONE CHANGING STUFF");
                 }
 
                 //check for end of turn
-                if (!board.MovePhase && !board.AttackPhase)
+                if (!game.MovePhase && !game.AttackPhase)
                 {
-                    board.endTurn();    //end the current turn
+                    game.endTurn();    //end the current turn
                     
                     //switch the controlling players
                     Player tempPlayer = CurrentPlayer;
                     CurrentPlayer = NextPlayer;
                     NextPlayer = tempPlayer;
 
-                    board.beginTurn();  //begin the next turn
+                    game.beginTurn();  //begin the next turn
                 }
             }
         }
@@ -234,19 +234,19 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             {
                 if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
                 {
-                    board.moveCursor(-1, 0);
+                    game.moveCursor(-1, 0);
                 }
                 else if (keyboardState.IsKeyDown(Keys.Right) && !previousKeyboardState.IsKeyDown(Keys.Right))
                 {
-                    board.moveCursor(1, 0);
+                    game.moveCursor(1, 0);
                 }
                 else if (keyboardState.IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
                 {
-                    board.moveCursor(0, -1);
+                    game.moveCursor(0, -1);
                 }
                 else if (keyboardState.IsKeyDown(Keys.Down) && !previousKeyboardState.IsKeyDown(Keys.Down))
                 {
-                    board.moveCursor(0, 1);
+                    game.moveCursor(0, 1);
                 }
                 else if (keyboardState.IsKeyDown(Keys.Enter) && !previousKeyboardState.IsKeyDown(Keys.Enter))
                 {
@@ -255,20 +255,62 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 else if (keyboardState.IsKeyDown(Keys.E) && !previousKeyboardState.IsKeyDown(Keys.E))
                 {
                     
-                    if (board.MovePhase == true)
+                    if (game.MovePhase == true)
                     {
-                        board.endMovePhaseNoMove();
+                        game.endMovePhaseNoMove();
                     }
-                    else if (board.AttackPhase == true)
+                    else if (game.AttackPhase == true)
                     {
-                        board.endAttackPhase();
+                        game.endAttackPhase();
                     }
                 }
                 else if (keyboardState.IsKeyDown(Keys.U) && !previousKeyboardState.IsKeyDown(Keys.U))
                 {
-                    if (board.AttackPhase == true)
+                    if (game.AttackPhase == true)
                     {
-                        board.undoLastMove();
+                        game.undoLastMove();
+                    }
+                }
+                else if (keyboardState.IsKeyDown(Keys.D1) && !previousKeyboardState.IsKeyDown(Keys.D1))
+                {
+                    if (game.IsChampionAttack)
+                    {
+
+                    }
+                }
+                else if (keyboardState.IsKeyDown(Keys.D2) && !previousKeyboardState.IsKeyDown(Keys.D2))
+                {
+                    if (game.IsChampionAttack)
+                    {
+
+                    }
+                }
+                else if (keyboardState.IsKeyDown(Keys.D3) && !previousKeyboardState.IsKeyDown(Keys.D3))
+                {
+                    if (game.IsChampionAttack)
+                    {
+
+                    }
+                }
+                else if (keyboardState.IsKeyDown(Keys.D4) && !previousKeyboardState.IsKeyDown(Keys.D4))
+                {
+                    if (game.IsChampionAttack)
+                    {
+
+                    }
+                }
+                else if (keyboardState.IsKeyDown(Keys.D5) && !previousKeyboardState.IsKeyDown(Keys.D5))
+                {
+                    if (game.IsChampionAttack)
+                    {
+
+                    }
+                }
+                else if (keyboardState.IsKeyDown(Keys.D6) && !previousKeyboardState.IsKeyDown(Keys.D6))
+                {
+                    if (game.IsChampionAttack)
+                    {
+
                     }
                 }
             }
@@ -282,13 +324,21 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// </summary>
         protected virtual void makeAction()
         {       
-            if (board.MovePhase)
+            if (game.MovePhase)
             {
                 processMovePhase();
             }
-            if (board.AttackPhase)
+            if (game.AttackPhase)
             {  
-                processAttackPhase();
+                Unit championCheck = game.GetCurrentTile().Unit;
+                if (championCheck != null && championCheck is Champion)
+                {
+                    processChampionAttackPhase();
+                }
+                else
+                {
+                    processAttackPhase();
+                }
             }
         }
 
@@ -301,19 +351,19 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 #if DEBUG
             //board.showMoveBitMasks();
 #endif
-            Tile currentTile = board.GetCurrentTile();
+            Tile currentTile = game.GetCurrentTile();
 #if DEBUG
             Debug.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
 #endif
             if (currentTile.IsUsable)
             {
                 //check that there is a tile selected
-                if (board.selectedTile != null)
+                if (game.selectedTile != null)
                 {
                     //if we've selected the same tile again, deselect it
-                    if (currentTile.position == board.selectedTile.position)
+                    if (currentTile.position == game.selectedTile.position)
                     {
-                        board.selectedTile = null;
+                        game.selectedTile = null;
 #if DEBUG
                         Debug.WriteLine("selected tile = null");
 #endif
@@ -323,7 +373,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 #if DEBUG
                         Debug.WriteLine("updating selected tile");
 #endif
-                        board.selectedTile = currentTile;
+                        game.selectedTile = currentTile;
                     }
                 }
                 else
@@ -331,17 +381,17 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 #if DEBUG
                     Debug.WriteLine("updating selected tile");
 #endif
-                    board.selectedTile = currentTile;
+                    game.selectedTile = currentTile;
                 }
             }
             else
             {
                 //the currentTile is not occupied
                 //if there is a selected tile, check to see if currentTile is within its move range
-                if (board.selectedTile != null && (currentTile.MoveID & board.selectedTile.Unit.ID) != 0)
+                if (game.selectedTile != null && (currentTile.MoveID & game.selectedTile.Unit.ID) != 0)
                 {
                     //execute the move phase
-                    executeMovePhase(currentTile, board.selectedTile);
+                    executeMovePhase(currentTile, game.selectedTile);
                 }
             }
         }
@@ -352,7 +402,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// </summary>
         protected virtual void executeMovePhase(Tile currentTile, Tile boardSelectedTile)
         {
-            board.applyMove(new Move(currentTile.position, boardSelectedTile.position));
+            game.applyMove(new Move(currentTile.position, boardSelectedTile.position));
         }
 
         /// <summary>
@@ -364,20 +414,20 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 #if DEBUG
             //board.showAttackBitMasks();
 #endif
-            Tile currentTile = board.GetCurrentTile();
+            Tile currentTile = game.GetCurrentTile();
 #if DEBUG
             Debug.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
 #endif
             if (currentTile.IsUsable)
             {
                 //check that there is a tile selected
-                if (board.selectedTile != null)
+                if (game.selectedTile != null)
                 {
                     //if we've selected the same tile again, attack phase is over 
                     //(not sure if this is the best implementation)
-                    if (currentTile.position == board.selectedTile.position)
+                    if (currentTile.position == game.selectedTile.position)
                     {
-                        board.selectedTile = null;
+                        game.selectedTile = null;
 #if DEBUG
                         Debug.WriteLine("selected the same tile again");
                         Debug.WriteLine("selected tile = null");
@@ -389,7 +439,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                         Debug.WriteLine("selected a new tile");
                         Debug.WriteLine("updating selected tile");
 #endif
-                        board.selectedTile = currentTile;
+                        game.selectedTile = currentTile;
                     }
                 }
                 else
@@ -398,19 +448,19 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     Debug.WriteLine("no tile selected, selecting current tile");
                     Debug.WriteLine("updating selected tile");
 #endif
-                    board.selectedTile = currentTile;
+                    game.selectedTile = currentTile;
                 }
             }
             else
             {
-                if (board.selectedTile.Unit is Champion)
+                if (game.selectedTile.Unit is Champion)
                 {
                     Debug.WriteLine("Champion attack is selected");
                     //if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
                 }
                 //we've selected a tile that is not one of ours.
                 //if there is a selected tile, check to see if the current tile is within our attack range
-                if (board.selectedTile != null && (currentTile.AttackID & board.selectedTile.Unit.ID) != 0)
+                if (game.selectedTile != null && (currentTile.AttackID & game.selectedTile.Unit.ID) != 0)
                 {
                     //if the current tile has a unit on it
                     if (currentTile.IsOccupied)
@@ -419,10 +469,80 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                         Debug.WriteLine("executing attack phase");
 #endif
                         //execute the attack phase
-                        executeAttackPhase(currentTile, board.selectedTile);
+                        executeAttackPhase(currentTile, game.selectedTile);
                     }
                 }
             }
+        }
+
+        private void processChampionAttackPhase()
+        {
+            game.IsChampionAttack = true;
+            //NEED TO IMPLEMENT THE CHAMPION ATTACKS HERE
+            //Commented out is the processAttackPhase code.
+            //we'll have to implement this differently though
+//#if DEBUG
+//            //board.showAttackBitMasks();
+//#endif
+//            Tile currentTile = board.GetCurrentTile();
+//#if DEBUG
+//            Debug.WriteLine("currentTile.IsUsable: " + currentTile.IsUsable);
+//#endif
+//            if (currentTile.IsUsable)
+//            {
+//                //check that there is a tile selected
+//                if (board.selectedTile != null)
+//                {
+//                    //if we've selected the same tile again, attack phase is over 
+//                    //(not sure if this is the best implementation)
+//                    if (currentTile.position == board.selectedTile.position)
+//                    {
+//                        board.selectedTile = null;
+//#if DEBUG
+//                        Debug.WriteLine("selected the same tile again");
+//                        Debug.WriteLine("selected tile = null");
+//#endif
+//                    }
+//                    else
+//                    {
+//#if DEBUG
+//                        Debug.WriteLine("selected a new tile");
+//                        Debug.WriteLine("updating selected tile");
+//#endif
+//                        board.selectedTile = currentTile;
+//                    }
+//                }
+//                else
+//                {
+//#if DEBUG
+//                    Debug.WriteLine("no tile selected, selecting current tile");
+//                    Debug.WriteLine("updating selected tile");
+//#endif
+//                    board.selectedTile = currentTile;
+//                }
+//            }
+//            else
+//            {
+//                if (board.selectedTile.Unit is Champion)
+//                {
+//                    Debug.WriteLine("Champion attack is selected");
+//                    //if (keyboardState.IsKeyDown(Keys.Left) && !previousKeyboardState.IsKeyDown(Keys.Left))
+//                }
+//                //we've selected a tile that is not one of ours.
+//                //if there is a selected tile, check to see if the current tile is within our attack range
+//                if (board.selectedTile != null && (currentTile.AttackID & board.selectedTile.Unit.ID) != 0)
+//                {
+//                    //if the current tile has a unit on it
+//                    if (currentTile.IsOccupied)
+//                    {
+//#if DEBUG
+//                        Debug.WriteLine("executing attack phase");
+//#endif
+//                        //execute the attack phase
+//                        executeAttackPhase(currentTile, board.selectedTile);
+//                    }
+//                }
+//            }
         }
 
         /// <summary>
@@ -433,7 +553,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// <param name="attackerTile">the tile that is attacking</param>
         protected virtual void executeAttackPhase(Tile victimTile, Tile attackerTile)
         {
-            board.applyAttack(new Attack(victimTile.position, attackerTile.position));
+            game.applyAttack(new Attack(victimTile.position, attackerTile.position));
         }
 
         /// <summary>
@@ -448,27 +568,27 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
             //Painting the grid
 
-            board.PaintGrid(spriteBatch);
-            board.PaintUnits(spriteBatch);
+            game.PaintGrid(spriteBatch);
+            game.PaintUnits(spriteBatch);
 
             //Painting information text
 
-            unitDisplayWindow.Draw(spriteBatch, board.GetCurrentTile().Unit);
+            unitDisplayWindow.Draw(spriteBatch, game.GetCurrentTile().Unit);
 
             spriteBatch.Begin();
 
-            if (board.ControllingFaction == Faction.ANGEL)
+            if (game.ControllingFaction == Faction.ANGEL)
             {
                 fontPosition.X = 20;
                 fontPosition.Y = 20;
                 spriteBatch.DrawString(gameFont, "Angel Turn", fontPosition, Color.Black);
-                if (board.MovePhase)
+                if (game.MovePhase)
                 {
                     fontPosition.X = 35;
                     fontPosition.Y = 50;
                     spriteBatch.DrawString(mapFont, "Move Phase", fontPosition, Color.Black);
                 }
-                if (board.AttackPhase)
+                if (game.AttackPhase)
                 {
                     fontPosition.X = 35;
                     fontPosition.Y = 50;
@@ -480,13 +600,13 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 fontPosition.X = ScreenManager.screenWidth - 200;
                 fontPosition.Y = 20;
                 spriteBatch.DrawString(gameFont, "Demon Turn", fontPosition, Color.Black);
-                if (board.MovePhase)
+                if (game.MovePhase)
                 {
                     fontPosition.X = ScreenManager.screenWidth - 185;
                     fontPosition.Y = 50;
                     spriteBatch.DrawString(mapFont, "Move Phase", fontPosition, Color.Black);
                 }
-                if (board.AttackPhase)
+                if (game.AttackPhase)
                 {
                     fontPosition.X = ScreenManager.screenWidth - 185;
                     fontPosition.Y = 50;
@@ -497,7 +617,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             fontPosition.X = 5;
             fontPosition.Y = 120;
 
-            Dictionary<int, Unit>.ValueCollection AngelValues = board.Angels.Values;
+            Dictionary<int, Unit>.ValueCollection AngelValues = game.Angels.Values;
 
             foreach (Unit u in AngelValues)
             {
@@ -508,7 +628,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             fontPosition.X = 635;
             fontPosition.Y = 120;
 
-            Dictionary<int, Unit>.ValueCollection DemonValues = board.Demons.Values;
+            Dictionary<int, Unit>.ValueCollection DemonValues = game.Demons.Values;
 
             foreach (Unit u in DemonValues)
             {
