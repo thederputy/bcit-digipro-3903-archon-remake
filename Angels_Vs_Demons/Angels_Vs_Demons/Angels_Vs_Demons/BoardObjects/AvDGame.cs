@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Angels_Vs_Demons.BoardObjects;
+using Angels_Vs_Demons.BoardObjects.Spells;
 using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.GameObjects.Units;
 using Angels_Vs_Demons.Players;
@@ -883,8 +885,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     if (attack is Spell)
                     {
                         Spell spell = attack as Spell;
-                        Debug.WriteLine("spell is using .Cast()");
-                        spell.Cast();
+                        applySpell(spell);
                     }
                     else
                     {
@@ -945,6 +946,23 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Debug.WriteLine("DEBUG: leaving applyAttack()");
 #endif
+        }
+
+		/// <summary>
+		/// Applys a spell to the board.
+		/// </summary>
+        private void applySpell(Spell spell)
+        {
+            if (spell is Teleport)
+            {
+                //do fancy teleporting junk
+            }
+            else
+            {
+                Unit victimUnit = GetTile(spell.VictimPos).Unit;
+                Unit attackerUnit = GetTile(spell.AttackerPos).Unit;
+                spell.Cast(victimUnit, attackerUnit);
+            }
         }
 
         #endregion
