@@ -343,15 +343,25 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 processMovePhase();
             }
             if (game.AttackPhase)
-            {  
-                Unit championCheck = game.GetCurrentTile().Unit;
-                if (championCheck != null && championCheck is Champion)
+            {
+                if (game.selectedTile != null)
                 {
-                    processChampionAttackPhase();
+                    if (game.selectedTile.Unit is Champion)
+                    {
+                        processChampionAttackPhase();
+                    }
                 }
                 else
                 {
-                    processAttackPhase();
+                    Unit championCheck = game.GetCurrentTile().Unit;
+                    if (championCheck != null && championCheck is Champion)
+                    {
+                        processChampionAttackPhase();
+                    }
+                    else
+                    {
+                        processAttackPhase();
+                    }
                 }
             }
         }
