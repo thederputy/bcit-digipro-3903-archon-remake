@@ -23,6 +23,37 @@ namespace Angels_Vs_Demons.Players
         /// </summary>
         private Dictionary<string, int> unitValues = new Dictionary<string, int>();
 
+        /// <summary>
+        /// Default weighting for board positions.
+        /// </summary>
+        private int[] DEFAULT_WEIGHTS ={1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                      1, 1, 2, 2, 3, 3, 2, 2, 1, 1, 
+                                      1, 1, 2, 2, 3, 3, 2, 2, 1, 1, 
+                                      1, 1, 2, 2, 3, 3, 2, 2, 1, 1, 
+                                      1, 1, 2, 2, 3, 3, 2, 2, 1, 1, 
+                                      1, 1, 2, 2, 3, 3, 2, 2, 1, 1, 
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+
+        /// <summary>
+        /// Weighting for champion board positions.
+        /// </summary>
+        private int[] CHAMPION_WEIGHTS = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+
+        /// <summary>
+        /// Weighting for board positions
+        /// </summary>
+        private int[] tableWeights;        
+         
         internal AvDGame CurrentBoard
         {
           get { return currentBoard; }
@@ -41,12 +72,12 @@ namespace Angels_Vs_Demons.Players
             : base(faction)
         {
             maxDepth = boardDepth;
-            unitValues.Add("Champion", 100);
-            unitValues.Add("Archer", 25);
-            unitValues.Add("Guard", 20);
-            unitValues.Add("Knight", 30);
-            unitValues.Add("Mage", 30);
-            unitValues.Add("Peon", 10);
+            unitValues.Add("Champion", 10);
+            unitValues.Add("Archer", 4);
+            unitValues.Add("Guard", 4);
+            unitValues.Add("Knight", 6);
+            unitValues.Add("Mage", 8);
+            unitValues.Add("Peon", 2);
         }
 
         /// <summary>
@@ -123,7 +154,7 @@ namespace Angels_Vs_Demons.Players
                     maxValue = value;
                     bestMove.clear();
                     bestMove.push_front(candidateTurn);
-                } else if (value == maxValue){
+                } else if (value == maxValue) {
                     Debug.WriteLine("Max value (equal): " + value + " at depth : 0");
                     bestMove.push_front(candidateTurn);
                 }
@@ -161,6 +192,7 @@ namespace Angels_Vs_Demons.Players
             Turn move;
             AvDGame nextBoard;
             int value;
+            int maxValue = Int32.MinValue;
 
             Debug.WriteLine("Max node at depth : " + depth + " with alpha : " + alpha +
                                 " beta : " + beta);
@@ -176,19 +208,23 @@ namespace Angels_Vs_Demons.Players
 
                 value = minMove(nextBoard, depth + 1, alpha, beta);
 
-                if (value > alpha)
-                {
-                    alpha = value;
-                    Debug.WriteLine("Max value : " + value + " at depth : " + depth);
-                }
+                //if (value > alpha)
+                //{
+                //    alpha = value;
+                //    Debug.WriteLine("Max value : " + value + " at depth : " + depth);
+                //}
 
-                if (alpha > beta)
-                {
-                    Debug.WriteLine("Max value with prunning : " + beta + " at depth : " + depth);
-                    Debug.WriteLine(sucessors.length() + " sucessors left");
-                    return beta;
-                }
+                //if (alpha > beta)
+                //{
+                //    Debug.WriteLine("Max value with prunning : " + beta + " at depth : " + depth);
+                //    Debug.WriteLine(sucessors.length() + " sucessors left");
+                //    return beta;
+                //}
 
+                if (value > maxValue)
+                {
+                    maxValue = value;
+                }
             }
 
             Debug.WriteLine("Max value selected : " + alpha + " at depth : " + depth);
@@ -214,6 +250,7 @@ namespace Angels_Vs_Demons.Players
             Turn move;
             AvDGame nextBoard;
             int value;
+            int maxValue = Int32.MinValue;
 
             Debug.WriteLine("Min node at depth : " + depth + " with alpha : " + alpha +
                                 " beta : " + beta);
@@ -229,17 +266,22 @@ namespace Angels_Vs_Demons.Players
 
                 value = maxMove(nextBoard, depth + 1, alpha, beta);
 
-                if (value < beta)
-                {
-                    beta = value;
-                    Debug.WriteLine("Min value : " + value + " at depth : " + depth);
-                }
+                //if (value < beta)
+                //{
+                //    beta = value;
+                //    Debug.WriteLine("Min value : " + value + " at depth : " + depth);
+                //}
 
-                if (beta < alpha)
+                //if (beta < alpha)
+                //{
+                //    Debug.WriteLine("Min value with prunning : " + alpha + " at depth : " + depth);
+                //    Debug.WriteLine(sucessors.length() + " sucessors left");
+                //    return alpha;
+                //}
+
+                if (value > maxValue)
                 {
-                    Debug.WriteLine("Min value with prunning : " + alpha + " at depth : " + depth);
-                    Debug.WriteLine(sucessors.length() + " sucessors left");
-                    return alpha;
+                    maxValue = value;
                 }
             }
 
@@ -256,7 +298,8 @@ namespace Angels_Vs_Demons.Players
         {
             int colorForce = 0;
             int enemyForce = 0;
-            Unit unit;
+            int pos = 0;
+            Unit unit;       
 
             for (int i = 0; i < board.Board.Grid.Length; i++)
             {
@@ -265,16 +308,18 @@ namespace Angels_Vs_Demons.Players
                     if (tile.IsOccupied)
                     {
                         unit = tile.Unit;
+                        calculateTableWeights(unit);
 
-                        if (tile.Unit.FactionType == this.Faction)
+                        if (unit.FactionType == this.Faction)
                         {
-                            colorForce += calculateValue(unit);
+                            colorForce += calculateValue(unit, tableWeights[pos]);
                         }
                         else
                         {
-                            enemyForce += calculateValue(unit);
+                            enemyForce += calculateValue(unit, tableWeights[pos]);
                         }
                     }
+                    pos++;
                 }
             }
 
@@ -286,27 +331,47 @@ namespace Angels_Vs_Demons.Players
         /// </summary>
         /// <param name="unit">the unit to calculate</param>
         /// <returns>the unit value</returns>
-        private int calculateValue(Unit unit)
+        private int calculateValue(Unit unit, int pos)
         {
             int value = unitValues[unit.GetType().Name];
-            Debug.WriteLine("Calculating value for unit: " + unit.Name);
+            //Debug.WriteLine("Calculating value for unit: " + unit.Name);
 
-            value = value + unit.CurrHP;
+            value = (value * unit.CurrHP) + pos;
 
             return value;
         }
 
         /// <summary>
-        /// Verifies if the game tree can be pruned
+        /// 
         /// </summary>
-        /// <param name="board">The board to evaluate</param>
-        /// <param name="depth">Current game tree depth</param>
-        /// <returns>true if the tree can be pruned.</returns>
+        /// <param name="board"></param>
+        private void calculateTableWeights(Unit unit)
+        {
+            if (unit is Champion)
+            {
+                this.tableWeights = CHAMPION_WEIGHTS;
+            }
+            else
+            {
+                this.tableWeights = DEFAULT_WEIGHTS;
+            }
+        }
+
+        /// <sumary> 
+        ///   Verifies if the game tree can be prunned
+        /// </sumary>
+        /// <param name="board">
+        ///   The board to evaluate
+        /// </param>
+        /// <param name="depth">
+        ///   Current game tree depth
+        /// </param>
+        /// <value>
+        ///  true if the tree can be prunned.
+        /// </value>
         private bool cutOffTest(AvDGame board, int depth)
         {
-            return depth > maxDepth;
-                //TODO: check for win
-                //|| board.hasEnded();
+            return depth >= maxDepth || board.IsOver;
         }
 
     }
