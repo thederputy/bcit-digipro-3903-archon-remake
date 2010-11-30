@@ -765,7 +765,26 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             {
                 if (game.SelectedSpell != SpellValues.spellTypes.NONE)
                 {
-                    spriteBatch.DrawString(mapFont, "Selected spell: " + game.SelectedSpell, fontPosition, Color.Black);
+                    int MP = 0;
+                    switch (game.SelectedSpell)
+                    {
+                        case SpellValues.spellTypes.BOLT:
+                            MP = (int)SpellValues.spellCost.BOLT;
+                            break;
+                        case SpellValues.spellTypes.BUFF:
+                            MP = (int)SpellValues.spellCost.BUFF;
+                            break;
+                        case SpellValues.spellTypes.HEAL:
+                            MP = (int)SpellValues.spellCost.HEAL;
+                            break;
+                        case SpellValues.spellTypes.STUN:
+                            MP = (int)SpellValues.spellCost.STUN;
+                            break;
+                        case SpellValues.spellTypes.TELE:
+                            MP = (int)SpellValues.spellCost.TELE;
+                            break;
+                    }
+                    spriteBatch.DrawString(mapFont, "Selected spell: " + game.SelectedSpell + " (" + MP + ")", fontPosition, Color.Black);
                 }
             }
 
@@ -783,9 +802,28 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
             if (game.ControllingFaction == Faction.DEMON)
             {
+                int MP = 0;
+                switch (game.SelectedSpell)
+                {
+                    case SpellValues.spellTypes.BOLT:
+                        MP = (int)SpellValues.spellCost.BOLT;
+                        break;
+                    case SpellValues.spellTypes.BUFF:
+                        MP = (int)SpellValues.spellCost.BUFF;
+                        break;
+                    case SpellValues.spellTypes.HEAL:
+                        MP = (int)SpellValues.spellCost.HEAL;
+                        break;
+                    case SpellValues.spellTypes.STUN:
+                        MP = (int)SpellValues.spellCost.STUN;
+                        break;
+                    case SpellValues.spellTypes.TELE:
+                        MP = (int)SpellValues.spellCost.TELE;
+                        break;
+                }
                 if (game.SelectedSpell != SpellValues.spellTypes.NONE)
                 {
-                    spriteBatch.DrawString(mapFont, "Selected spell: " + game.SelectedSpell, fontPosition, Color.Black);
+                    spriteBatch.DrawString(mapFont, "Selected spell: " + game.SelectedSpell + " (" + MP + ")", fontPosition, Color.Black);
                 }
             }
 
