@@ -16,7 +16,8 @@ namespace Angels_Vs_Demons.BoardObjects.Spells
             HEAL,
             REST,
             STUN,
-            TELE
+            TELE,
+            NONE
         }
 
         /// <summary>
