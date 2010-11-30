@@ -82,9 +82,11 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         private SpriteFont mapFont, gameFont;
         private Vector2 fontPosition;
 
-        private Boolean gameOverScreenDisplayed;
+        protected Boolean gameOverScreenDisplayed;
 
         UnitDisplayWindow unitDisplayWindow;
+
+        protected int waitTime, totalWait, shortWait, longWait;
 
         #endregion
 
@@ -99,6 +101,10 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
             gameOverScreenDisplayed = false;
+            waitTime = 0;
+            shortWait = 50;
+            longWait = int.MaxValue;
+            totalWait = shortWait;
         }
 
         /// <summary>
@@ -179,6 +185,19 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     NextPlayer = Player2;
                 }
 
+                if (Player1 is ComputerPlayer && Player2 is ComputerPlayer)
+                {
+                    if (waitTime < totalWait)
+                    {
+                        waitTime++;
+                        return;
+                    }
+                    else
+                    {
+                        waitTime = 0;
+                    }
+                }
+
                 if (CurrentPlayer is ComputerPlayer)
                 {
                     //do the computer player stuff
@@ -186,6 +205,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     Turn turn = cp.getTurn(game);
                     game.applyTurn(turn);
                     Console.WriteLine("DONE CHANGING STUFF");
+                    CheckForGameOver();
                 }
 
                 //check for end of turn
@@ -365,6 +385,17 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     game.SelectedSpell = SpellValues.spellTypes.NONE;
                     game.attackFinder.bitMaskAllTilesAsNotAttackable();
                 }
+                else if (keyboardState.IsKeyDown(Keys.P) && !previousKeyboardState.IsKeyDown(Keys.P))
+                {
+                    if (totalWait == shortWait)
+                    {
+                        totalWait = longWait;
+                    }
+                    else
+                    {
+                        totalWait = shortWait;
+                    }
+                }
             }
             previousKeyboardState = keyboardState;
             previousGamePadState = gamePadState;
@@ -543,6 +574,9 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             }
         }
 
+        /// <summary>
+        /// Processes the champion's attack phase.
+        /// </summary>
         private void processChampionAttackPhase()
         {
 #if DEBUG
@@ -634,16 +668,8 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// <param name="attackerTile">the tile that is attacking</param>
         protected virtual void executeAttackPhase(Tile victimTile, Tile attackerTile)
         {
-            Boolean attackedChampion = false;
-            if (victimTile.Unit is Champion)
-            {
-                attackedChampion = true;
-            }
             game.applyAttack(new Attack(victimTile.position, attackerTile.position));
-            if(attackedChampion == true && victimTile.Unit == null)
-            {
-                GameOver(CurrentPlayer);
-            }
+            CheckForGameOver();
         }
 
         /// <summary>
@@ -655,11 +681,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         protected virtual Attack executeChampionAttackPhase(Tile victimTile, Tile attackerTile)
         {
             Attack spell = null;
-            Boolean attackedChampion = false;
-            if (victimTile.Unit is Champion)
-            {
-                attackedChampion = true;
-            }
             switch (game.SelectedSpell)
             {
                 case SpellValues.spellTypes.BOLT:
@@ -682,10 +703,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     break;
             }
             game.applyAttack(spell);
-            if (attackedChampion == true && victimTile.Unit == null)
-            {
-                GameOver(CurrentPlayer);
-            }
+            CheckForGameOver();
             return spell;
         }
         #endregion
@@ -698,6 +716,15 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         {
             // This game has a blue background
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.Azure, 0, 0);
+
+            bool AIpause = false;
+            if (Player1 is ComputerPlayer && Player2 is ComputerPlayer)
+            {
+                if (totalWait == longWait)
+                {
+                    AIpause = true;
+                }
+            }
             
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
@@ -729,6 +756,12 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     fontPosition.Y = 50;
                     spriteBatch.DrawString(mapFont, "Attack Phase", fontPosition, Color.Black);
                 }
+                if (AIpause)
+                {
+                    fontPosition.X = 35;
+                    fontPosition.Y = 70;
+                    spriteBatch.DrawString(mapFont, "AI input is paused", fontPosition, Color.Black);
+                }
             }
             else
             {
@@ -746,6 +779,12 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     fontPosition.X = ScreenManager.screenWidth - 185;
                     fontPosition.Y = 50;
                     spriteBatch.DrawString(mapFont, "Attack Phase", fontPosition, Color.Black);
+                }
+                if (AIpause)
+                {
+                    fontPosition.X = ScreenManager.screenWidth - 185;
+                    fontPosition.Y = 70;
+                    spriteBatch.DrawString(mapFont, "AI input is paused", fontPosition, Color.Black);
                 }
             }
 
@@ -833,9 +872,16 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             if (TransitionPosition > 0)
                 ScreenManager.FadeBackBufferToBlack(255 - TransitionAlpha);
         }
-        public void GameOver(Player winnerPlayer)
+
+        /// <summary>
+        /// Checks to see if the game is over. If so, it sets the winnerPlayer value.
+        /// </summary>
+        public void CheckForGameOver()
         {
-            WinnerPlayer = winnerPlayer;
+            if (game.IsOver)
+            {
+                WinnerPlayer = CurrentPlayer;
+            }
         }
 
         #endregion

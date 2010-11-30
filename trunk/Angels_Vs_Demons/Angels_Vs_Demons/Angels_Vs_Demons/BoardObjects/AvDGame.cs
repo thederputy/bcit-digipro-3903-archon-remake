@@ -819,7 +819,17 @@ namespace Angels_Vs_Demons.BoardObjects
 #if DEBUG
             Debug.WriteLine("\nDEBUG: entering applyTurn()");
 #endif
-            if (turn != null)
+            if (turn == null)
+            {
+                endMovePhaseNoMove();
+                endAttackPhase();
+            }
+            else if (!turn.IsExecutable)
+            {
+                endMovePhaseNoMove();
+                endAttackPhase();
+            }
+            else
             {
                 applyMove(turn.Move);
                 applyAttack(turn.Attack);

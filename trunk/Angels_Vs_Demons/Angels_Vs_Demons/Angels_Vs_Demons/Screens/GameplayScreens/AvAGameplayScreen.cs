@@ -1,5 +1,8 @@
 ﻿#region Using Statements
 using Angels_Vs_Demons.Players;
+using Microsoft.Xna.Framework;
+using Angels_Vs_Demons.BoardObjects;
+using System;
 #endregion
 
 namespace Angels_Vs_Demons.Screens.GameplayScreens
@@ -21,6 +24,9 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             Player2 = new ComputerPlayer(Faction.DEMON, 1);
         }
 
+        #endregion
+
+        #region Update
         #endregion
     }
 }
