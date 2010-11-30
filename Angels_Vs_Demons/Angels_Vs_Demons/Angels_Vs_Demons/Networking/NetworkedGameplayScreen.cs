@@ -388,6 +388,23 @@ namespace Angels_Vs_Demons.Networking
 
         #endregion
 
+        /// <summary>
+        /// Sets the Finish message
+        /// </summary>
+        /// <param name="message">the message we will be modifying.</param>
+        /// <returns>the modified message</returns>
+        protected override string FinishMessage(string message)
+        {
+            if (WinnerPlayer.Faction.Equals(Player1.Faction))
+            {
+                message = "You won.\nCONGRATULATIONS!";
+            }
+            else
+            {
+                message = "You lost. Better luck next time!";
+            }
+            return message;
+        }
 
         #region Input Handling
 
