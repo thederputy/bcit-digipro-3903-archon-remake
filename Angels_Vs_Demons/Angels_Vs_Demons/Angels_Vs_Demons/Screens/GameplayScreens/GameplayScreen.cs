@@ -155,8 +155,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
         #endregion
 
-        #region Update and Draw
-
+        #region Update
 
         /// <summary>
         /// Updates the state of the game. This method checks the GameScreen.isActive
@@ -208,8 +207,9 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
             game.beginTurn();  //begin the next turn
         }
+        #endregion
 
-
+        #region Handle Input
         /// <summary>
         /// Lets the game respond to player input. Unlike the Update method,
         /// this will only be called when the gameplay screen is active.
@@ -284,7 +284,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
                         game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.BOLT);
-                        game.SpellType = SpellValues.spellTypes.BOLT;
+                        game.SelectedSpell = SpellValues.spellTypes.BOLT;
                         Debug.WriteLine("Finding BOLT attacks");
                     }
                 }
@@ -294,7 +294,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
                         game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.STUN);
-                        game.SpellType = SpellValues.spellTypes.STUN;
+                        game.SelectedSpell = SpellValues.spellTypes.STUN;
                         Debug.WriteLine("Finding STUN attacks");
                     }
                 }
@@ -304,7 +304,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
                         game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.TELE);
-                        game.SpellType = SpellValues.spellTypes.TELE;
+                        game.SelectedSpell = SpellValues.spellTypes.TELE;
                         Debug.WriteLine("Finding TELE attacks");
                     }
                 }
@@ -314,7 +314,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
                         game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.BUFF);
-                        game.SpellType = SpellValues.spellTypes.BUFF;
+                        game.SelectedSpell = SpellValues.spellTypes.BUFF;
                         Debug.WriteLine("Finding BUFF attacks");
                     }
                 }
@@ -324,7 +324,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     {
                         game.attackFinder.bitMaskAllTilesAsNotAttackable();
                         game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.HEAL);
-                        game.SpellType = SpellValues.spellTypes.HEAL;
+                        game.SelectedSpell = SpellValues.spellTypes.HEAL;
                         Debug.WriteLine("Finding HEAL attacks");
                     }
                 }
@@ -619,7 +619,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         protected virtual Attack executeChampionAttackPhase(Tile victimTile, Tile attackerTile)
         {
             Attack spell = null;
-            switch (game.SpellType)
+            switch (game.SelectedSpell)
             {
                 case SpellValues.spellTypes.BOLT:
                     spell = new Bolt(victimTile.position, attackerTile.position);
@@ -643,7 +643,9 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             game.applyAttack(spell);
             return spell;
         }
+        #endregion
 
+        #region Drawing
         /// <summary>
         /// Draws the gameplay screen.
         /// </summary>
@@ -702,6 +704,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 }
             }
 
+            //Draw the Angel unit HP
             fontPosition.X = 5;
             fontPosition.Y = 120;
 
@@ -713,6 +716,15 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 fontPosition.Y += mapFont.LineSpacing + 2;
             }
 
+            if (game.ControllingFaction == Faction.ANGEL)
+            {
+                if (game.SelectedSpell != SpellValues.spellTypes.NONE)
+                {
+                    spriteBatch.DrawString(mapFont, "Selected spell: " + game.SelectedSpell, fontPosition, Color.Black);
+                }
+            }
+
+            //Draw the Demon unit HP
             fontPosition.X = 635;
             fontPosition.Y = 120;
 
@@ -724,13 +736,20 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 fontPosition.Y += mapFont.LineSpacing + 2;
             }
 
+            if (game.ControllingFaction == Faction.DEMON)
+            {
+                if (game.SelectedSpell != SpellValues.spellTypes.NONE)
+                {
+                    spriteBatch.DrawString(mapFont, "Selected spell: " + game.SelectedSpell, fontPosition, Color.Black);
+                }
+            }
+
             spriteBatch.End();
             
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0)
                 ScreenManager.FadeBackBufferToBlack(255 - TransitionAlpha);
         }
-
         #endregion
     }
 }

@@ -92,12 +92,12 @@ namespace Angels_Vs_Demons.BoardObjects
         }
         private bool isChampionAttack;
 
-        public SpellValues.spellTypes SpellType
+        public SpellValues.spellTypes SelectedSpell
         {
-            get { return spellType; }
-            set { spellType = value; }
+            get { return selectedSpell; }
+            set { selectedSpell = value; }
         }
-        private SpellValues.spellTypes spellType;
+        private SpellValues.spellTypes selectedSpell;
 
         /// <summary>
         /// Gets/sets the attack phase.
@@ -660,6 +660,7 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             movePhase = true;
             attackPhase = false;
+            selectedSpell = SpellValues.spellTypes.NONE;
             //get all the valid moves
             bool thereAreMoves = moveFinder.findMoves();
 
@@ -755,6 +756,7 @@ namespace Angels_Vs_Demons.BoardObjects
             moveFinder.bitMaskAllTilesAsNotMovable();
             attackFinder.bitMaskAllTilesAsNotAttackable();
             attackFinder.bitMaskAllTilesAsNonCastable();
+            selectedSpell = SpellValues.spellTypes.NONE;
             isChampionAttack = false;
             movePhase = false;
             attackPhase = false;
@@ -992,6 +994,7 @@ namespace Angels_Vs_Demons.BoardObjects
                     attackerUnit.CurrRecharge = attackerUnit.TotalRecharge;
                 }
             }
+            selectedSpell = SpellValues.spellTypes.NONE;
         }
 
         #endregion
