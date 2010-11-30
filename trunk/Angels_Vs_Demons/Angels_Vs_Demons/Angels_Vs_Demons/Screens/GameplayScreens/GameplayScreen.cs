@@ -217,10 +217,31 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             if (WinnerPlayer != null && !gameOverScreenDisplayed)
             {
                 gameOverScreenDisplayed = true;
-                ScreenManager.AddScreen(new GameOverMenuScreen(winnerPlayer.Faction), ControllingPlayer.Value);
+
+                string message = "";
+
+                FinishMessage(message, WinnerPlayer);
+
+                MessageBoxScreen confirmFinishMessageBox = new MessageBoxScreen(message);
+
+                confirmFinishMessageBox.Accepted += ConfirmFinishMessageBoxAccepted;
+
+                ScreenManager.AddScreen(confirmFinishMessageBox, ControllingPlayer);
+
+                //ScreenManager.AddScreen(new GameOverMenuScreen(winnerPlayer.Faction), ControllingPlayer.Value);
             }
         }
+        protected virtual string FinishMessage(string message, Player winner)
+        {
 
+            message = winner.Faction + "S WIN";
+            return message;
+                
+        }
+        private void ConfirmFinishMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
+        {
+            LoadingScreen.Load(ScreenManager, false, null, new MainMenuScreen());
+        }
         /// <summary>
         /// Handles the end of turn. Will be overridden in the NetworkedGameplayScreen.
         /// </summary>
