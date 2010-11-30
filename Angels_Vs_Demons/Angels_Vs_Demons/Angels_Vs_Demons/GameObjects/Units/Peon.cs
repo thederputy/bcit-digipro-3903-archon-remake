@@ -27,7 +27,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
             Range = 1;
             Movement = 3;
             CurrRecharge = 0;
-            totalRecharge = 2;
+            totalRecharge = 3;
         }
 
         #endregion
