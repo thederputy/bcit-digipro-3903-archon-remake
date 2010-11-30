@@ -615,7 +615,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             game.applyAttack(new Attack(victimTile.position, attackerTile.position));
             if(attackedChampion == true && victimTile.Unit == null)
             {
-                GameOver(ControllingPlayer.Value);
+                GameOver(ControllingPlayer.Value, CurrentPlayer);
             }
         }
 
@@ -657,7 +657,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             game.applyAttack(spell);
             if (attackedChampion == true && victimTile.Unit == null)
             {
-                GameOver(ControllingPlayer.Value);
+                GameOver(ControllingPlayer.Value, CurrentPlayer);
             }
             return spell;
         }
@@ -768,9 +768,10 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             if (TransitionPosition > 0)
                 ScreenManager.FadeBackBufferToBlack(255 - TransitionAlpha);
         }
-        public void GameOver(PlayerIndex playerIndex)
+        public void GameOver(PlayerIndex playerIndex, Player winnerPlayer)
         {
-            ScreenManager.AddScreen(new GameOverMenuScreen(), playerIndex);
+            WinnerPlayer = winnerPlayer;
+            ScreenManager.AddScreen(new GameOverMenuScreen(winnerPlayer.Faction), playerIndex);
         }
 
         #endregion
