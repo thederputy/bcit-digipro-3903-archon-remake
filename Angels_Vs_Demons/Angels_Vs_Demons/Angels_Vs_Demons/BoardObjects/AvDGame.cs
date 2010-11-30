@@ -93,6 +93,16 @@ namespace Angels_Vs_Demons.BoardObjects
         }
         private bool isChampionAttack;
 
+        /// <summary>
+        /// Gets set to true when a champion dies.
+        /// </summary>
+        public bool IsOver
+        {
+            get { return isOver; }
+            set { isOver = value; }
+        }
+        private bool isOver;
+
         public SpellValues.spellTypes SelectedSpell
         {
             get { return selectedSpell; }
@@ -158,6 +168,7 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             content = CONTENT;
             selectedTile = null;
+            isOver = false;
 
             // Loads the textures
             gameFont = content.Load<SpriteFont>("MenuFont");
@@ -934,6 +945,10 @@ namespace Angels_Vs_Demons.BoardObjects
                         //check to see if we killed the unit
                         if (victimTile.Unit.CurrHP == 0)
                         {
+                            if (victimTile.Unit is Champion)
+                            {
+                                isOver = true;
+                            }
                             victimTile.Unit = null;
 #if DEBUG
                         Debug.WriteLine("DEBUG: victim is dead");
@@ -955,6 +970,10 @@ namespace Angels_Vs_Demons.BoardObjects
                                 //check to see if we killed the unit
                                 if (victimTile.Unit.CurrHP == 0)
                                 {
+                                    if (victimTile.Unit is Champion)
+                                    {
+                                        isOver = true;
+                                    }
                                     victimTile.Unit = null;
 #if DEBUG
                                     Debug.WriteLine("DEBUG: victim is dead");
@@ -992,6 +1011,10 @@ namespace Angels_Vs_Demons.BoardObjects
                 spell.Cast(victimUnit, attackerUnit);
                 if (victimUnit.CurrHP == 0)
                 {
+                    if (victimUnit is Champion)
+                    {
+                        isOver = true;
+                    }
                     GetTile(spell.VictimPos).Unit = null;
                 }
                 if (!(spell is Rest))
