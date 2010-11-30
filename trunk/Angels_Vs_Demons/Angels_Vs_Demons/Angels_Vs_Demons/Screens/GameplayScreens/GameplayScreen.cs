@@ -191,16 +191,24 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 //check for end of turn
                 if (!game.MovePhase && !game.AttackPhase)
                 {
-                    game.endTurn();    //end the current turn
-                    
-                    //switch the controlling players
-                    Player tempPlayer = CurrentPlayer;
-                    CurrentPlayer = NextPlayer;
-                    NextPlayer = tempPlayer;
-
-                    game.beginTurn();  //begin the next turn
+                    handleEndOfTurn();
                 }
             }
+        }
+
+        /// <summary>
+        /// Handles the end of turn. Will be overridden in the NetworkedGameplayScreen.
+        /// </summary>
+        protected virtual void handleEndOfTurn()
+        {
+            game.endTurn();    //end the current turn
+
+            //switch the controlling players
+            Player tempPlayer = CurrentPlayer;
+            CurrentPlayer = NextPlayer;
+            NextPlayer = tempPlayer;
+
+            game.beginTurn();  //begin the next turn
         }
 
 
@@ -610,7 +618,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// </summary>
         /// <param name="victimTile">the tile that is getting attacked</param>
         /// <param name="attackerTile">the tile that is attacking</param>
-        protected virtual void executeChampionAttackPhase(Tile victimTile, Tile attackerTile)
+        protected virtual Attack executeChampionAttackPhase(Tile victimTile, Tile attackerTile)
         {
             Attack spell = null;
             switch (game.SpellType)
@@ -635,6 +643,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     break;
             }
             game.applyAttack(spell);
+            return spell;
         }
 
         /// <summary>

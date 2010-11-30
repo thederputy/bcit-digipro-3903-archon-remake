@@ -295,6 +295,23 @@ namespace Angels_Vs_Demons.Networking
         }
 
         /// <summary>
+        /// Sends our turn data over the network.
+        /// </summary>
+        protected override void  handleEndOfTurn()
+        {
+            if (localMove == null)
+            {
+                localMove = new Move(Position.nil, Position.nil);
+            }
+            if (localAttack == null)
+            {
+                localAttack = new Attack(Position.nil, Position.nil);
+            }
+            localTurn = new Turn(localMove, localAttack);
+            base.handleEndOfTurn();
+        }
+
+        /// <summary>
         /// Helper for reading incoming network packets.
         /// </summary>
         void ReadIncomingPackets(LocalNetworkGamer gamer)
@@ -397,22 +414,22 @@ namespace Angels_Vs_Demons.Networking
             }
         }
 
-        /// <summary>
-        /// Actual gameplay movement of the cursor is handled in Gamplay screen.
-        /// This update methods gets the new position of the cursor and assigns it 
-        /// to the position of the player that we passed in.
-        /// </summary>
-        /// <param name="hPlayer">The player we're going to update</param>
-        /// <param name="playerIndex">The index, if local player</param>
-        void ReadPlayerInput(HumanPlayer hPlayer, PlayerIndex playerIndex)
-        {
-            hPlayer.Position = game.GetCurrentTile().position;
-            //check to see if it is our turn
-            if (hPlayer.Faction == game.ControllingFaction)
-            {
-                hPlayer.Turn = localTurn;
-            }
-        }
+        ///// <summary>
+        ///// Actual gameplay movement of the cursor is handled in Gamplay screen.
+        ///// This update methods gets the new position of the cursor and assigns it 
+        ///// to the position of the player that we passed in.
+        ///// </summary>
+        ///// <param name="hPlayer">The player we're going to update</param>
+        ///// <param name="playerIndex">The index, if local player</param>
+        //void ReadPlayerInput(HumanPlayer hPlayer, PlayerIndex playerIndex)
+        //{
+        //    hPlayer.Position = game.GetCurrentTile().position;
+        //    //check to see if it is our turn
+        //    if (hPlayer.Faction == game.ControllingFaction)
+        //    {
+        //        hPlayer.Turn = localTurn;
+        //    }
+        //}
 
         /// <summary>
         /// Gets called when you press enter on the board.
@@ -440,9 +457,8 @@ namespace Angels_Vs_Demons.Networking
         /// <param name="boardSelectedTile">the tile that was selected</param>
         protected override void executeMovePhase(Tile currentTile, Tile boardSelectedTile)
         {
-            localMove = new Move(currentTile.position, game.selectedTile.position);
-            game.applyMove(localMove);
-            //localTurn = new Turn(localMove, new Attack(Position.nil, Position.nil));
+            localMove = new Move(currentTile.position, boardSelectedTile.position);
+            base.executeMovePhase(currentTile, boardSelectedTile);
         }
 
         /// <summary>
@@ -453,7 +469,18 @@ namespace Angels_Vs_Demons.Networking
         protected override void executeAttackPhase(Tile victimTile, Tile attackerTile)
         {
             localAttack = new Attack(victimTile.position, attackerTile.position);
-            game.applyAttack(localAttack);
+            base.executeAttackPhase(victimTile, attackerTile);
+        }
+
+        /// <summary>
+        /// Executes the champion attack phase for a networked game.
+        /// </summary>
+        /// <param name="victimTile">the tile that is getting attacked</param>
+        /// <param name="attackerTile">the tile that is attacking</param>
+        protected override Attack executeChampionAttackPhase(Tile victimTile, Tile attackerTile)
+        {
+            localAttack = base.executeChampionAttackPhase(victimTile, attackerTile);
+            return localAttack;
         }
 
         #endregion
