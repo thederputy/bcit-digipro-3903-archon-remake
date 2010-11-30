@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Angels_Vs_Demons.BoardObjects;
 using Angels_Vs_Demons.BoardObjects.Spells;
 using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.GameObjects.Units;
@@ -12,9 +11,6 @@ using Angels_Vs_Demons.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Collections;
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects
@@ -32,7 +28,7 @@ namespace Angels_Vs_Demons.BoardObjects
         public GameObject Cursor;
 
         /// <summary>
-        /// 
+        /// The board, containging the grid of tiles.
         /// </summary>
         public Board Board
         {

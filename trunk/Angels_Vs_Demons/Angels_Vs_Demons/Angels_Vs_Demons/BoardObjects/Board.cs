@@ -1,18 +1,8 @@
 ﻿#region Using Statements
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.GameObjects.Units;
-using Angels_Vs_Demons.Players;
-using Angels_Vs_Demons.Screens.ScreenManagers;
-using Angels_Vs_Demons.Util;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Collections;
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects

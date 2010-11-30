@@ -139,7 +139,6 @@
     <Compile Include="BoardObjects\Spells\Teleport.cs" />
     <Compile Include="BoardObjects\Turn.cs" />
     <Compile Include="Players\Faction.cs" />
-    <Compile Include="Players\NetworkedHumanPlayer.cs" />
     <Compile Include="Util\AttackFinder.cs" />
     <Compile Include="Util\BitMask.cs" />
     <Compile Include="Util\List.cs" />

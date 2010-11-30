@@ -1,10 +1,4 @@
 ﻿#region Using Statements
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Angels_Vs_Demons.BoardObjects;
-using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.Players;
 #endregion
 

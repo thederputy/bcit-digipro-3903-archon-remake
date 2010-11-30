@@ -1,22 +1,16 @@
 ﻿#region Using Statements
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Net;
 using Angels_Vs_Demons.BoardObjects;
 using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.Players;
 using Angels_Vs_Demons.Screens;
 using Angels_Vs_Demons.Screens.GameplayScreens;
 using Angels_Vs_Demons.Util;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.GamerServices;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Net;
 #endregion
 
 namespace Angels_Vs_Demons.Networking

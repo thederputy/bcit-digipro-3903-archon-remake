@@ -1,12 +1,8 @@
 ﻿#region Using Statements
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Angels_Vs_Demons.GameObjects;
 using Angels_Vs_Demons.Util;
+using Microsoft.Xna.Framework;
 #endregion
 
 namespace Angels_Vs_Demons.BoardObjects

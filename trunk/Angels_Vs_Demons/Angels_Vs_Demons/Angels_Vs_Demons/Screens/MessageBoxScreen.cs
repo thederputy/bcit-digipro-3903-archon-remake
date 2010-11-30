@@ -1,9 +1,9 @@
 ﻿#region Using Statements
 using System;
+using Angels_Vs_Demons.Screens.ScreenManagers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Angels_Vs_Demons.Screens.ScreenManagers;
 #endregion
 
 namespace Angels_Vs_Demons.Screens
