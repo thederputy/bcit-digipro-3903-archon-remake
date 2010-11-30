@@ -1012,7 +1012,6 @@ namespace Angels_Vs_Demons.BoardObjects
                 //we need to get the victim pos, because this position is where the champion now is.
                 Champion attackerUnit = GetTile(spell.VictimPos).Unit as Champion;
                 attackerUnit.CurrMP -= (int)SpellValues.spellCost.TELE;
-                attackerUnit.CurrRecharge = attackerUnit.TotalRecharge;
             }
             else
             {
@@ -1026,10 +1025,6 @@ namespace Angels_Vs_Demons.BoardObjects
                         isOver = true;
                     }
                     GetTile(spell.VictimPos).Unit = null;
-                }
-                if (!(spell is Rest))
-                {
-                    attackerUnit.CurrRecharge = attackerUnit.TotalRecharge;
                 }
             }
             selectedSpell = SpellValues.spellTypes.NONE;
