@@ -220,7 +220,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
                 string message = "";
 
-                FinishMessage(message);
+                message = FinishMessage(message);
 
                 MessageBoxScreen confirmFinishMessageBox = new MessageBoxScreen(message);
 
