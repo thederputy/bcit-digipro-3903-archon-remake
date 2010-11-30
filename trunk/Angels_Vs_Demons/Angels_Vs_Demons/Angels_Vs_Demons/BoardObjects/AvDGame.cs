@@ -987,7 +987,10 @@ namespace Angels_Vs_Demons.BoardObjects
                 {
                     GetTile(spell.VictimPos).Unit = null;
                 }
-                attackerUnit.CurrRecharge = attackerUnit.TotalRecharge;
+                if (!(spell is Rest))
+                {
+                    attackerUnit.CurrRecharge = attackerUnit.TotalRecharge;
+                }
             }
         }
 
