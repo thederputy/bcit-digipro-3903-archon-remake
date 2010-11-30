@@ -1,14 +1,11 @@
 ﻿#region Using Statements
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using Angels_Vs_Demons.BoardObjects;
-using Angels_Vs_Demons.Screens.GameplayScreens;
-using Angels_Vs_Demons.Util;
-using Angels_Vs_Demons.GameObjects.Units;
 using Angels_Vs_Demons.GameObjects;
+using Angels_Vs_Demons.GameObjects.Units;
+using Angels_Vs_Demons.Util;
 #endregion
 
 namespace Angels_Vs_Demons.Players
@@ -35,6 +32,11 @@ namespace Angels_Vs_Demons.Players
         // Max depth used in the Min-Max algorithm
         private int maxDepth = 1;
 
+        /// <summary>
+        /// Creates a computer player
+        /// </summary>
+        /// <param name="faction">the faction to associate with this player</param>
+        /// <param name="boardDepth">the maxdepth of the game tree</param>
         public ComputerPlayer(Faction faction, int boardDepth)
             : base(faction)
         {
@@ -47,10 +49,9 @@ namespace Angels_Vs_Demons.Players
             unitValues.Add("Peon", 10);
         }
 
-        /// <sumary> 
-        ///   Allows the user to change the max depth of
-        ///  the min-max tree
-        /// </sumary>
+        /// <summary>
+        /// Gets/sets the max depth of the min-max tree.
+        /// </summary>
         public int depth
         {
             get
@@ -63,6 +64,11 @@ namespace Angels_Vs_Demons.Players
             }
         }
 
+        /// <summary>
+        /// Interface used for the game with the AI.
+        /// </summary>
+        /// <param name="board">the game to make a move on</param>
+        /// <returns>the turn to apply to the board</returns>
         public Turn getTurn(AvDGame board)
         {
             CurrentBoard = (AvDGame)board.Clone();
@@ -74,32 +80,22 @@ namespace Angels_Vs_Demons.Players
             return minimax(CurrentBoard);
         }
 
-        /// <sumary> 
-        ///   Says if the game move is valid
-        /// </sumary>
-        /// <param name="moves">
-        ///  The list of piece movements for the game move.
-        /// </param>
-        /// <value>
-        ///  true if the game move is valid, false otherwise.
-        /// </value>
+        /// <summary>
+        /// Checks to see if there are any more moves. (says if the game move is valid)
+        /// </summary>
+        /// <param name="moves">The list of piece movements for the game move.</param>
+        /// <returns>true if the game move is valid, false otherwise.</returns>
         private bool mayPlay(List moves)
         {
             return !moves.isEmpty();
                 //&& !((List)moves.peek_head()).isEmpty();
         }
 
-        /// <sumary> 
-        ///   Implements the Min-Max algorithm for selecting
-        ///  the computer move
-        /// </sumary>
-        /// <param name="board">
-        ///   The board that will be used as a starting point
-        ///  for generating the game movements
-        /// </param>
-        /// <value>
-        ///  A list with the computer game movements.
-        /// </value>
+        /// <summary>
+        /// Implements the Min-Max algorithm for selecting the computer move.
+        /// </summary>
+        /// <param name="board">The board that will be used as a starting point for generating the game movements</param>
+        /// <returns>the computer's <code>Turn</code> to apply to the board</returns>
         private Turn minimax(AvDGame board)
         {
             List sucessors, bestMove = new List();
@@ -146,26 +142,14 @@ namespace Angels_Vs_Demons.Players
             return bestTurn;
         }
 
-        /// <sumary> 
-        ///   Implements game move evaluation from the point of view of the
-        ///  MAX player.
-        /// </sumary>
-        /// <param name="board">
-        ///   The board that will be used as a starting point
-        ///  for generating the game movements
-        /// </param>
-        /// <param name="depth">
-        ///   Current depth in the Min-Max tree
-        /// </param>
-        /// <param name="alpha">
-        ///   Current alpha value for the alpha-beta cutoff
-        /// </param>
-        /// <param name="beta">
-        ///   Current beta value for the alpha-beta cutoff
-        /// </param>
-        /// <value>
-        ///  Move evaluation value
-        /// </value>
+        /// <summary>
+        /// Implements game move evaluation from the point of view of the MAX player.
+        /// </summary>
+        /// <param name="board">The board that will be used as a starting point for generating the game movements</param>
+        /// <param name="depth">Current depth in the Min-Max tree</param>
+        /// <param name="alpha">Current alpha value for the alpha-beta cutoff</param>
+        /// <param name="beta">Current beta value for the alpha-beta cutoff</param>
+        /// <returns>Move evaluation value</returns>
         private int maxMove(AvDGame board, int depth, int alpha, int beta)
         {
             if (cutOffTest(board, depth))
@@ -211,26 +195,14 @@ namespace Angels_Vs_Demons.Players
             return alpha;
         }
 
-        /// <sumary> 
-        ///   Implements game move evaluation from the point of view of the
-        ///  MIN player.
-        /// </sumary>
-        /// <param name="board">
-        ///   The board that will be used as a starting point
-        ///  for generating the game movements
-        /// </param>
-        /// <param name="depth">
-        ///   Current depth in the Min-Max tree
-        /// </param>
-        /// <param name="alpha">
-        ///   Current alpha value for the alpha-beta cutoff
-        /// </param>
-        /// <param name="beta">
-        ///   Current beta value for the alpha-beta cutoff
-        /// </param>
-        /// <value>
-        ///  Move evaluation value
-        /// </value>
+        /// <summary>
+        /// Implements game move evaluation from the point of view of the MIN player.
+        /// </summary>
+        /// <param name="board">The board that will be used as a starting point for generating the game movements</param>
+        /// <param name="depth">Current depth in the Min-Max tree</param>
+        /// <param name="alpha">Current alpha value for the alpha-beta cutoff</param>
+        /// <param name="beta">Current beta value for the alpha-beta cutoff</param>
+        /// <returns>Move evaluation value</returns>
         private int minMove(AvDGame board, int depth, int alpha, int beta)
         {
             if (cutOffTest(board, depth))
@@ -275,15 +247,11 @@ namespace Angels_Vs_Demons.Players
             return beta;
         }
 
-        /// <sumary> 
-        ///   Evaluates the strength of the current player
-        /// </sumary>
-        /// <param name="board">
-        ///   The board where the current player position will be evaluated.
-        /// </param>
-        /// <value>
-        ///  Player strength
-        /// </value>
+        /// <summary>
+        /// Evaluates the strength of the current player compared to the opossing player
+        /// </summary>
+        /// <param name="board">The board where the current player position will be evaluated.</param>
+        /// <returns>the player strength</returns>
         private int eval(AvDGame board)
         {
             int colorForce = 0;
@@ -313,18 +281,11 @@ namespace Angels_Vs_Demons.Players
             return colorForce - enemyForce;
         }
 
-        /// <sumary> 
-        ///   Evaluates the strength of a piece
-        /// </sumary>
-        /// <param name="piece">
-        ///   The type of piece
-        /// </param>
-        /// <param name="pos">
-        ///   The piece position
-        /// </param>
-        /// <value>
-        ///  Piece value
-        /// </value>
+        /// <summary>
+        /// Evaluates the strength of a unit
+        /// </summary>
+        /// <param name="unit">the unit to calculate</param>
+        /// <returns>the unit value</returns>
         private int calculateValue(Unit unit)
         {
             int value = unitValues[unit.GetType().Name];
@@ -335,19 +296,12 @@ namespace Angels_Vs_Demons.Players
             return value;
         }
 
-
-        /// <sumary> 
-        ///   Verifies if the game tree can be prunned
-        /// </sumary>
-        /// <param name="board">
-        ///   The board to evaluate
-        /// </param>
-        /// <param name="depth">
-        ///   Current game tree depth
-        /// </param>
-        /// <value>
-        ///  true if the tree can be prunned.
-        /// </value>
+        /// <summary>
+        /// Verifies if the game tree can be pruned
+        /// </summary>
+        /// <param name="board">The board to evaluate</param>
+        /// <param name="depth">Current game tree depth</param>
+        /// <returns>true if the tree can be pruned.</returns>
         private bool cutOffTest(AvDGame board, int depth)
         {
             return depth > maxDepth;

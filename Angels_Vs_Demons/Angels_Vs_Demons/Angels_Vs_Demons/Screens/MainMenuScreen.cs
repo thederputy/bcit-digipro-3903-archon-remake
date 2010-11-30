@@ -1,8 +1,8 @@
 ﻿#region Using Statements
-using Microsoft.Xna.Framework;
 using Angels_Vs_Demons.Networking;
-using Angels_Vs_Demons.Screens.ScreenManagers;
 using Angels_Vs_Demons.Screens.GameplayScreens;
+using Angels_Vs_Demons.Screens.ScreenManagers;
+using Microsoft.Xna.Framework;
 #endregion
 
 namespace Angels_Vs_Demons.Screens
