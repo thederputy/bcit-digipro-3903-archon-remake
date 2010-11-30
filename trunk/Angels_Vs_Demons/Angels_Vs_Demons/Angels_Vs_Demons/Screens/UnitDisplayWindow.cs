@@ -70,7 +70,7 @@ namespace Angels_Vs_Demons.Screens
                 Name = "Name: " + currentTileUnit.Name;
                 HP = "HP: " + currentTileUnit.CurrHP + "/" + currentTileUnit.TotalHP;
                 Recharge = "Recharge: " + currentTileUnit.CurrRecharge;
-                Armor = "Armor: " + currentTileUnit.Armor;
+                Armor = "Armor: " + currentTileUnit.CurrArmor;
                 Movement = "Movement: " + currentTileUnit.Movement;
                 if (currentTileUnit is NonChampion)
                 {

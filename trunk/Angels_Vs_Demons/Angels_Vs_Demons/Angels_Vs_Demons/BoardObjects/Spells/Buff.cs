@@ -14,7 +14,8 @@ namespace Angels_Vs_Demons.BoardObjects.Spells
         public override void Cast(Unit VictimUnit, Champion CastingUnit)
         {
             CastingUnit.CurrMP -= (int)SpellValues.spellCost.BUFF;
-            VictimUnit.Armor = armorType.IMBUED;
+            VictimUnit.CurrArmor = armorType.IMBUED;
+            VictimUnit.BuffCount = 3;
         }
     }
 }

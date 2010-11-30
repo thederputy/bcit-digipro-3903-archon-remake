@@ -22,6 +22,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
             AttackPower = 25;
             AttackTypeVal = attackType.MELEE;
             Armor = armorType.HEAVY;
+            CurrArmor = Armor;
             Range = 2;
             Special = new specialType[]{specialType.HULKING};
             Movement = 2;

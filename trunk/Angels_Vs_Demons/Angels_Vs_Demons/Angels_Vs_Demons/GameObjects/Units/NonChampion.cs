@@ -39,27 +39,6 @@ namespace Angels_Vs_Demons.GameObjects.Units
     {
         #region Properties
 
-        public bool IsBuff
-        {
-            get { return isBuff; }
-            set { isBuff = value; }
-        }
-        private bool isBuff;
-
-        public int BuffCount
-        {
-            get { return buffCount; }
-            set
-            {
-                buffCount = value;
-                if (buffCount < 0)
-                {
-                    buffCount = 0;
-                }
-            }
-        }
-        private int buffCount;
-
         /// <summary>
         /// Atack Power represents the amount of damage this unit inflicts before mitigation.
         /// </summary>

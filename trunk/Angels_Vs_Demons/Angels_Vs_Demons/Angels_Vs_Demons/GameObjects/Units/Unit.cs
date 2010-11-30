@@ -154,7 +154,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
         private int movement;
 
         /// <summary>
-        /// Armor Type of this unit. Determines damage mitigation.
+        /// Actual Armor Type of this unit. Determines damage mitigation.
         /// </summary>
         public armorType Armor
         {
@@ -163,6 +163,48 @@ namespace Angels_Vs_Demons.GameObjects.Units
         }
 
         private armorType armor;
+
+        /// <summary>
+        /// Current Armor Type of this unit. Determines damage mitigation.
+        /// </summary>
+        public armorType CurrArmor
+        {
+            get { return currArmor; }
+            set { currArmor = value; }
+        }
+        private armorType currArmor;
+
+        /// <summary>
+        /// True if the unit is currently under the Buff spell (armor is temporarily set to imbued)
+        /// </summary>
+        public bool IsBuff
+        {
+            get { return isBuff; }
+        }
+        protected bool isBuff;
+
+        /// <summary>
+        /// The counter for the buff spell.
+        /// </summary>
+        public int BuffCount
+        {
+            get { return buffCount; }
+            set
+            {
+                buffCount = value;
+                if (buffCount <= 0)
+                {
+                    buffCount = 0;
+                    isBuff = false;
+                    currArmor = armor;
+                }
+                else
+                {
+                    isBuff = true;
+                }
+            }
+        }
+        protected int buffCount;
 
         /// <summary>
         /// Special Type(s), if any, of this unit.
@@ -241,7 +283,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
         {
             int effectiveAP = attackerAP;
 
-            switch (armor)
+            switch (currArmor)
             {
                 case armorType.HEAVY:
                     switch (attackerType)
