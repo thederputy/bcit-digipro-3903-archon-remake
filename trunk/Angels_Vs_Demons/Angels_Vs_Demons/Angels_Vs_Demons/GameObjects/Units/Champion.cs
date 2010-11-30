@@ -45,7 +45,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
             Special = new specialType[] { specialType.FLYING, specialType.CHAMPION };
             Movement = 2;
             CurrRecharge = 0;
-            totalRecharge = 1;
+            totalRecharge = 2;
         }
 
         /// <summary>

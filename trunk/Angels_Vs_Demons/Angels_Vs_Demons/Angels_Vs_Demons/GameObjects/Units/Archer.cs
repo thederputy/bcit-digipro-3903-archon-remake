@@ -26,8 +26,8 @@ namespace Angels_Vs_Demons.GameObjects.Units
             Range = 4;
             Special = new specialType[] {specialType.PROJECTILE};
             Movement = 2;
-            CurrRecharge = 2;
-            totalRecharge = 2;
+            CurrRecharge = 0;
+            totalRecharge = 3;
         }
 
         #endregion
