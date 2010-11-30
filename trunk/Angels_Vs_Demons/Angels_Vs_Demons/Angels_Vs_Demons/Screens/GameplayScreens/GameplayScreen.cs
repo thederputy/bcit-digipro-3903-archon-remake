@@ -328,15 +328,34 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                         Debug.WriteLine("Finding HEAL attacks");
                     }
                 }
-                else if (keyboardState.IsKeyDown(Keys.D6) && !previousKeyboardState.IsKeyDown(Keys.D6))
+                else if (keyboardState.IsKeyDown(Keys.D0) && !previousKeyboardState.IsKeyDown(Keys.D0))
                 {
                     if (game.IsChampionAttack)
                     {
                         Attack rest = new Rest(game.selectedTile.position, game.selectedTile.position);
                         Debug.WriteLine("I'm just resting");
                         game.applyAttack(rest);
-                        
                     }
+                }
+                else if (keyboardState.IsKeyDown(Keys.D6) && !previousKeyboardState.IsKeyDown(Keys.D6))
+                {
+                    game.SelectedSpell = SpellValues.spellTypes.NONE;
+                    game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                }
+                else if (keyboardState.IsKeyDown(Keys.D7) && !previousKeyboardState.IsKeyDown(Keys.D7))
+                {
+                    game.SelectedSpell = SpellValues.spellTypes.NONE;
+                    game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                }
+                else if (keyboardState.IsKeyDown(Keys.D8) && !previousKeyboardState.IsKeyDown(Keys.D8))
+                {
+                    game.SelectedSpell = SpellValues.spellTypes.NONE;
+                    game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                }
+                else if (keyboardState.IsKeyDown(Keys.D9) && !previousKeyboardState.IsKeyDown(Keys.D9))
+                {
+                    game.SelectedSpell = SpellValues.spellTypes.NONE;
+                    game.attackFinder.bitMaskAllTilesAsNotAttackable();
                 }
             }
             previousKeyboardState = keyboardState;
