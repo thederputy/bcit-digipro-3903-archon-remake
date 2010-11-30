@@ -237,7 +237,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
         /// <param name="attackerAP">beginning attack power.</param>
         /// <param name="attackerType">attack type to apply mitigation for.</param>
         /// <returns>the altered attack power.</returns>
-        public int applyMitigation(int attackerAP, attackType attackerType)
+        public virtual int applyMitigation(int attackerAP, attackType attackerType)
         {
             int effectiveAP = attackerAP;
 
