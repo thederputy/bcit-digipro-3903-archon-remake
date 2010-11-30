@@ -18,7 +18,7 @@ namespace Angels_Vs_Demons.Screens
         /// Constructor.
         /// </summary>
         public GameOverMenuScreen(Faction faction)
-            : base("GameOver")
+            : base("  GameOver \n" + faction + "S WIN")
         {
             // Flag that there is no need for the game to transition
             // off when the pause menu is on top of it.
