@@ -14,7 +14,7 @@ namespace Angels_Vs_Demons.BoardObjects.Spells
         public override void Cast(Unit VictimUnit, Champion CastingUnit)
         {
             CastingUnit.CurrMP = CastingUnit.TotalMP;
-            CastingUnit.CurrRecharge = 5;
+            CastingUnit.CurrRecharge = 6;
         }
     }
 }
