@@ -136,6 +136,12 @@ namespace Angels_Vs_Demons.Players
             int value, maxValue = Int32.MinValue;
 
             sucessors = board.getValidTurns();
+
+            if (sucessors.isEmpty())
+            {
+                return new Turn(new Move(Position.nil, Position.nil), new Attack(Position.nil, Position.nil));
+            }
+
             while (mayPlay(sucessors))
             {
                 candidateTurn = (Turn)sucessors.pop_front();
