@@ -71,6 +71,11 @@ namespace Angels_Vs_Demons.Screens
                 HP = "HP: " + currentTileUnit.CurrHP + "/" + currentTileUnit.TotalHP;
                 Recharge = "Recharge: " + currentTileUnit.CurrRecharge;
                 Armor = "Armor: " + currentTileUnit.CurrArmor;
+                if(currentTileUnit.CurrArmor != currentTileUnit.Armor)
+                {
+                    //this unit is buffed, add the recharge count to the armour string
+                    Armor += " (" + currentTileUnit.BuffCount + ")";
+                }
                 Movement = "Movement: " + currentTileUnit.Movement;
                 if (currentTileUnit is NonChampion)
                 {
