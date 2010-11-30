@@ -607,7 +607,16 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// <param name="attackerTile">the tile that is attacking</param>
         protected virtual void executeAttackPhase(Tile victimTile, Tile attackerTile)
         {
+            Boolean attackedChampion = false;
+            if (victimTile.Unit is Champion)
+            {
+                attackedChampion = true;
+            }
             game.applyAttack(new Attack(victimTile.position, attackerTile.position));
+            if(attackedChampion == true && victimTile.Unit == null)
+            {
+                GameOver(ControllingPlayer.Value);
+            }
         }
 
         /// <summary>
@@ -619,6 +628,11 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         protected virtual Attack executeChampionAttackPhase(Tile victimTile, Tile attackerTile)
         {
             Attack spell = null;
+            Boolean attackedChampion = false;
+            if (victimTile.Unit is Champion)
+            {
+                attackedChampion = true;
+            }
             switch (game.SelectedSpell)
             {
                 case SpellValues.spellTypes.BOLT:
@@ -641,6 +655,10 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     break;
             }
             game.applyAttack(spell);
+            if (attackedChampion == true && victimTile.Unit == null)
+            {
+                GameOver(ControllingPlayer.Value);
+            }
             return spell;
         }
         #endregion
@@ -750,6 +768,11 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             if (TransitionPosition > 0)
                 ScreenManager.FadeBackBufferToBlack(255 - TransitionAlpha);
         }
+        public void GameOver(PlayerIndex playerIndex)
+        {
+            ScreenManager.AddScreen(new GameOverMenuScreen(), playerIndex);
+        }
+
         #endregion
     }
 }
