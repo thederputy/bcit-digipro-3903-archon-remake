@@ -220,7 +220,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
                 string message = "";
 
-                FinishMessage(message, WinnerPlayer);
+                FinishMessage(message);
 
                 MessageBoxScreen confirmFinishMessageBox = new MessageBoxScreen(message);
 
@@ -231,13 +231,19 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 //ScreenManager.AddScreen(new GameOverMenuScreen(winnerPlayer.Faction), ControllingPlayer.Value);
             }
         }
-        protected virtual string FinishMessage(string message, Player winner)
-        {
 
-            message = winner.Faction + "S WIN";
+        /// <summary>
+        /// Sets the Finish message
+        /// </summary>
+        /// <param name="message">the message we will be modifying.</param>
+        /// <returns>the modified message</returns>
+        protected virtual string FinishMessage(string message)
+        {
+            message = WinnerPlayer.Faction + "S WIN";
             return message;
-                
         }
+
+
         private void ConfirmFinishMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
         {
             LoadingScreen.Load(ScreenManager, false, null, new MainMenuScreen());
