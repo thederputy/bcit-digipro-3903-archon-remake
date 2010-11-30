@@ -26,7 +26,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
             Special = new specialType[]{specialType.HULKING};
             Movement = 2;
             CurrRecharge = 0;
-            totalRecharge = 3;
+            totalRecharge = 4;
         }
 
 
@@ -42,5 +42,25 @@ namespace Angels_Vs_Demons.GameObjects.Units
             return other;
         }
 
+        /// <summary>
+        /// Calls base applyMitigation (see: Unit.applyMitigation) and applies hulking property
+        /// (damage in excess of 20 is ignored).
+        /// </summary>
+        /// <param name="attackerAP">beginning attack power.</param>
+        /// <param name="attackerType">attack type to apply mitigation for.</param>
+        /// <returns>the altered attack power.</returns>
+        public override int applyMitigation(int attackerAP, attackType attackerType)
+        {
+            int effectiveAP;
+
+            effectiveAP = base.applyMitigation(attackerAP, attackerType);
+
+            if (effectiveAP > 20)
+            {
+                effectiveAP = 20;
+            }
+
+            return effectiveAP;
+        }
     }
 }
