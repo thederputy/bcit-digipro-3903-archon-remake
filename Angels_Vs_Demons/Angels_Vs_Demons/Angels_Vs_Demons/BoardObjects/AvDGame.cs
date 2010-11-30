@@ -584,6 +584,10 @@ namespace Angels_Vs_Demons.BoardObjects
                             {
                                 tile.Unit.CurrRecharge--;
                             }
+                            if (tile.Unit.IsBuff)
+                            {
+                                tile.Unit.BuffCount--;
+                            }
                         }
                     }
                 }

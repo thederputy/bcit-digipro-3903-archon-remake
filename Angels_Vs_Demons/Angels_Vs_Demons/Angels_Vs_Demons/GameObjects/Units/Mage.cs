@@ -22,6 +22,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
             AttackPower = 30;
             AttackTypeVal = attackType.MAGIC;
             Armor = armorType.MAGIC;
+            CurrArmor = Armor;
             Range = 3;
             Special = new specialType[] { specialType.SPLASH, specialType.PROJECTILE };
             Movement = 3;

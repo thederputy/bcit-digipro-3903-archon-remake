@@ -40,7 +40,8 @@ namespace Angels_Vs_Demons.GameObjects.Units
             TotalHP = 100;
             currMP = 50;
             totalMP = 50;
-            Armor = armorType.MAGIC;
+            Armor = armorType.IMBUED;
+            CurrArmor = Armor;
             Special = new specialType[] { specialType.FLYING, specialType.CHAMPION };
             Movement = 2;
             CurrRecharge = 0;

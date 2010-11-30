@@ -22,6 +22,7 @@ namespace Angels_Vs_Demons.GameObjects.Units
             AttackPower = 25;
             AttackTypeVal = attackType.MELEE;
             Armor = armorType.MAGIC;
+            CurrArmor = Armor;
             Range = 1;
             Special = new specialType[] { specialType.FLYING };
             Movement = 4;
