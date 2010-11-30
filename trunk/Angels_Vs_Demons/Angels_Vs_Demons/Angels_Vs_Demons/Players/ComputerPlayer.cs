@@ -133,7 +133,9 @@ namespace Angels_Vs_Demons.Players
             Turn candidateTurn, bestTurn = null;
             AvDGame nextBoard;
             int totalMoves;
-            int value, maxValue = Int32.MinValue;
+            int value = Int32.MinValue;
+            int maxValue = Int32.MinValue;
+            int currDepth = 0;
 
             sucessors = board.getValidTurns();
 
@@ -152,7 +154,14 @@ namespace Angels_Vs_Demons.Players
                 nextBoard.endTurn();
                 nextBoard.beginTurn();
 
-                value = minMove(nextBoard, 1, maxValue, Int32.MaxValue);
+                if (candidateTurn.Attack.IsExecutable)
+                {
+                    value = eval(nextBoard, currDepth);
+                }
+                else
+                {
+                    value = minMove(nextBoard, currDepth + 1, maxValue, Int32.MaxValue);
+                }
 
                 if (value > maxValue)
                 {
@@ -187,20 +196,20 @@ namespace Angels_Vs_Demons.Players
         /// <param name="alpha">Current alpha value for the alpha-beta cutoff</param>
         /// <param name="beta">Current beta value for the alpha-beta cutoff</param>
         /// <returns>Move evaluation value</returns>
-        private int maxMove(AvDGame board, int depth, int alpha, int beta)
+        private int maxMove(AvDGame board, int currDepth, int alpha, int beta)
         {
-            if (cutOffTest(board, depth))
+            if (cutOffTest(board, currDepth))
             {
-                return eval(board);
+                return eval(board, currDepth);
             }
 
             List sucessors;
             Turn move;
             AvDGame nextBoard;
-            int value;
+            int value = Int32.MinValue;
             int maxValue = Int32.MinValue;
 
-            Debug.WriteLine("Max node at depth : " + depth + " with alpha : " + alpha +
+            Debug.WriteLine("Max node at depth : " + currDepth + " with alpha : " + alpha +
                                 " beta : " + beta);
 
             sucessors = board.getValidTurns();
@@ -212,7 +221,15 @@ namespace Angels_Vs_Demons.Players
                 nextBoard.endTurn();
                 nextBoard.beginTurn();
 
-                value = minMove(nextBoard, depth + 1, alpha, beta);
+                if (move.Attack.IsExecutable)
+                {
+                    value = eval(board, currDepth);
+                }
+                else
+                {
+                    value = minMove(nextBoard, currDepth + 1, alpha, beta);
+                }
+                
 
                 //if (value > alpha)
                 //{
@@ -233,8 +250,8 @@ namespace Angels_Vs_Demons.Players
                 }
             }
 
-            Debug.WriteLine("Max value selected : " + alpha + " at depth : " + depth);
-            return alpha;
+            Debug.WriteLine("Max value selected : " + alpha + " at depth : " + currDepth);
+            return maxValue;
         }
 
         /// <summary>
@@ -245,20 +262,20 @@ namespace Angels_Vs_Demons.Players
         /// <param name="alpha">Current alpha value for the alpha-beta cutoff</param>
         /// <param name="beta">Current beta value for the alpha-beta cutoff</param>
         /// <returns>Move evaluation value</returns>
-        private int minMove(AvDGame board, int depth, int alpha, int beta)
+        private int minMove(AvDGame board, int currDepth, int alpha, int beta)
         {
-            if (cutOffTest(board, depth))
+            if (cutOffTest(board, currDepth))
             {
-                return eval(board);
+                return eval(board, currDepth);
             }
 
             List sucessors;
             Turn move;
             AvDGame nextBoard;
-            int value;
+            int value = Int32.MinValue;
             int maxValue = Int32.MinValue;
 
-            Debug.WriteLine("Min node at depth : " + depth + " with alpha : " + alpha +
+            Debug.WriteLine("Min node at depth : " + currDepth + " with alpha : " + alpha +
                                 " beta : " + beta);
 
             sucessors = (List)board.getValidTurns();
@@ -270,7 +287,14 @@ namespace Angels_Vs_Demons.Players
                 nextBoard.endTurn();
                 nextBoard.beginTurn();
 
-                value = maxMove(nextBoard, depth + 1, alpha, beta);
+                if (move.Attack.IsExecutable)
+                {
+                    value = eval(board, currDepth);
+                }
+                else
+                {
+                    value = maxMove(nextBoard, currDepth + 1, alpha, beta);
+                }
 
                 //if (value < beta)
                 //{
@@ -291,8 +315,8 @@ namespace Angels_Vs_Demons.Players
                 }
             }
 
-            Debug.WriteLine("Min value selected : " + beta + " at depth : " + depth);
-            return beta;
+            Debug.WriteLine("Min value selected : " + beta + " at depth : " + currDepth);
+            return maxValue;
         }
 
         /// <summary>
@@ -300,11 +324,12 @@ namespace Angels_Vs_Demons.Players
         /// </summary>
         /// <param name="board">The board where the current player position will be evaluated.</param>
         /// <returns>the player strength</returns>
-        private int eval(AvDGame board)
+        private int eval(AvDGame board, int currDepth)
         {
             int colorForce = 0;
             int enemyForce = 0;
             int pos = 0;
+            int depthOffset = currDepth * 50 * -1;
             Unit unit;       
 
             for (int i = 0; i < board.Board.Grid.Length; i++)
@@ -318,11 +343,11 @@ namespace Angels_Vs_Demons.Players
 
                         if (unit.FactionType == this.Faction)
                         {
-                            colorForce += calculateValue(unit, tableWeights[pos]);
+                            colorForce += calculateValue(unit, tableWeights[pos], depthOffset);
                         }
                         else
                         {
-                            enemyForce += calculateValue(unit, tableWeights[pos]);
+                            enemyForce += calculateValue(unit, tableWeights[pos], depthOffset);
                         }
                     }
                     pos++;
@@ -337,12 +362,12 @@ namespace Angels_Vs_Demons.Players
         /// </summary>
         /// <param name="unit">the unit to calculate</param>
         /// <returns>the unit value</returns>
-        private int calculateValue(Unit unit, int pos)
+        private int calculateValue(Unit unit, int pos, int depthOffset)
         {
             int value = unitValues[unit.GetType().Name];
             //Debug.WriteLine("Calculating value for unit: " + unit.Name);
 
-            value = (value * unit.CurrHP) + pos;
+            value = (value * unit.CurrHP) + pos + depthOffset;
 
             return value;
         }
