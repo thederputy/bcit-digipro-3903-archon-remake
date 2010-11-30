@@ -1106,7 +1106,14 @@ namespace Angels_Vs_Demons.BoardObjects
                         {
                             if ((victimTile.AttackID & attackerTile.Unit.ID) != 0)
                             {
-                                attacks.push_back(new Attack(victimTile.position, attackerTile.position));
+                                if (attackerTile.Unit is NonChampion)
+                                {
+                                    attacks.push_back(new Attack(victimTile.position, attackerTile.position));
+                                }
+                                if (attackerTile.Unit is Champion)
+                                {
+                                    getValidSpells(attacks, victimTile, attackerTile.position);
+                                }
                             }
                         }
                     }
@@ -1115,6 +1122,40 @@ namespace Angels_Vs_Demons.BoardObjects
                 undoLastMove();
             }
             return attacks;
+        }
+
+        /// <summary>
+        /// Pushes all the valid attacks onto the attack list
+        /// </summary>
+        /// <param name="attacks">the attack list to push on to</param>
+        /// <param name="victimTile">the victim tile</param>
+        /// <param name="attackerPos">the attacker position</param>
+        private void getValidSpells(List attacks, Tile victimTile, Vector2 attackerPos)
+        {
+            if ((victimTile.SpellID & BitMask.spellBits[(int)SpellValues.spellTypes.BOLT]) != 0)
+            {
+                attacks.push_back(new Bolt(victimTile.position, attackerPos));
+            }
+            if ((victimTile.SpellID & BitMask.spellBits[(int)SpellValues.spellTypes.BUFF]) != 0)
+            {
+                attacks.push_back(new Buff(victimTile.position, attackerPos));
+            }
+            if ((victimTile.SpellID & BitMask.spellBits[(int)SpellValues.spellTypes.HEAL]) != 0)
+            {
+                attacks.push_back(new Heal(victimTile.position, attackerPos));
+            }
+            if ((victimTile.SpellID & BitMask.spellBits[(int)SpellValues.spellTypes.REST]) != 0)
+            {
+                attacks.push_back(new Rest(victimTile.position, attackerPos));
+            }
+            if ((victimTile.SpellID & BitMask.spellBits[(int)SpellValues.spellTypes.STUN]) != 0)
+            {
+                attacks.push_back(new Stun(victimTile.position, attackerPos));
+            }
+            if ((victimTile.SpellID & BitMask.spellBits[(int)SpellValues.spellTypes.TELE]) != 0)
+            {
+                attacks.push_back(new Teleport(victimTile.position, attackerPos));
+            }
         }
 
         /// <summary>
