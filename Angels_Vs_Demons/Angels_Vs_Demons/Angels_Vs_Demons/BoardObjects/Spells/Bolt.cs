@@ -12,6 +12,7 @@ namespace Angels_Vs_Demons.BoardObjects.Spells
         {
 
         }
+
         public override void Cast(Unit VictimUnit, Champion CastingUnit)
         {
             CastingUnit.CurrMP -= (int)SpellValues.spellCost.BOLT;

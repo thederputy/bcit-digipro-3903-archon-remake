@@ -33,9 +33,6 @@ namespace Angels_Vs_Demons.BoardObjects
             }
         }
 
-        public virtual void Cast(Unit VictimUnit, Champion CastingUnit)
-        {
-
-        }
+        public abstract void Cast(Unit VictimUnit, Champion CastingUnit);
     }
 }
