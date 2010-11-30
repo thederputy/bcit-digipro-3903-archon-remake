@@ -82,6 +82,8 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         private SpriteFont mapFont, gameFont;
         private Vector2 fontPosition;
 
+        private Boolean gameOverScreenDisplayed;
+
         UnitDisplayWindow unitDisplayWindow;
 
         #endregion
@@ -96,6 +98,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         {
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
+            gameOverScreenDisplayed = false;
         }
 
         /// <summary>
@@ -166,8 +169,8 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                                                        bool coveredByOtherScreen)
         {
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
-
-            if (WinnerPlayer == null)
+            
+            if (WinnerPlayer == null && !gameOverScreenDisplayed)
             {
                 //will only get called at the beginning of the game
                 if (CurrentPlayer == null)
@@ -190,6 +193,11 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 {
                     handleEndOfTurn();
                 }
+            }
+            if (WinnerPlayer != null && !gameOverScreenDisplayed)
+            {
+                gameOverScreenDisplayed = true;
+                ScreenManager.AddScreen(new GameOverMenuScreen(winnerPlayer.Faction), ControllingPlayer.Value);
             }
         }
 
@@ -634,7 +642,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             game.applyAttack(new Attack(victimTile.position, attackerTile.position));
             if(attackedChampion == true && victimTile.Unit == null)
             {
-                GameOver(ControllingPlayer.Value, CurrentPlayer);
+                GameOver(CurrentPlayer);
             }
         }
 
@@ -676,7 +684,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             game.applyAttack(spell);
             if (attackedChampion == true && victimTile.Unit == null)
             {
-                GameOver(ControllingPlayer.Value, CurrentPlayer);
+                GameOver(CurrentPlayer);
             }
             return spell;
         }
@@ -787,10 +795,9 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             if (TransitionPosition > 0)
                 ScreenManager.FadeBackBufferToBlack(255 - TransitionAlpha);
         }
-        public void GameOver(PlayerIndex playerIndex, Player winnerPlayer)
+        public void GameOver(Player winnerPlayer)
         {
             WinnerPlayer = winnerPlayer;
-            ScreenManager.AddScreen(new GameOverMenuScreen(winnerPlayer.Faction), playerIndex);
         }
 
         #endregion
