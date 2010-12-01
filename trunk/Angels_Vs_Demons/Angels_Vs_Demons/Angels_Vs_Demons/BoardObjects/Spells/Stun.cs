@@ -14,7 +14,7 @@ namespace Angels_Vs_Demons.BoardObjects.Spells
         public override void Cast(Unit VictimUnit, Champion CastingUnit)
         {
             CastingUnit.CurrMP -= (int)SpellValues.spellCost.STUN;
-            VictimUnit.CurrRecharge += 3;
+            VictimUnit.CurrRecharge += 4;
         }
     }
 }
