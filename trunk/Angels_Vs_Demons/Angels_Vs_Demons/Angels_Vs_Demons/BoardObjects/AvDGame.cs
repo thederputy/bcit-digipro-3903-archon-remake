@@ -63,6 +63,16 @@ namespace Angels_Vs_Demons.BoardObjects
         private Move lastMove;
         private int lastCurrRecharge;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public int TurnCount
+        {
+            get { return turnCount; }
+            set { turnCount = value; }
+        }
+        private int turnCount;
+
         public MoveFinder moveFinder;
         public AttackFinder attackFinder;
 
