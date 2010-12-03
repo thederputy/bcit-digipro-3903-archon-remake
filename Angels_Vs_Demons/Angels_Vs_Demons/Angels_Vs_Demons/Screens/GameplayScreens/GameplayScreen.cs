@@ -358,6 +358,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 }
                 else if (game.AttackPhase == true)
                 {
+                    game.AttackPhase = false;
                     game.endAttackPhase();
                 }
             }
@@ -693,6 +694,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         protected virtual void executeAttackPhase(Tile victimTile, Tile attackerTile)
         {
             game.applyAttack(new Attack(victimTile.position, attackerTile.position));
+            game.AttackPhase = false;
             CheckForGameOver();
         }
 
@@ -727,6 +729,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     break;
             }
             game.applyAttack(spell);
+            game.AttackPhase = false;
             CheckForGameOver();
             return spell;
         }

@@ -293,15 +293,15 @@ namespace Angels_Vs_Demons.Networking
         /// </summary>
         protected override void handleEndOfTurn()
         {
-            if (localMove == null)
-            {
-                localMove = new Move(Position.nil, Position.nil);
-            }
-            if (localAttack == null)
-            {
-                localAttack = new Attack(Position.nil, Position.nil);
-            }
-            localTurn = new Turn(localMove, localAttack);
+            //if (localMove == null)
+            //{
+            //    localMove = new Move(Position.nil, Position.nil);
+            //}
+            //if (localAttack == null)
+            //{
+            //    localAttack = new Attack(Position.nil, Position.nil);
+            //}
+            //localTurn = new Turn(localMove, localAttack);
             base.handleEndOfTurn();
         }
 
@@ -485,8 +485,9 @@ namespace Angels_Vs_Demons.Networking
                         {
                             localAttack = new Attack();
                         }
-                        game.endAttackPhase();
                         localTurn = new Turn(localMove, localAttack);
+                        game.AttackPhase = false;
+                        game.endAttackPhase();
                     }
                 }
             }
