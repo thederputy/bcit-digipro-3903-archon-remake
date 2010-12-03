@@ -380,6 +380,7 @@ namespace Angels_Vs_Demons.Networking
                 if (remoteTurn != null)
                 {
                     game.applyTurn(remoteTurn);
+                    game.AttackPhase = false;
                 }
 
                 remoteTurn = null;
@@ -481,13 +482,13 @@ namespace Angels_Vs_Demons.Networking
                     }
                     else if (game.AttackPhase == true)
                     {
+                        game.AttackPhase = false;
+                        game.endAttackPhase();
                         if (localAttack == null)
                         {
                             localAttack = new Attack();
                         }
                         localTurn = new Turn(localMove, localAttack);
-                        game.AttackPhase = false;
-                        game.endAttackPhase();
                     }
                 }
             }

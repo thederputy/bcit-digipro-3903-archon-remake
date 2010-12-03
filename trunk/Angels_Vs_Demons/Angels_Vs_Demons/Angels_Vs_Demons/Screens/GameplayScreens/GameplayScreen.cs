@@ -204,6 +204,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     ComputerPlayer cp = CurrentPlayer as ComputerPlayer;
                     Turn turn = cp.getTurn(game);
                     game.applyTurn(turn);
+                    game.AttackPhase = false;
                     Console.WriteLine("DONE CHANGING STUFF");
                     CheckForGameOver();
                 }
