@@ -175,7 +175,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                                                        bool coveredByOtherScreen)
         {
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
-            
+
             if (WinnerPlayer == null && !gameOverScreenDisplayed)
             {
                 //will only get called at the beginning of the game
@@ -277,7 +277,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
             // Look up inputs for the active player profile.
             int playerIndex = (int)ControllingPlayer.Value;
-            
+
 
             KeyboardState keyboardState = input.CurrentKeyboardStates[playerIndex];
             GamePadState gamePadState = input.CurrentGamePadStates[playerIndex];
@@ -432,7 +432,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
         /// This is the main loop that processes the gamestate.
         /// </summary>
         protected virtual void makeAction()
-        {       
+        {
             if (game.MovePhase)
             {
                 processMovePhase();
@@ -643,14 +643,14 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                                 executeChampionAttackPhase(currentTile, game.selectedTile);
                             }
                         }
-//#if DEBUG
-//                        Debug.WriteLine("selected a new tile");
-//                        Debug.WriteLine("updating selected tile");
-//#endif
-//                        game.selectedTile = currentTile;
-//                        game.attackFinder.findAttacksForTile(game.selectedTile);
-//                        game.attackFinder.bitMaskAllTilesForChampionAsNotAttackable(game.selectedTile.Unit.ID);
-//                        game.IsChampionAttack = true;
+                        //#if DEBUG
+                        //                        Debug.WriteLine("selected a new tile");
+                        //                        Debug.WriteLine("updating selected tile");
+                        //#endif
+                        //                        game.selectedTile = currentTile;
+                        //                        game.attackFinder.findAttacksForTile(game.selectedTile);
+                        //                        game.attackFinder.bitMaskAllTilesForChampionAsNotAttackable(game.selectedTile.Unit.ID);
+                        //                        game.IsChampionAttack = true;
                     }
                 }
                 else
@@ -751,7 +751,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                     AIpause = true;
                 }
             }
-            
+
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
             //Painting the grid
@@ -893,7 +893,7 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             }
 
             spriteBatch.End();
-            
+
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0)
                 ScreenManager.FadeBackBufferToBlack(255 - TransitionAlpha);

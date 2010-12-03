@@ -380,7 +380,7 @@ namespace Angels_Vs_Demons.Networking
                 if (remoteTurn != null)
                 {
                     game.applyTurn(remoteTurn);
-                    //game.AttackPhase = false;
+                    game.AttackPhase = false;
                 }
 
                 remoteTurn = null;

@@ -979,7 +979,7 @@ namespace Angels_Vs_Demons.BoardObjects
                             }
                             victimTile.Unit = null;
 #if DEBUG
-                        Debug.WriteLine("DEBUG: victim is dead");
+                            Debug.WriteLine("DEBUG: victim is dead");
 #endif
                         }
                         //set the recharge on the unit that just attacked
@@ -1018,15 +1018,15 @@ namespace Angels_Vs_Demons.BoardObjects
 #endif
         }
 
-		/// <summary>
-		/// Applys a spell to the board.
-		/// </summary>
+        /// <summary>
+        /// Applys a spell to the board.
+        /// </summary>
         private void applySpell(Spell spell)
         {
             if (spell is Teleport)
             {
                 bitMaskSwapTiles(GetTile(spell.VictimPos), GetTile(spell.AttackerPos));
-                
+
                 //we need to get the victim pos, because this position is where the champion now is.
                 Champion attackerUnit = GetTile(spell.VictimPos).Unit as Champion;
                 attackerUnit.CurrMP -= (int)SpellValues.spellCost.TELE;
@@ -1278,7 +1278,7 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             /* CANNOT USE CLONING HERE!!!!!!!
              * Otherwise bad shit happens
-             */ 
+             */
             if (destTile.IsOccupied)
             {
                 //we're swapping two units
@@ -1357,7 +1357,7 @@ namespace Angels_Vs_Demons.BoardObjects
             {
                 for (int j = 0; j < y_size; j++)
                 {
-                    if(board.Grid[i][j].IsOccupied)
+                    if (board.Grid[i][j].IsOccupied)
                     {
                         //Unit Tempunit = grid[i][j].Unit;
                         //Texture2D TempTexture = Tempunit.sprite;
@@ -1384,7 +1384,7 @@ namespace Angels_Vs_Demons.BoardObjects
             spriteBatch.End();
 
         }
-        
+
         #endregion
     }
 }
