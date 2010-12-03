@@ -314,18 +314,6 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                 {
                     makeAction();
                 }
-                else if (keyboardState.IsKeyDown(Keys.E) && !previousKeyboardState.IsKeyDown(Keys.E))
-                {
-
-                    if (game.MovePhase == true)
-                    {
-                        game.endMovePhaseNoMove();
-                    }
-                    else if (game.AttackPhase == true)
-                    {
-                        game.endAttackPhase();
-                    }
-                }
                 else if (keyboardState.IsKeyDown(Keys.U) && !previousKeyboardState.IsKeyDown(Keys.U))
                 {
                     if (game.AttackPhase == true)
@@ -344,63 +332,97 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
                         totalWait = shortWait;
                     }
                 }
-
-                //process the spell keys
-                if (game.IsChampionAttack)
+                else
                 {
-                    if (keyboardState.IsKeyDown(Keys.D1) || keyboardState.IsKeyDown(Keys.NumPad1))
-                    {
-                        game.attackFinder.bitMaskAllTilesAsNotAttackable();
-                        game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.BOLT);
-                        game.SelectedSpell = SpellValues.spellTypes.BOLT;
-                        Debug.WriteLine("Finding BOLT attacks");
-                    }
-                    else if (keyboardState.IsKeyDown(Keys.D2) || keyboardState.IsKeyDown(Keys.NumPad2))
-                    {
-                        game.attackFinder.bitMaskAllTilesAsNotAttackable();
-                        game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.STUN);
-                        game.SelectedSpell = SpellValues.spellTypes.STUN;
-                        Debug.WriteLine("Finding STUN attacks");
-                    }
-                    else if (keyboardState.IsKeyDown(Keys.D3) || keyboardState.IsKeyDown(Keys.NumPad3))
-                    {
-                        game.attackFinder.bitMaskAllTilesAsNotAttackable();
-                        game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.TELE);
-                        game.SelectedSpell = SpellValues.spellTypes.TELE;
-                        Debug.WriteLine("Finding TELE attacks");
-                    }
-                    else if (keyboardState.IsKeyDown(Keys.D4) || keyboardState.IsKeyDown(Keys.NumPad4))
-                    {
-                        game.attackFinder.bitMaskAllTilesAsNotAttackable();
-                        game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.BUFF);
-                        game.SelectedSpell = SpellValues.spellTypes.BUFF;
-                        Debug.WriteLine("Finding BUFF attacks");
-                    }
-                    else if (keyboardState.IsKeyDown(Keys.D5) || keyboardState.IsKeyDown(Keys.NumPad5))
-                    {
-                        game.attackFinder.bitMaskAllTilesAsNotAttackable();
-                        game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.HEAL);
-                        game.SelectedSpell = SpellValues.spellTypes.HEAL;
-                        Debug.WriteLine("Finding HEAL attacks");
-                    }
-                    else if (keyboardState.IsKeyDown(Keys.D0) || keyboardState.IsKeyDown(Keys.NumPad0))
-                    {
-                        Attack rest = new Rest(game.selectedTile.position, game.selectedTile.position);
-                        Debug.WriteLine("I'm just resting");
-                        game.applyAttack(rest);
-                    }
-                    else if(game.SelectedSpell != SpellValues.spellTypes.NONE)
-                    {
-                        if(keyboardState.GetPressedKeys().Length > 0)
-                        {
-                            game.SelectedSpell = SpellValues.spellTypes.NONE;
-                            game.attackFinder.bitMaskAllTilesAsNotAttackable();
-                        }
-                    }
+                    handleKeysE(keyboardState);
+                    handleSpellInput(keyboardState);
                 }
             }
             previousKeyboardState = keyboardState;
             previousGamePadState = gamePadState;
+        }
+
+        /// <summary>
+        /// Handles the input for the E key. This should be overridden for networked gameplay screen
+        /// as we don't want to be able to end a move if it is not our turn.
+        /// </summary>
+        /// <param name="keyboardState">the current keyboard state</param>
+        protected virtual void handleKeysE(KeyboardState keyboardState)
+        {
+            if (keyboardState.IsKeyDown(Keys.E) && !previousKeyboardState.IsKeyDown(Keys.E))
+            {
+
+                if (game.MovePhase == true)
+                {
+                    game.endMovePhaseNoMove();
+                }
+                else if (game.AttackPhase == true)
+                {
+                    game.endAttackPhase();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles the spell input. This should be overridden for networked gameplay screen
+        /// as we don't want to be able to do any spells if it is not your turn.
+        /// </summary>
+        /// <param name="keyboardState">the current keyboard state</param>
+        protected virtual void handleSpellInput(KeyboardState keyboardState)
+        {
+            //process the spell keys
+            if (game.IsChampionAttack)
+            {
+                if (keyboardState.IsKeyDown(Keys.D1) || keyboardState.IsKeyDown(Keys.NumPad1))
+                {
+                    game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                    game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.BOLT);
+                    game.SelectedSpell = SpellValues.spellTypes.BOLT;
+                    Debug.WriteLine("Finding BOLT attacks");
+                }
+                else if (keyboardState.IsKeyDown(Keys.D2) || keyboardState.IsKeyDown(Keys.NumPad2))
+                {
+                    game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                    game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.STUN);
+                    game.SelectedSpell = SpellValues.spellTypes.STUN;
+                    Debug.WriteLine("Finding STUN attacks");
+                }
+                else if (keyboardState.IsKeyDown(Keys.D3) || keyboardState.IsKeyDown(Keys.NumPad3))
+                {
+                    game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                    game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.TELE);
+                    game.SelectedSpell = SpellValues.spellTypes.TELE;
+                    Debug.WriteLine("Finding TELE attacks");
+                }
+                else if (keyboardState.IsKeyDown(Keys.D4) || keyboardState.IsKeyDown(Keys.NumPad4))
+                {
+                    game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                    game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.BUFF);
+                    game.SelectedSpell = SpellValues.spellTypes.BUFF;
+                    Debug.WriteLine("Finding BUFF attacks");
+                }
+                else if (keyboardState.IsKeyDown(Keys.D5) || keyboardState.IsKeyDown(Keys.NumPad5))
+                {
+                    game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                    game.attackFinder.findAttacksForSpellType(game.selectedTile, SpellValues.spellTypes.HEAL);
+                    game.SelectedSpell = SpellValues.spellTypes.HEAL;
+                    Debug.WriteLine("Finding HEAL attacks");
+                }
+                else if (keyboardState.IsKeyDown(Keys.D0) || keyboardState.IsKeyDown(Keys.NumPad0))
+                {
+                    Attack rest = new Rest(game.selectedTile.position, game.selectedTile.position);
+                    Debug.WriteLine("I'm just resting");
+                    game.applyAttack(rest);
+                }
+                else if (game.SelectedSpell != SpellValues.spellTypes.NONE)
+                {
+                    if (keyboardState.GetPressedKeys().Length > 0)
+                    {
+                        game.SelectedSpell = SpellValues.spellTypes.NONE;
+                        game.attackFinder.bitMaskAllTilesAsNotAttackable();
+                    }
+                }
+            }
         }
 
         /// <summary>

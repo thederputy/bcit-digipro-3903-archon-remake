@@ -462,6 +462,34 @@ namespace Angels_Vs_Demons.Networking
         }
 
         /// <summary>
+        /// Handles the input for the E key. This should be overridden for networked gameplay screen
+        /// as we don't want to be able to end a move if it is not our turn.
+        /// </summary>
+        /// <param name="keyboardState">the current keyboard state</param>
+        protected override void handleKeysE(KeyboardState keyboardState)
+        {
+            HumanPlayer hPlayer = localGamer.Tag as HumanPlayer;
+            if (hPlayer.Faction == game.ControllingFaction)
+            {
+                base.handleKeysE(keyboardState);
+            }
+        }
+
+        /// <summary>
+        /// Handles the spell input. This should be overridden for networked gameplay screen
+        /// as we don't want to be able to do any spells if it is not your turn.
+        /// </summary>
+        /// <param name="keyboardState">the current keyboard state</param>
+        protected virtual void handleSpellInput(KeyboardState keyboardState)
+        {
+            HumanPlayer hPlayer = localGamer.Tag as HumanPlayer;
+            if (hPlayer.Faction == game.ControllingFaction)
+            {
+                base.handleSpellInput(keyboardState);
+            }
+        }
+
+        /// <summary>
         /// Executes the move phase for a networked game.
         /// </summary>
         /// <param name="currentTile">the tile that the cursor is now on.</param>
