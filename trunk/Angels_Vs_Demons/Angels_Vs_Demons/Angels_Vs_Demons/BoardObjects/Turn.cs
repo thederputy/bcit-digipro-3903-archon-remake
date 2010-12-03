@@ -46,6 +46,12 @@ namespace Angels_Vs_Demons.BoardObjects
         #endregion
 
         #region Initialization
+
+        /// <summary>
+        /// Constructs a new turn object. If nothing is being done this turn, create new
+        /// </summary>
+        /// <param name="newMove">the move for this turn</param>
+        /// <param name="newAttack">the attack for this turn</param>
         public Turn(Move newMove, Attack newAttack)
         {
             Move   = newMove;

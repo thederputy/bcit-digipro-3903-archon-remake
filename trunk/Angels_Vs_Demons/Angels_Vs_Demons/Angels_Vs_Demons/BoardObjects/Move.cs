@@ -57,7 +57,8 @@ namespace Angels_Vs_Demons.BoardObjects
 
         /// <summary>
         /// Creates a move based on an new and old tile. If null is passed in for one or both of the parameters,
-        /// then this move is not executable.
+        /// then this move is not executable. If you want to instantiate a move object that is not executable,
+        /// pass in <code>Position.nil</code> for both arguments or call the 0 argument constructor.
         /// </summary>
         /// <param name="newNewTile">The new grid position</param>
         /// <param name="newPreviousTile">The previous grid position</param>
@@ -65,6 +66,15 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             NewTile = newNewTile;
             PreviousTile = newPreviousTile;
+        }
+
+        /// <summary>
+        /// Creates a move that is initially not executable.
+        /// </summary>
+        public Move()
+        {
+            NewTile = Position.nil;
+            PreviousTile = Position.nil;
         }
 
         /// <summary>
