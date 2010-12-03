@@ -1,5 +1,6 @@
 ﻿#region Using Statements
 using Angels_Vs_Demons.Players;
+using System.Diagnostics;
 #endregion
 
 namespace Angels_Vs_Demons.Screens.GameplayScreens
@@ -39,5 +40,23 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
             return message;
         }
         #endregion
+
+        /// <summary>
+        /// Gets called when you press enter on the board.
+        /// This is the main loop that processes the gamestate.
+        /// </summary>
+        protected override void makeAction()
+        {
+            if (Player1.Faction == game.ControllingFaction)
+            {
+                base.makeAction();
+            }
+#if DEBUG
+            else
+            {
+                Debug.WriteLine("NOT YOUR TURN, DUMMY!");
+            }
+#endif
+        }
     }
 }
