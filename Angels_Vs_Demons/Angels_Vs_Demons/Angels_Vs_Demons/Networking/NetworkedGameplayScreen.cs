@@ -476,11 +476,15 @@ namespace Angels_Vs_Demons.Networking
 
                     if (game.MovePhase == true)
                     {
-                        localMove = null;
+                        localMove = new Move();
                         game.endMovePhaseNoMove();
                     }
                     else if (game.AttackPhase == true)
                     {
+                        if (localAttack == null)
+                        {
+                            localAttack = new Attack();
+                        }
                         game.endAttackPhase();
                         localTurn = new Turn(localMove, localAttack);
                     }

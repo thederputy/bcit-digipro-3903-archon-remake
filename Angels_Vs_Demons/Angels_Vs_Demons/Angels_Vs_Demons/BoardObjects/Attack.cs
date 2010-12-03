@@ -54,7 +54,8 @@ namespace Angels_Vs_Demons.BoardObjects
         #endregion
 
         /// <summary>
-        /// Creates an attack based on an attacker and an attacker tile.
+        /// Creates an attack based on an attacker and an attacker tile. If you want to instantiate an attack object
+        /// that is not executable, <code>Position.nil</code> for both arguments or call the 0 argument constructor.
         /// </summary>
         /// <param name="newVictimPos">the grid position containing the victim</param>
         /// <param name="newAttackerPos">the grid position containing the attacker</param>
@@ -62,6 +63,15 @@ namespace Angels_Vs_Demons.BoardObjects
         {
             VictimPos = newVictimPos;
             AttackerPos = newAttackerPos;
+        }
+
+        /// <summary>
+        /// Creates an attack that is initially not executable.
+        /// </summary>
+        public Attack()
+        {
+            VictimPos = Position.nil;
+            AttackerPos = Position.nil;
         }
 
         /// <summary>
