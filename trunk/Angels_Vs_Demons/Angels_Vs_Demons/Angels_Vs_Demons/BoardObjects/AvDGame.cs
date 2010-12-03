@@ -103,6 +103,13 @@ namespace Angels_Vs_Demons.BoardObjects
         }
         private bool isChampionAttack;
 
+        public bool AttackExecuted
+        {
+            get { return attackExecuted; }
+            set { attackExecuted = value; }
+        }
+        private bool attackExecuted;
+
         /// <summary>
         /// Gets set to true when a champion dies.
         /// </summary>
@@ -670,6 +677,7 @@ namespace Angels_Vs_Demons.BoardObjects
             Debug.WriteLine("Controlling Faction: " + ControllingFaction);
 #endif
             isChampionAttack = false;
+            attackExecuted = false;
             decrementRecharge();
             setTilesUsableByControllingFaction();
             beginMovePhase();
@@ -785,6 +793,7 @@ namespace Angels_Vs_Demons.BoardObjects
             selectedSpell = SpellValues.spellTypes.NONE;
             isChampionAttack = false;
             movePhase = false;
+            attackExecuted = true;
         }
 
         /// <summary>
@@ -899,7 +908,7 @@ namespace Angels_Vs_Demons.BoardObjects
             Debug.WriteLine("\nDEBUG: entering undoLastMove()");
 #endif
             //if there is a lastMove
-            if (lastMove != null)
+            if (lastMove != null && !attackExecuted)
             {
                 if (lastMove.IsExecutable)
                 {
@@ -914,12 +923,12 @@ namespace Angels_Vs_Demons.BoardObjects
                 {
                     Debug.WriteLine("MORE SHIT HAPPENED");
                 }
+                lastMove = null;
+                lastCurrRecharge = 0;
+                selectedTile = null;
+                attackFinder.bitMaskAllTilesAsNotAttackable();
+                beginMovePhase();
             }
-            lastMove = null;
-            lastCurrRecharge = 0;
-            selectedTile = null;
-            attackFinder.bitMaskAllTilesAsNotAttackable();
-            beginMovePhase();
 #if DEBUG
             Debug.WriteLine("DEBUG: leaving undoLastMove()");
 #endif
