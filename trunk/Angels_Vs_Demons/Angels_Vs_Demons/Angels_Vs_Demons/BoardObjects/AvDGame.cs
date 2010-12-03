@@ -785,7 +785,6 @@ namespace Angels_Vs_Demons.BoardObjects
             selectedSpell = SpellValues.spellTypes.NONE;
             isChampionAttack = false;
             movePhase = false;
-            attackPhase = false;
         }
 
         /// <summary>
