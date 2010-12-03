@@ -291,7 +291,7 @@ namespace Angels_Vs_Demons.Networking
         /// <summary>
         /// Sends our turn data over the network.
         /// </summary>
-        protected override void  handleEndOfTurn()
+        protected override void handleEndOfTurn()
         {
             if (localMove == null)
             {
@@ -471,7 +471,20 @@ namespace Angels_Vs_Demons.Networking
             HumanPlayer hPlayer = localGamer.Tag as HumanPlayer;
             if (hPlayer.Faction == game.ControllingFaction)
             {
-                base.handleKeysE(keyboardState);
+                if (keyboardState.IsKeyDown(Keys.E) && !previousKeyboardState.IsKeyDown(Keys.E))
+                {
+
+                    if (game.MovePhase == true)
+                    {
+                        localMove = null;
+                        game.endMovePhaseNoMove();
+                    }
+                    else if (game.AttackPhase == true)
+                    {
+                        game.endAttackPhase();
+                        localTurn = new Turn(localMove, localAttack);
+                    }
+                }
             }
         }
 
@@ -480,7 +493,7 @@ namespace Angels_Vs_Demons.Networking
         /// as we don't want to be able to do any spells if it is not your turn.
         /// </summary>
         /// <param name="keyboardState">the current keyboard state</param>
-        protected virtual void handleSpellInput(KeyboardState keyboardState)
+        protected override void handleSpellInput(KeyboardState keyboardState)
         {
             HumanPlayer hPlayer = localGamer.Tag as HumanPlayer;
             if (hPlayer.Faction == game.ControllingFaction)
