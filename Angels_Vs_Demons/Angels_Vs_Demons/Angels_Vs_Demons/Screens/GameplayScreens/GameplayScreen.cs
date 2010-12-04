@@ -79,8 +79,8 @@ namespace Angels_Vs_Demons.Screens.GameplayScreens
 
         protected AvDGame game;
 
-        private SpriteFont mapFont, gameFont;
-        private Vector2 fontPosition;
+        protected SpriteFont mapFont, gameFont;
+        protected Vector2 fontPosition;
 
         protected Boolean gameOverScreenDisplayed;
 

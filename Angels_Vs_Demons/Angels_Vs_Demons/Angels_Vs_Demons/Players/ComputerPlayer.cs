@@ -192,7 +192,7 @@ namespace Angels_Vs_Demons.Players
         /// Implements game move evaluation from the point of view of the MAX player.
         /// </summary>
         /// <param name="board">The board that will be used as a starting point for generating the game movements</param>
-        /// <param name="depth">Current depth in the Min-Max tree</param>
+        /// <param name="currDepth">Current depth in the Min-Max tree</param>
         /// <param name="alpha">Current alpha value for the alpha-beta cutoff</param>
         /// <param name="beta">Current beta value for the alpha-beta cutoff</param>
         /// <returns>Move evaluation value</returns>
@@ -258,7 +258,7 @@ namespace Angels_Vs_Demons.Players
         /// Implements game move evaluation from the point of view of the MIN player.
         /// </summary>
         /// <param name="board">The board that will be used as a starting point for generating the game movements</param>
-        /// <param name="depth">Current depth in the Min-Max tree</param>
+        /// <param name="currDepth">Current depth in the Min-Max tree</param>
         /// <param name="alpha">Current alpha value for the alpha-beta cutoff</param>
         /// <param name="beta">Current beta value for the alpha-beta cutoff</param>
         /// <returns>Move evaluation value</returns>
@@ -323,6 +323,7 @@ namespace Angels_Vs_Demons.Players
         /// Evaluates the strength of the current player compared to the opossing player
         /// </summary>
         /// <param name="board">The board where the current player position will be evaluated.</param>
+        /// <param name="currDepth">the depth of the current board</param>
         /// <returns>the player strength</returns>
         private int eval(AvDGame board, int currDepth)
         {
@@ -361,6 +362,8 @@ namespace Angels_Vs_Demons.Players
         /// Evaluates the strength of a unit
         /// </summary>
         /// <param name="unit">the unit to calculate</param>
+        /// <param name="pos">the position of the unit</param>
+        /// <param name="depthOffset">the offset of the depth</param>
         /// <returns>the unit value</returns>
         private int calculateValue(Unit unit, int pos, int depthOffset)
         {
@@ -373,9 +376,10 @@ namespace Angels_Vs_Demons.Players
         }
 
         /// <summary>
-        /// 
+        /// Calculates the weighting of a unit.
+        /// The AI uses this to determine which moves are better than the other
         /// </summary>
-        /// <param name="board"></param>
+        /// <param name="unit">the unit currently being calculated</param>
         private void calculateTableWeights(Unit unit)
         {
             if (unit is Champion)

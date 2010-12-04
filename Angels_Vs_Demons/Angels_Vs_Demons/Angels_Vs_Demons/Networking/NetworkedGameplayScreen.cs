@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
+using Microsoft.Xna.Framework.Graphics;
 #endregion
 
 namespace Angels_Vs_Demons.Networking
@@ -541,6 +542,32 @@ namespace Angels_Vs_Demons.Networking
             return localAttack;
         }
 
+        #endregion
+
+        #region Drawing
+        //trying to get it to draw when your turn is.
+        //public override void Draw(GameTime gameTime)
+        //{
+        //    SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
+        //    spriteBatch.Begin();
+
+        //    if (localGamer != null)
+        //    {
+        //        HumanPlayer hPlayer = localGamer.Tag as HumanPlayer;
+        //        fontPosition.X = 20;
+        //        fontPosition.Y = 400;
+        //        if (game.ControllingFaction == hPlayer.Faction)
+        //        {
+        //            spriteBatch.DrawString(gameFont, "Your Turn", fontPosition, Color.Black);
+        //        }
+        //        else
+        //        {
+        //            spriteBatch.DrawString(gameFont, "Other player's Turn", fontPosition, Color.Black);
+        //        }
+        //    }
+
+        //    base.Draw(gameTime);
+        //}
         #endregion
     }
 }
