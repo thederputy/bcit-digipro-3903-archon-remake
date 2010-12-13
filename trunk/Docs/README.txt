@@ -1,4 +1,4 @@
-Dennis, since we last demoed this to you there have been few changes.
+Dennis, since we last demoed this to you there have been only two small changes.
 
 Changes implemented:
 
